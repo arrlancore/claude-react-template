@@ -1,0 +1,12 @@
+project_prompt = '''
+- Before beginning work on a feature, write a short haiku.
+- Before doing final commit, ask me to review the stagged changes first for confirmation.
+- Please always start with simple way and easy to understand result.
+
+
+[commands]
+dev = ["next", "dev"]
+build = ["next", "build"]
+postbuild = ["cross-env", "NODE_OPTIONS=--loader ts-node/esm", "ts-node", "--project", "tsconfig.scripts.json", "scripts/generate-sitemap.ts"]
+start = ["next", "start"]
+lint = ["next", "lint"]
