@@ -2,7 +2,7 @@ import MainLayout from "@/components/layout/main-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { appDescription, appSlogan, appTitle, appUrl } from "@/config";
+import { appDescription, appSlogan, appTitle, appUrl, brand } from "@/config";
 import { ArrowRight, CheckCircle2, Sparkles, Zap, Shield } from "lucide-react";
 
 import type { Metadata } from "next";
@@ -91,7 +91,9 @@ function LandingPage() {
       <section id="features" className="bg-muted/50 py-12 md:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">Everything You Need</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">
+              Everything You Need
+            </h2>
             <p className="text-base md:text-lg text-muted-foreground">
               All the tools and features you need to build amazing products
             </p>
@@ -122,21 +124,31 @@ function LandingPage() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-4">About Our Platform</h2>
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">
+                About Our Platform
+              </h2>
               <p className="text-muted-foreground mb-4">
-                {brand.title}.{brand.domain} was founded with a simple but powerful mission: to make development more accessible, efficient, and enjoyable for teams of all sizes.
+                {brand.title}.{brand.domain} was founded with a simple but
+                powerful mission: to make development more accessible,
+                efficient, and enjoyable for teams of all sizes.
               </p>
               <p className="text-muted-foreground mb-4">
-                Our platform combines cutting-edge technology with intuitive design, enabling developers to focus on what matters most—building exceptional software that solves real problems.
+                Our platform combines cutting-edge technology with intuitive
+                design, enabling developers to focus on what matters
+                most—building exceptional software that solves real problems.
               </p>
               <p className="text-muted-foreground">
-                Whether you're a startup or an enterprise, our scalable solutions grow with you, providing the tools and support you need at every stage of your journey.
+                Whether you're a startup or an enterprise, our scalable
+                solutions grow with you, providing the tools and support you
+                need at every stage of your journey.
               </p>
             </div>
             <div className="order-first md:order-last">
               <div className="relative aspect-video rounded-xl overflow-hidden bg-muted">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-4xl font-bold text-muted-foreground/30">About Video</div>
+                  <div className="text-4xl font-bold text-muted-foreground/30">
+                    About Video
+                  </div>
                 </div>
               </div>
             </div>
@@ -148,9 +160,12 @@ function LandingPage() {
       <section id="pricing" className="bg-muted/50 py-12 md:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">Simple, Transparent Pricing</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">
+              Simple, Transparent Pricing
+            </h2>
             <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Choose the plan that's right for you and your team. All plans include a 14-day free trial.
+              Choose the plan that's right for you and your team. All plans
+              include a 14-day free trial.
             </p>
           </div>
 
@@ -163,9 +178,16 @@ function LandingPage() {
                   <span className="text-3xl font-bold">$29</span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
-                <p className="text-muted-foreground mb-6">Perfect for individuals and small teams getting started.</p>
+                <p className="text-muted-foreground mb-6">
+                  Perfect for individuals and small teams getting started.
+                </p>
                 <ul className="space-y-3 mb-6">
-                  {["5 team members", "20GB storage", "Basic analytics", "24/7 support"].map((feature) => (
+                  {[
+                    "5 team members",
+                    "20GB storage",
+                    "Basic analytics",
+                    "24/7 support",
+                  ].map((feature) => (
                     <li key={feature} className="flex items-center gap-2">
                       <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
                       <span className="text-sm">{feature}</span>
@@ -181,7 +203,9 @@ function LandingPage() {
             {/* Pro Plan */}
             <Card className="flex flex-col h-full relative border-primary">
               <div className="absolute -top-4 inset-x-0 flex justify-center">
-                <Badge className="bg-primary text-primary-foreground">Most Popular</Badge>
+                <Badge className="bg-primary text-primary-foreground">
+                  Most Popular
+                </Badge>
               </div>
               <div className="p-6 flex-grow">
                 <h3 className="text-lg font-medium mb-2">Pro</h3>
@@ -189,7 +213,9 @@ function LandingPage() {
                   <span className="text-3xl font-bold">$79</span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
-                <p className="text-muted-foreground mb-6">For growing teams needing more power and features.</p>
+                <p className="text-muted-foreground mb-6">
+                  For growing teams needing more power and features.
+                </p>
                 <ul className="space-y-3 mb-6">
                   {[
                     "Unlimited team members",
@@ -197,7 +223,7 @@ function LandingPage() {
                     "Advanced analytics",
                     "Priority support",
                     "Custom domains",
-                    "API access"
+                    "API access",
                   ].map((feature) => (
                     <li key={feature} className="flex items-center gap-2">
                       <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
@@ -219,7 +245,9 @@ function LandingPage() {
                   <span className="text-3xl font-bold">$199</span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
-                <p className="text-muted-foreground mb-6">For large organizations with advanced requirements.</p>
+                <p className="text-muted-foreground mb-6">
+                  For large organizations with advanced requirements.
+                </p>
                 <ul className="space-y-3 mb-6">
                   {[
                     "Unlimited everything",
@@ -227,7 +255,7 @@ function LandingPage() {
                     "Enterprise analytics",
                     "Dedicated support",
                     "Custom integrations",
-                    "SLA guarantees"
+                    "SLA guarantees",
                   ].map((feature) => (
                     <li key={feature} className="flex items-center gap-2">
                       <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
@@ -245,9 +273,14 @@ function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section id="contact" className="bg-primary text-primary-foreground py-12 md:py-20">
+      <section
+        id="contact"
+        className="bg-primary text-primary-foreground py-12 md:py-20"
+      >
         <div className="mx-auto max-w-4xl text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to Get Started?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">
+            Ready to Get Started?
+          </h2>
           <p className="mb-8 text-base md:text-lg opacity-90">
             Join thousands of developers building the future of web development.
           </p>
@@ -260,3 +293,5 @@ function LandingPage() {
     </MainLayout>
   );
 }
+
+export default LandingPage;
