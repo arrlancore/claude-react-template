@@ -1,0 +1,127 @@
+/* styles/blog.css */
+.blog-content {
+  /* Typography */
+  --blog-font-size: 1.125rem;
+  --blog-line-height: 1.75;
+
+  /* Focus on readability */
+  font-size: var(--blog-font-size);
+  line-height: var(--blog-line-height);
+  width: 100%;
+}
+
+/* Custom header spacing */
+.blog-content h2 {
+  margin-top: 2.5em;
+  margin-bottom: 0.75em;
+}
+
+.blog-content h3 {
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+/* Paragraph spacing for better readability */
+.blog-content p {
+  margin-bottom: 1.5em;
+}
+
+/* List styling */
+.blog-content ul,
+.blog-content ol {
+  padding-left: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.blog-content li {
+  margin-bottom: 0.5em;
+}
+
+/* Blockquote styling */
+.blog-content blockquote {
+  font-style: normal;
+  color: var(--muted-foreground);
+  padding: 1em 1.5em;
+  border-left: 3px solid var(--border);
+  background-color: var(--muted);
+  border-radius: 0.5em;
+  margin: 2em 0;
+}
+
+.blog-content blockquote p {
+  margin-bottom: 0;
+}
+
+/* Code blocks */
+.blog-content pre {
+  border-radius: 0.5em;
+  margin: 1.5em 0;
+  padding: 1em;
+  overflow-x: auto;
+}
+
+.blog-content code {
+  font-size: 0.9em;
+}
+
+/* Image styling */
+.blog-content img {
+  border-radius: 0.5em;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Table styling */
+.blog-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2em 0;
+}
+
+.blog-content th {
+  background-color: var(--muted);
+  text-align: left;
+  padding: 0.75em;
+  font-weight: 600;
+}
+
+.blog-content td {
+  padding: 0.75em;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Link styling */
+.blog-content a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease;
+}
+
+.blog-content a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Media query for mobile */
+@media (max-width: 640px) {
+  .blog-content {
+    --blog-font-size: 1rem;
+    --blog-line-height: 1.6;
+  }
+
+  .blog-content blockquote {
+    padding: 0.75em 1em;
+  }
+
+  .blog-content h2 {
+    margin-top: 2em;
+  }
+
+  .blog-content h3 {
+    margin-top: 1.5em;
+  }
+}
+
+/* Dark mode adjustments */
+.dark .blog-content blockquote {
+  background-color: rgba(255, 255, 255, 0.05);
+}

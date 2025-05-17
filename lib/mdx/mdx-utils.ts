@@ -3,7 +3,7 @@ import fs from "fs";
 import matter from "gray-matter";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import readingTime from "reading-time";
-import { Post, PostMeta } from "@/types/blog";
+import { Post, PostMeta, TableOfContents } from "@/types/blog";
 import { ReactElement } from "react";
 import components from "./mdx-components";
 import { getAuthorBySlug } from "../author-utils";
@@ -14,6 +14,27 @@ const randomImage = "https://unsplash.it/640/425?";
 
 function getPostFilePaths(): string[] {
   return fs.readdirSync(POSTS_PATH).filter((path) => /\.mdx?$/.test(path));
+}
+
+// Function to extract headings from markdown content
+function extractHeadings(content: string): TableOfContents[] {
+  const headingRegex = /^(#{2,3})\s+(.+)$/gm;
+  const headings: TableOfContents[] = [];
+
+  let match;
+  while ((match = headingRegex.exec(content)) !== null) {
+    const level = match[1].length; // Number of # symbols (2 for h2, 3 for h3)
+    const text = match[2].trim();
+    const slug = text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/^-+|-+$/g, ''); // Remove leading and trailing hyphens
+
+    headings.push({ level, text, slug });
+  }
+
+  return headings;
 }
 
 export async function getAllPosts(): Promise<PostMeta[]> {
@@ -91,6 +112,9 @@ export async function getPostBySlug(slug: string): Promise<Post> {
     };
   }
 
+  // Extract table of contents from the markdown content
+  const toc = extractHeadings(content);
+
   const mdxContent = await MDXRemote({
     source: content,
     components: components,
@@ -99,6 +123,9 @@ export async function getPostBySlug(slug: string): Promise<Post> {
   const randomImageUrl =
     randomImage + data.tags ? randomImage + data.tags[0] : "";
 
+  // Set showToc to true by default if not explicitly defined in frontmatter
+  const showToc = data.showToc !== undefined ? data.showToc : true;
+
   return {
     content: mdxContent,
     ...data,
@@ -106,6 +133,8 @@ export async function getPostBySlug(slug: string): Promise<Post> {
     author,
     readingTime: readingTime(content).text,
     image: data.image || randomImageUrl,
+    toc,
+    showToc,
   } as Post;
 }
 

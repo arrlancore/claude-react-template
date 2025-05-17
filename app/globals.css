@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import custom styles */
+@import '../styles/mdx.css';
+@import '../styles/blog.css';
 
 @layer base {
   :root {

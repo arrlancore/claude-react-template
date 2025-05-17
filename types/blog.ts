@@ -24,6 +24,7 @@ export interface PostMeta {
   tags?: string[];
   image?: string;
   readingTime?: string;
+  showToc?: boolean;
 }
 
 export interface Post extends PostMeta {

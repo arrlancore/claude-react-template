@@ -1,10 +1,10 @@
 import { getPostBySlug } from "@/lib/mdx/mdx-utils";
-import { BlogHeader } from "@/components/blog/blog-header";
-import { BlogFooter } from "@/components/blog/blog-footer";
 import { Metadata } from "next";
 import { appLocale, appUrl, blogUrl, brandName } from "@/config";
 import { format } from "date-fns";
 import BlogPost from "@/components/blog/BlogPost";
+import MainLayout from "@/components/layout/main-layout";
+import { notFound } from "next/navigation";
 
 interface PageProps {
   params: {
@@ -58,16 +58,18 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page({ params }: PageProps) {
+export default async function BlogPostPage({ params }: PageProps) {
   const post = await getPostBySlug(params.slug);
 
+  if (!post) {
+    notFound();
+  }
+
   return (
-    <article className="max-w-screen-md mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-      <BlogHeader />
-      <div className="pt-12" />
-      <BlogPost post={post} />
-      <div className="pt-12" />
-      <BlogFooter />
-    </article>
+    <MainLayout className="py-8 md:py-12">
+      <article>
+        <BlogPost post={post} />
+      </article>
+    </MainLayout>
   );
 }
