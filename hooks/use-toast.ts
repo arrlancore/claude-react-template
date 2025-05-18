@@ -63,6 +63,11 @@ const addToRemoveQueue = (toastId: string) => {
     return
   }
 
+  // Safety check to ensure we're in a browser environment
+  if (typeof window === 'undefined') {
+    return;
+  }
+
   const timeout = setTimeout(() => {
     toastTimeouts.delete(toastId)
     dispatch({
@@ -190,6 +195,47 @@ function useToast() {
   React.useEffect(() => {
     listeners.push(setState)
 
+    // Handle page transitions and browser navigation
+    const handleBeforeUnload = () => {
+      // Clear all timeouts when page is about to unload
+      toastTimeouts.forEach((timeout) => {
+        clearTimeout(timeout)
+      })
+      toastTimeouts.clear()
+    }
+
+    // Handle visibility change (user tabs away/returns)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        // Dismiss all toasts when page is hidden
+        dispatch({ type: "DISMISS_TOAST" })
+      }
+    }
+
+    // Handle router changes in Next.js
+    const handleRouteChange = () => {
+      // Dismiss all toasts on route change
+      dispatch({ type: "DISMISS_TOAST" })
+    }
+
+    // Only add listeners in browser environment
+    if (typeof window !== 'undefined') {
+      window.addEventListener('beforeunload', handleBeforeUnload)
+      document.addEventListener('visibilitychange', handleVisibilityChange)
+
+      // Handle browser back/forward buttons
+      window.addEventListener('popstate', handleRouteChange)
+
+      // Try to detect Next.js router events if available
+      if (typeof window.history !== 'undefined') {
+        const originalPushState = window.history.pushState
+        window.history.pushState = function() {
+          handleRouteChange()
+          return originalPushState.apply(window.history, arguments as any)
+        }
+      }
+    }
+
     // Cleanup function to remove event listener and clear timeouts
     return () => {
       // Remove the state setter from listeners
@@ -198,8 +244,12 @@ function useToast() {
         listeners.splice(index, 1)
       }
 
-      // Optionally dismiss all toasts when component unmounts
-      // dispatch({ type: "DISMISS_TOAST" })
+      // Remove event listeners
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('beforeunload', handleBeforeUnload)
+        document.removeEventListener('visibilitychange', handleVisibilityChange)
+        window.removeEventListener('popstate', handleRouteChange)
+      }
     }
   }, []) // Empty dependency array so this only runs on mount/unmount
 

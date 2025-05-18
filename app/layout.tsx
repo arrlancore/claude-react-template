@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
+import { SafeToaster } from "@/components/ui/safe-toaster";
+import { NavigationEvents } from "@/components/navigation-events";
 import localFont from "next/font/local";
 import "./globals.css";
 import {
@@ -76,7 +77,8 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <Toaster />
+          <SafeToaster />
+          <NavigationEvents />
         </ThemeProvider>
       </body>
     </html>
