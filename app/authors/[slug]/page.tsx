@@ -20,14 +20,14 @@ import {
   Calendar,
   BookOpen,
 } from "lucide-react";
-import { format } from "date-fns";
-import { id } from "date-fns/locale";
 import { getAuthorBySlug } from "@/lib/author-utils";
 import { getPostsByAuthor } from "@/lib/mdx/mdx-utils";
 import { Metadata } from "next";
-import { appLocale, appUrl, brandName } from "@/config";
+import { appLocale, appUrl, brandName, paginationConfig } from "@/config";
+import { formatDateWithMonth } from "@/lib/date-utils";
 import MainLayout from "@/components/layout/main-layout";
 import { Separator } from "@/components/ui/separator";
+import BlogPagination from "@/components/blog/BlogPagination";
 
 export async function generateMetadata({
   params,
@@ -76,15 +76,22 @@ export async function generateMetadata({
 
 export default async function AuthorPage({
   params,
+  searchParams,
 }: {
   params: { slug: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const author = await getAuthorBySlug(params.slug);
-  const authorPosts = await getPostsByAuthor(params.slug);
+  // Get page from query or default to 1
+  const pageParam = searchParams.page;
+  const currentPage = typeof pageParam === 'string' ? parseInt(pageParam, 10) || 1 : 1;
 
+  const author = await getAuthorBySlug(params.slug);
   if (!author) {
     notFound();
   }
+
+  // Get posts with pagination
+  const { posts: authorPosts, total, totalPages } = await getPostsByAuthor(params.slug, currentPage, paginationConfig.authorPostsPerPage);
 
   return (
     <MainLayout>
@@ -181,6 +188,12 @@ export default async function AuthorPage({
           </div>
           <Separator className="mb-8" />
 
+          {total > 0 && (
+            <div className="text-center mb-6 text-muted-foreground">
+              Showing {authorPosts.length} of {total} posts
+            </div>
+          )}
+
           {authorPosts.length === 0 ? (
             <div className="text-center py-12 bg-muted/20 rounded-lg">
               <p className="text-muted-foreground">
@@ -229,9 +242,7 @@ export default async function AuthorPage({
                         <div className="flex items-center">
                           <Calendar className="h-3 w-3 mr-1" />
                           <span>
-                            {format(new Date(post.publishedAt), "MMM d, yyyy", {
-                              locale: id,
-                            })}
+                            {formatDateWithMonth(post.publishedAt)}
                           </span>
                         </div>
                         <div className="flex items-center">
@@ -248,6 +259,9 @@ export default async function AuthorPage({
               ))}
             </div>
           )}
+
+          {/* Pagination */}
+          <BlogPagination totalPages={totalPages} currentPage={currentPage} />
         </div>
       </div>
     </MainLayout>

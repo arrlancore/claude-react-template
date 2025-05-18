@@ -7,6 +7,7 @@ import { Post, PostMeta, TableOfContents } from "@/types/blog";
 import { ReactElement } from "react";
 import components from "./mdx-components";
 import { getAuthorBySlug } from "../author-utils";
+import { paginationConfig } from "@/config";
 
 const POSTS_PATH = path.join(process.cwd(), "content/posts");
 
@@ -37,7 +38,7 @@ function extractHeadings(content: string): TableOfContents[] {
   return headings;
 }
 
-export async function getAllPosts(): Promise<PostMeta[]> {
+export async function getAllPosts(page: number = 1, limit: number = paginationConfig.postsPerPage): Promise<{ posts: PostMeta[], total: number, totalPages: number }> {
   const currentDate = new Date();
 
   const mapPost = async (filePath: string) => {
@@ -71,9 +72,9 @@ export async function getAllPosts(): Promise<PostMeta[]> {
     } as PostMeta;
   };
 
-  let posts = await Promise.all(getPostFilePaths().map(mapPost));
+  let allPosts = await Promise.all(getPostFilePaths().map(mapPost));
 
-  posts = posts
+  allPosts = allPosts
     .filter((post) => post.draft !== true)
     .filter((post) => new Date(post.publishedAt) <= currentDate)
     .sort((a, b) => {
@@ -82,14 +83,42 @@ export async function getAllPosts(): Promise<PostMeta[]> {
       );
     });
 
-  return posts;
+  const total = allPosts.length;
+  const totalPages = Math.ceil(total / limit);
+
+  // Handle pagination
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  const paginatedPosts = allPosts.slice(startIndex, endIndex);
+
+  return {
+    posts: paginatedPosts,
+    total,
+    totalPages
+  };
 }
 
 export async function getPostsByAuthor(
-  authorSlug: string
-): Promise<PostMeta[]> {
-  const posts = await getAllPosts();
-  return posts.filter((post) => post.author.slug === authorSlug);
+  authorSlug: string,
+  page: number = 1,
+  limit: number = paginationConfig.authorPostsPerPage
+): Promise<{ posts: PostMeta[], total: number, totalPages: number }> {
+  const { posts: allPosts } = await getAllPosts(1, Number.MAX_SAFE_INTEGER);
+
+  const filteredPosts = allPosts.filter((post) => post.author.slug === authorSlug);
+  const total = filteredPosts.length;
+  const totalPages = Math.ceil(total / limit);
+
+  // Handle pagination
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+
+  return {
+    posts: paginatedPosts,
+    total,
+    totalPages
+  };
 }
 
 export async function getPostBySlug(slug: string): Promise<Post> {

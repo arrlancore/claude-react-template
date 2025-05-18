@@ -17,3 +17,17 @@ export const blogTitle = "Blog";
 export const blogDescription = `Latest news, insights, and tutorials from the ${brand.title}.${brand.domain} team.`;
 export const blogUrl = appUrl + "blog";
 export const defaultAuthor = "Editor Team";
+
+// pagination
+export const paginationConfig = {
+  postsPerPage: 20, // Number of posts to display per page
+  maxPagesShown: 7, // Maximum number of page numbers to show in pagination
+  authorPostsPerPage: 20, // Number of posts per page on author pages
+};
+
+// date formatting
+export const dateConfig = {
+  locale: "id",           // Locale for date-fns (id = Indonesian)
+  format: "dd-MM-yyyy",   // Default date format
+  formatWithMonth: "MMM d, yyyy", // Format with month name
+};

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PostMeta } from "@/types/blog";
+import { formatDate } from "@/lib/date-utils";
 
 export default function PostCard({ post }: { post: PostMeta }) {
   return (
@@ -18,7 +19,7 @@ export default function PostCard({ post }: { post: PostMeta }) {
           <CardTitle>{post.title}</CardTitle>
           <div className="text-sm text-muted-foreground">
             {post.readingTime} •{" "}
-            {new Date(post.publishedAt).toLocaleDateString()}
+            {formatDate(post.publishedAt)}
           </div>
         </CardHeader>
         <CardContent>

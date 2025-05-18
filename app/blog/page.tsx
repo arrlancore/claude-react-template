@@ -1,7 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { format } from "date-fns";
-import { id } from "date-fns/locale";
 import { getAllPosts } from "@/lib/mdx/mdx-utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +11,10 @@ import {
   blogTitle,
   blogUrl,
   brandName,
+  paginationConfig,
 } from "@/config";
+import { formatDate } from "@/lib/date-utils";
+import BlogPagination from "@/components/blog/BlogPagination";
 
 export const metadata: Metadata = {
   title: blogTitle,
@@ -28,13 +29,28 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function BlogPage() {
-  const posts = await getAllPosts();
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  // Get page from query or default to 1
+  const pageParam = searchParams.page;
+  const currentPage = typeof pageParam === 'string' ? parseInt(pageParam, 10) || 1 : 1;
+
+  // Get posts with pagination
+  const { posts, total, totalPages } = await getAllPosts(currentPage, paginationConfig.postsPerPage);
 
   return (
     <MainLayout>
       <div className="py-12">
         <h1 className="text-3xl md:text-4xl font-bold mb-6 md:mb-12 text-center">Blog</h1>
+
+        {total > 0 && (
+          <div className="text-center mb-6 text-muted-foreground">
+            Showing {posts.length} of {total} posts
+          </div>
+        )}
 
         {posts.length === 0 ? (
           <div className="text-center py-12">
@@ -81,9 +97,7 @@ export default async function BlogPage() {
                     </p>
 
                     <p className="text-muted-foreground text-sm whitespace-nowrap">
-                      {format(new Date(post.publishedAt), "dd-MM-yyyy", {
-                        locale: id,
-                      })}{" "}
+                      {formatDate(post.publishedAt)}{" "}
                       • {post.readingTime}
                     </p>
                   </div>
@@ -94,6 +108,9 @@ export default async function BlogPage() {
             ))}
           </div>
         )}
+
+        {/* Pagination */}
+        <BlogPagination totalPages={totalPages} currentPage={currentPage} />
       </div>
     </MainLayout>
   );

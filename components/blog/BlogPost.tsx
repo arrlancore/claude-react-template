@@ -1,7 +1,5 @@
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
-import { format } from "date-fns";
-import { id } from "date-fns/locale";
 import { Post } from "@/types/blog";
 import ShareButtons from "../share-button";
 import { extractDomain } from "@/lib/utils";
@@ -14,6 +12,7 @@ import {
   Clock,
   ListOrdered,
 } from "lucide-react";
+import { formatCustomDate } from "@/lib/date-utils";
 import { Separator } from "../ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
@@ -61,9 +60,7 @@ export default async function BlogPost(props: { post: Post }) {
             </div>
             <span>•</span>
             <time dateTime={new Date(post.publishedAt).toISOString()}>
-              {format(new Date(post.publishedAt), "MMMM d, yyyy", {
-                locale: id,
-              })}
+              {formatCustomDate(post.publishedAt, "MMMM d, yyyy")}
             </time>
           </div>
         </div>
