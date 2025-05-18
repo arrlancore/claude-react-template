@@ -1,14 +1,20 @@
-import { notFound } from 'next/navigation';
-import { getAuthorBySlug } from '@/lib/author-utils';
-import { getPostsByAuthor } from '@/lib/mdx/mdx-utils';
-import { Metadata } from 'next';
-import { appLocale, appUrl, brandName, i18nConfig } from '@/config';
-import AuthorPageClient from './client';
+import { notFound } from "next/navigation";
+import { getAuthorBySlug } from "@/lib/author-utils";
+import { getPostsByAuthor } from "@/lib/mdx/mdx-utils";
+import { Metadata } from "next";
+import {
+  appLocale,
+  appUrl,
+  brandName,
+  i18nConfig,
+  paginationConfig,
+} from "@/config";
+import AuthorPageClient from "./client";
 
 export async function generateMetadata({
-  params: { slug, locale }
+  params: { slug, locale },
 }: {
-  params: { slug: string, locale: string }
+  params: { slug: string; locale: string };
 }): Promise<Metadata> {
   // Validate locale
   if (!i18nConfig.locales.includes(locale)) {
@@ -56,9 +62,11 @@ export async function generateMetadata({
 }
 
 export default async function Page({
-  params: { slug, locale }
+  params: { slug, locale },
+  searchParams,
 }: {
-  params: { slug: string, locale: string }
+  params: { slug: string; locale: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
   // Validate locale
   if (!i18nConfig.locales.includes(locale)) {
@@ -71,7 +79,23 @@ export default async function Page({
     notFound();
   }
 
-  const authorPosts = await getPostsByAuthor(slug);
+  const pageParam = searchParams.page;
+  const currentPage =
+    typeof pageParam === "string" ? parseInt(pageParam, 10) || 1 : 1;
+  const authorPosts = await getPostsByAuthor(
+    slug,
+    currentPage,
+    paginationConfig.authorPostsPerPage
+  );
 
-  return <AuthorPageClient author={author} posts={authorPosts} locale={locale} />;
+  return (
+    <AuthorPageClient
+      author={author}
+      posts={authorPosts.posts}
+      locale={locale}
+      total={authorPosts.total}
+      totalPages={authorPosts.totalPages}
+      currentPage={currentPage}
+    />
+  );
 }

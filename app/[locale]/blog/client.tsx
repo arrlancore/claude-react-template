@@ -30,7 +30,7 @@ export default function BlogPageClient({
         </h1>
 
         {total && total > 0 && (
-          <div className="text-center mb-6 text-muted-foreground">
+          <div className="text-center mb-6 text-sm text-muted-foreground">
             Showing {posts.length} of {total} posts
           </div>
         )}
