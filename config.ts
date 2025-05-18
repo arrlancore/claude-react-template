@@ -20,7 +20,7 @@ export const defaultAuthor = "Editor Team";
 
 // pagination
 export const paginationConfig = {
-  postsPerPage: 3, // Number of posts to display per page
+  postsPerPage: 20, // Number of posts to display per page
   maxPagesShown: 7, // Maximum number of page numbers to show in pagination
   authorPostsPerPage: 20, // Number of posts per page on author pages
 };

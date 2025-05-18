@@ -75,9 +75,8 @@ export default async function Page({ params }: PageProps) {
   }
 
   return (
-    <MainLayout>
-      <article className="max-w-screen-md mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="pt-12" />
+    <MainLayout className="py-8 md:py-12">
+      <article>
         <BlogPost post={post} locale={params.locale} />
       </article>
     </MainLayout>

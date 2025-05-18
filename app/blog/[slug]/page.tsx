@@ -68,7 +68,7 @@ export default async function BlogPostPage({ params }: PageProps) {
   return (
     <MainLayout className="py-8 md:py-12">
       <article>
-        <BlogPost post={post} />
+        <BlogPost post={post} locale="en" />
       </article>
     </MainLayout>
   );
