@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -37,7 +38,7 @@ export const AuthForm = () => {
     } else {
       setAuthMode("login");
     }
-  }, [form]);
+  }, [form]); // Include form in dependency array
 
   // Login form state
   const [email, setEmail] = useState("");
@@ -59,15 +60,14 @@ export const AuthForm = () => {
     setAuthLoading(true);
 
     try {
-      // Mock login for demo purposes
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      toast({
-        title: "Login Success",
-        description: "Welcome back!",
-        variant: "default",
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
-      // In a real app, you would use supabase.auth.signInWithPassword
+
+      if (error) throw error;
+
+      // Redirect is handled by useEffect watching for user state
     } catch (error: any) {
       toast({
         title: t("login.failure.title"),
@@ -84,8 +84,18 @@ export const AuthForm = () => {
     setAuthLoading(true);
 
     try {
-      // Mock signup for demo purposes
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+          },
+        },
+      });
+
+      if (error) throw error;
 
       toast({
         title: t("signup.success.title"),
@@ -94,7 +104,6 @@ export const AuthForm = () => {
 
       // Switch to login tab
       setAuthMode("login");
-      // In a real app, you would use supabase.auth.signUp
     } catch (error: any) {
       toast({
         title: t("signup.failure.title"),
@@ -106,54 +115,49 @@ export const AuthForm = () => {
     }
   };
 
-  // If already authenticated
+  // Debug log for Tabs component state
+  useEffect(() => {
+    console.log("Current authMode:", authMode);
+    console.log("Tabs defaultValue:", authMode);
+  }, [authMode]);
+
   if (user) {
     router.push("/profile");
     return null;
   }
 
-  // If still loading auth state, show minimal loading indicator
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center p-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   return (
     <div className="w-full max-w-md">
       <Tabs
-        defaultValue={authMode}
         value={authMode}
-        onValueChange={(value) => setAuthMode(value as "login" | "signup")}
+        onValueChange={(v) => setAuthMode(v as "login" | "signup")}
         className="w-full"
       >
         <TabsList className="grid w-full grid-cols-2 mb-6">
-          <TabsTrigger value="login">{t("login.tabLabel") || "Login"}</TabsTrigger>
-          <TabsTrigger value="signup">{t("signup.tabLabel") || "Sign Up"}</TabsTrigger>
+          <TabsTrigger value="login">{t("login.tabLabel")}</TabsTrigger>
+          <TabsTrigger value="signup">{t("signup.tabLabel")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="login">
           <Card className="border shadow-sm">
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl text-center font-bold">
-                {t("login.title") || "Sign In"}
+                {t("login.title")}
               </CardTitle>
               <CardDescription className="text-center">
-                {t("login.description") || "Enter your credentials to sign in to your account"}
+                {t("login.description")}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">{t("login.email") || "Email"}</Label>
+                  <Label htmlFor="email">{t("login.email")}</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="email"
                       type="email"
-                      placeholder={t("login.emailPlaceholder") || "name@example.com"}
+                      placeholder={t("login.emailPlaceholder")}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10"
@@ -164,12 +168,12 @@ export const AuthForm = () => {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="password">{t("login.password") || "Password"}</Label>
+                    <Label htmlFor="password">{t("login.password")}</Label>
                     <Link
                       href="#"
                       className="text-xs text-primary hover:underline"
                     >
-                      {t("login.forgotPassword") || "Forgot Password?"}
+                      {t("login.forgotPassword")}
                     </Link>
                   </div>
                   <div className="relative">
@@ -177,7 +181,7 @@ export const AuthForm = () => {
                     <Input
                       id="password"
                       type="password"
-                      placeholder={t("login.passwordPlaceholder") || "••••••••"}
+                      placeholder={t("login.passwordPlaceholder")}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="pl-10"
@@ -190,11 +194,11 @@ export const AuthForm = () => {
                   {authLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t("login.loading") || "Signing in..."}
+                      {t("login.loading")}
                     </>
                   ) : (
                     <>
-                      {t("login.button") || "Sign In"}
+                      {t("login.button")}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </>
                   )}
@@ -208,22 +212,22 @@ export const AuthForm = () => {
           <Card className="border shadow-sm">
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl text-center font-bold">
-                {t("signup.title") || "Create Account"}
+                {t("signup.title")}
               </CardTitle>
               <CardDescription className="text-center">
-                {t("signup.description") || "Enter your information to create an account"}
+                {t("signup.description")}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSignup} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="firstName">{t("signup.firstName") || "First Name"}</Label>
+                    <Label htmlFor="firstName">{t("signup.firstName")}</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="firstName"
-                        placeholder={t("signup.firstNamePlaceholder") || "John"}
+                        placeholder={t("signup.firstNamePlaceholder")}
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         className="pl-10"
@@ -233,10 +237,10 @@ export const AuthForm = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">{t("signup.lastName") || "Last Name"}</Label>
+                    <Label htmlFor="lastName">{t("signup.lastName")}</Label>
                     <Input
                       id="lastName"
-                      placeholder={t("signup.lastNamePlaceholder") || "Doe"}
+                      placeholder={t("signup.lastNamePlaceholder")}
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                     />
@@ -244,13 +248,13 @@ export const AuthForm = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">{t("signup.email") || "Email"}</Label>
+                  <Label htmlFor="signup-email">{t("signup.email")}</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="signup-email"
                       type="email"
-                      placeholder={t("signup.emailPlaceholder") || "name@example.com"}
+                      placeholder={t("signup.emailPlaceholder")}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10"
@@ -261,14 +265,14 @@ export const AuthForm = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">
-                    {t("signup.password") || "Password"}
+                    {t("signup.password")}
                   </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="signup-password"
                       type="password"
-                      placeholder={t("signup.passwordPlaceholder") || "••••••••"}
+                      placeholder={t("signup.passwordPlaceholder")}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="pl-10"
@@ -282,11 +286,11 @@ export const AuthForm = () => {
                   {authLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t("signup.loading") || "Creating account..."}
+                      {t("signup.loading")}
                     </>
                   ) : (
                     <>
-                      {t("signup.button") || "Create Account"}
+                      {t("signup.button")}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </>
                   )}
