@@ -5,6 +5,7 @@ import { I18nProvider } from "@/components/i18n-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import localFont from "next/font/local";
 import "../globals.css";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -49,9 +50,11 @@ export default async function LocaleLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <I18nProvider locale={locale} messages={messages}>
-            {children}
-          </I18nProvider>
+          <AuthProvider>
+            <I18nProvider locale={locale} messages={messages}>
+              {children}
+            </I18nProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
