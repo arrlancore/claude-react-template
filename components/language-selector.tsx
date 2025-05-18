@@ -16,14 +16,35 @@ import Link from "next/link";
 export function LanguageSelector() {
   const pathname = usePathname();
 
-  // Extract the current locale from the pathname
-  const currentLocale = pathname.split('/')[1] || i18nConfig.defaultLocale;
+  // Extract the current locale from the pathname or use default
+  const pathnameLocale = pathname.split('/')[1];
+  const isOnDefaultLocale = !pathnameLocale || !i18nConfig.locales.includes(pathnameLocale);
+  const currentLocale = isOnDefaultLocale ? i18nConfig.defaultLocale : pathnameLocale;
 
   // Function to get localized path
   const getLocalizedPath = (locale: string) => {
-    const segments = pathname.split('/');
-    segments[1] = locale;
-    return segments.join('/');
+    // For default locale, remove locale prefix
+    if (locale === i18nConfig.defaultLocale) {
+      const segments = pathname.split('/');
+      // If we're already on a localized path, remove the locale segment
+      if (i18nConfig.locales.includes(segments[1])) {
+        segments.splice(1, 1);
+      }
+      return segments.join('/') || '/';
+    }
+    // For non-default locales, add the locale prefix
+    else {
+      const segments = pathname.split('/');
+      // If we're on default locale (no locale in path), add the locale
+      if (!i18nConfig.locales.includes(segments[1])) {
+        segments.splice(1, 0, locale);
+      }
+      // If we're on another locale path, replace it
+      else {
+        segments[1] = locale;
+      }
+      return segments.join('/');
+    }
   };
 
   return (

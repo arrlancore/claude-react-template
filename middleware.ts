@@ -7,9 +7,12 @@ export default createMiddleware({
 
   // If this locale is matched, pathname will not be modified
   defaultLocale: i18nConfig.defaultLocale,
+
+  // This instructs next-intl to not add the locale prefix for the default locale
+  localePrefix: 'as-needed'
 });
 
 export const config = {
   // Match only internationalized pathnames
-  matcher: ['/((?!api|_next|.*\\..*).*)']
+  matcher: ['/((?!api|_next|.*\\..*).*)', '/']
 };

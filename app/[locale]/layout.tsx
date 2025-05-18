@@ -23,18 +23,20 @@ export function generateStaticParams() {
 
 export default async function LocaleLayout({
   children,
-  params: { locale }
+  params: { locale },
+  messages: propMessages
 }: {
   children: React.ReactNode;
   params: { locale: string };
+  messages?: any;
 }) {
   // Validate locale
   if (!i18nConfig.locales.includes(locale)) {
     notFound();
   }
 
-  // Get messages for the selected locale
-  const messages = await getMessages(locale);
+  // Get messages for the selected locale if not provided
+  const messages = propMessages || await getMessages(locale);
 
   return (
     <html lang={locale} suppressHydrationWarning>

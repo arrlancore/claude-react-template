@@ -3,7 +3,7 @@ import { MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { brand } from "@/config";
+import { brand, i18nConfig } from "@/config";
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { LanguageSelector } from "../language-selector";
@@ -13,11 +13,18 @@ export function BlogHeader() {
   const t = useTranslations('blog');
   const params = useParams();
   const locale = params.locale as string || 'en';
+  const { defaultLocale } = i18nConfig;
+
+  // Generate homepage link based on locale
+  const homeLink = locale === defaultLocale ? '/' : `/${locale}`;
+
+  // Generate blog link based on locale
+  const blogLink = locale === defaultLocale ? '/blog' : `/${locale}/blog`;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-2">
-        <Link href={`/${locale}`}>
+        <Link href={homeLink}>
           <h1 className="text-xl md:text-2xl font-extrabold">
             <span>{brand.title}</span>
             {brand.domain && (
@@ -28,7 +35,7 @@ export function BlogHeader() {
           </h1>
         </Link>
         <div className="flex items-center space-x-2">
-          <Link href={`/${locale}/blog`}>
+          <Link href={blogLink}>
             <Button variant="ghost">{t('title')}</Button>
           </Link>
           <LanguageSelector />

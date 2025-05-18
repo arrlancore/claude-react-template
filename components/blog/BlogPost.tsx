@@ -18,10 +18,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import TableOfContents from "./TableOfContents";
+import { i18nConfig } from "@/config";
 
 export default async function BlogPost(props: { post: Post; locale: string }) {
   const { post, locale } = props;
   const hasToc = post.toc && post.toc.length > 0 && post.showToc !== false;
+  const { defaultLocale } = i18nConfig;
+
+  // Generate author link based on locale
+  const getAuthorLink = (authorSlug: string) => {
+    return locale === defaultLocale ?
+      `/authors/${authorSlug}` :
+      `/${locale}/authors/${authorSlug}`;
+  };
 
   return (
     <div className="w-full">
@@ -46,7 +55,7 @@ export default async function BlogPost(props: { post: Post; locale: string }) {
               <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <Link
-              href={`/${locale}/authors/${post.author.slug}`}
+              href={getAuthorLink(post.author.slug)}
               className="text-sm font-medium hover:underline"
             >
               {post.author.name}
@@ -171,7 +180,7 @@ export default async function BlogPost(props: { post: Post; locale: string }) {
                   </Avatar>
                   <div className="flex-grow text-center sm:text-left">
                     <Link
-                      href={`/${locale}/authors/${post.author.slug}`}
+                      href={getAuthorLink(post.author.slug)}
                       className="text-lg font-semibold hover:underline inline-flex items-center gap-1"
                     >
                       {post.author.name}

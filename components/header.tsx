@@ -14,7 +14,25 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const t = useTranslations("common");
   const params = useParams();
+  // Get locale from params or use default if we're on the root route
   const locale = (params.locale as string) || "en";
+  const { defaultLocale } = i18nConfig;
+
+  // Generate link paths based on the locale
+  const getLocalizedLink = (path: string) => {
+    // For default locale, don't include the locale in the path
+    if (locale === defaultLocale) {
+      return path;
+    }
+    // For other locales, include the locale in the path
+    return `/${locale}${path}`;
+  };
+
+  // Generate homepage link based on locale
+  const homeLink = locale === defaultLocale ? '/' : `/${locale}`;
+
+  // Generate blog link based on locale
+  const blogLink = locale === defaultLocale ? '/blog' : `/${locale}/blog`;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -25,7 +43,7 @@ function Header() {
       <div className="container flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo section */}
         <div className="flex items-center">
-          <Link href={`/${locale}`} className="flex items-center">
+          <Link href={homeLink} className="flex items-center">
             <h1 className="text-xl md:text-2xl font-extrabold">
               <span>{brand.title}</span>
               {brand.domain && (
@@ -64,7 +82,7 @@ function Header() {
             {t("nav.contact")}
           </a>
           <Link
-            href={`/${locale}/blog`}
+            href={blogLink}
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             {t("nav.blog")}
@@ -132,7 +150,7 @@ function Header() {
                 {t("nav.contact")}
               </a>
               <Link
-                href={`/${locale}/blog`}
+                href={blogLink}
                 className="py-2 text-muted-foreground hover:text-foreground"
                 onClick={toggleMenu}
               >
