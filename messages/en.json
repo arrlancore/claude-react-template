@@ -79,6 +79,39 @@
       "title": "Ready to Get Started?",
       "description": "Join thousands of developers building the future of web development.",
       "button": "Start Building Now"
+    },
+    "about": {
+      "title": "About Our Platform",
+      "description1": "was founded with a simple but powerful mission: to make development more accessible, efficient, and enjoyable for teams of all sizes.",
+      "description2": "Our platform combines cutting-edge technology with intuitive design, enabling developers to focus on what matters most—building exceptional software that solves real problems.",
+      "description3": "Whether you're a startup or an enterprise, our scalable solutions grow with you, providing the tools and support you need at every stage of your journey."
+    },
+    "pricing": {
+      "title": "Simple, Transparent Pricing",
+      "subtitle": "Choose the plan that's right for you and your team. All plans include a 14-day free trial.",
+      "mostPopular": "Most Popular",
+      "plans": {
+        "starter": {
+          "name": "Starter",
+          "price": "$29",
+          "description": "Perfect for individuals and small teams getting started",
+          "features": "5 team members,20GB storage,Basic analytics,24/7 support"
+        },
+        "pro": {
+          "name": "Pro",
+          "price": "$79",
+          "description": "For growing teams needing more power and features",
+          "features": "Unlimited team members,100GB storage,Advanced analytics,Priority support,Custom domains,API access"
+        },
+        "enterprise": {
+          "name": "Enterprise",
+          "price": "$199",
+          "description": "For large organizations with advanced requirements",
+          "features": "Unlimited everything,500GB storage,Enterprise analytics,Dedicated support,Custom integrations,SLA guarantees"
+        }
+      },
+      "getStarted": "Get Started",
+      "contactSales": "Contact Sales"
     }
   },
   "blog": {
