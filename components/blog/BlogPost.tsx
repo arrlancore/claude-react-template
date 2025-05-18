@@ -77,7 +77,7 @@ export default async function BlogPost(props: { post: Post }) {
             alt={post.title}
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 100vw, 768px"
+            sizes="(max-width: 1336px) 100vw, 1336px"
             priority={true}
           />
 
@@ -154,7 +154,7 @@ export default async function BlogPost(props: { post: Post }) {
         {/* Author Section */}
         {post.author && (
           <div className="max-w-2xl mx-auto">
-            <Card className="border-0 shadow-none">
+            <Card className="border-0 shadow-none overflow-hidden">
               <CardHeader className="pb-2 pt-4">
                 <CardTitle className="text-base flex items-center gap-2">
                   <BookOpen className="h-4 w-4" />

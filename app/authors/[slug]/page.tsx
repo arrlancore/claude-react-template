@@ -1,11 +1,25 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Github, Linkedin, Twitter, User, Clock, Calendar, BookOpen } from "lucide-react";
+import {
+  Github,
+  Linkedin,
+  Twitter,
+  User,
+  Clock,
+  Calendar,
+  BookOpen,
+} from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { getAuthorBySlug } from "@/lib/author-utils";
@@ -77,12 +91,14 @@ export default async function AuthorPage({
       <div className="py-12">
         {/* Author Profile Card */}
         <div className="max-w-2xl mx-auto mb-16">
-          <Card className="border border-border/40 overflow-hidden">
+          <Card className="border-0 shadow-none overflow-hidden">
             <CardHeader className="pb-4 pt-6">
               <div className="flex flex-col items-center">
                 <Avatar className="h-24 w-24 mb-4 border-2 border-background shadow-sm">
                   <AvatarImage src={author.avatar} alt={author.name} />
-                  <AvatarFallback className="text-xl">{author.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="text-xl">
+                    {author.name.charAt(0)}
+                  </AvatarFallback>
                 </Avatar>
                 <CardTitle className="text-2xl md:text-3xl font-bold text-center flex items-center gap-2">
                   {author.name}
@@ -99,7 +115,12 @@ export default async function AuthorPage({
 
               <div className="flex justify-center gap-2 mt-6">
                 {author.socialLinks?.twitter && (
-                  <Button variant="outline" size="sm" className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5" asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5"
+                    asChild
+                  >
                     <Link
                       href={author.socialLinks.twitter}
                       target="_blank"
@@ -112,7 +133,12 @@ export default async function AuthorPage({
                   </Button>
                 )}
                 {author.socialLinks?.github && (
-                  <Button variant="outline" size="sm" className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5" asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5"
+                    asChild
+                  >
                     <Link
                       href={author.socialLinks.github}
                       target="_blank"
@@ -125,7 +151,12 @@ export default async function AuthorPage({
                   </Button>
                 )}
                 {author.socialLinks?.linkedin && (
-                  <Button variant="outline" size="sm" className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5" asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5"
+                    asChild
+                  >
                     <Link
                       href={author.socialLinks.linkedin}
                       target="_blank"
@@ -146,15 +177,15 @@ export default async function AuthorPage({
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-center mb-8">
             <BookOpen className="h-5 w-5 mr-2" />
-            <h2 className="text-xl font-semibold">
-              Articles by {author.name}
-            </h2>
+            <h2 className="text-xl font-semibold">Articles by {author.name}</h2>
           </div>
           <Separator className="mb-8" />
 
           {authorPosts.length === 0 ? (
             <div className="text-center py-12 bg-muted/20 rounded-lg">
-              <p className="text-muted-foreground">No articles published yet.</p>
+              <p className="text-muted-foreground">
+                No articles published yet.
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -180,7 +211,11 @@ export default async function AuthorPage({
                     <CardHeader className="pb-2">
                       <div className="flex flex-wrap gap-1.5 mb-2">
                         {post.tags?.slice(0, 3).map((tag) => (
-                          <Badge key={tag} variant="secondary" className="text-xs px-2 py-0.5 rounded-full">
+                          <Badge
+                            key={tag}
+                            variant="secondary"
+                            className="text-xs px-2 py-0.5 rounded-full"
+                          >
                             {tag}
                           </Badge>
                         ))}
@@ -204,7 +239,9 @@ export default async function AuthorPage({
                           <span>{post.readingTime}</span>
                         </div>
                       </div>
-                      <p className="text-sm text-muted-foreground line-clamp-3">{post.summary}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-3">
+                        {post.summary}
+                      </p>
                     </CardContent>
                   </Link>
                 </Card>

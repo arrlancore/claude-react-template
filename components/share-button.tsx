@@ -127,7 +127,7 @@ export default function ShareButtons({
 
       {/* Share Card */}
       <div className="w-full">
-        <Card className="border-0 shadow-none">
+        <Card className="border-0 shadow-none overflow-hidden">
           <CardHeader className="pb-2 pt-4">
             <CardTitle className="text-base flex items-center gap-2">
               <Share2 className="h-4 w-4" />
