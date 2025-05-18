@@ -27,57 +27,90 @@ export default async function BlogPost(props: { post: Post; locale: string }) {
 
   // Generate author link based on locale
   const getAuthorLink = (authorSlug: string) => {
-    return locale === defaultLocale ?
-      `/authors/${authorSlug}` :
-      `/${locale}/authors/${authorSlug}`;
+    return locale === defaultLocale
+      ? `/authors/${authorSlug}`
+      : `/${locale}/authors/${authorSlug}`;
   };
 
   return (
     <div className="w-full">
       {/* Header Section */}
-      <div className="mb-8 md:mb-10">
-        <div className="flex flex-wrap justify-center gap-2 mb-4">
-          {post.tags?.map((tag) => (
-            <Badge key={tag} variant="secondary">
-              {tag}
-            </Badge>
-          ))}
+      <div className="relative mb-16">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+          <div className="absolute top-0 left-1/4 w-64 h-64 rounded-full bg-primary/5 mix-blend-multiply blur-3xl" />
+          <div className="absolute top-0 right-1/4 w-64 h-64 rounded-full bg-secondary/5 mix-blend-multiply blur-3xl" />
         </div>
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-center leading-tight">
-          {post.title}
-        </h1>
 
-        {/* Author info (mini) and post metadata */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
-          <div className="flex items-center gap-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={post.author.avatar} alt={post.author.name} />
-              <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <Link
-              href={getAuthorLink(post.author.slug)}
-              className="text-sm font-medium hover:underline"
-            >
-              {post.author.name}
-            </Link>
+        <div className="max-w-4xl mx-auto px-4">
+          {/* Tags with enhanced styling */}
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
+            {post.tags?.map((tag) => (
+              <Badge
+                key={tag}
+                variant="secondary"
+                className="px-4 py-1 text-sm font-medium rounded-full bg-secondary/10 text-secondary-foreground/80 backdrop-blur-sm"
+              >
+                {tag}
+              </Badge>
+            ))}
           </div>
 
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              <span>{post.readingTime}</span>
+          {/* Title with improved typography */}
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center leading-tight mb-8 bg-clip-text">
+            {post.title}
+          </h1>
+
+          {/* Author info and metadata with modern layout */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8">
+            {/* Author section */}
+            <div className="flex items-center gap-3 group">
+              <div className="relative">
+                <Avatar className="h-12 w-12 ring-2 ring-background shadow-lg">
+                  <AvatarImage
+                    src={post.author.avatar}
+                    alt={post.author.name}
+                  />
+                  <AvatarFallback className="font-medium">
+                    {post.author.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-primary ring-2 ring-background" />
+              </div>
+              <Link
+                href={getAuthorLink(post.author.slug)}
+                className="text-base font-medium group-hover:text-primary transition-colors"
+              >
+                {post.author.name}
+              </Link>
             </div>
-            <span>•</span>
-            <time dateTime={new Date(post.publishedAt).toISOString()}>
-              {formatCustomDate(post.publishedAt, "MMMM d, yyyy")}
-            </time>
+
+            {/* Vertical separator for larger screens */}
+            <div className="hidden sm:block h-6 w-px bg-border/60" />
+
+            {/* Post metadata with icons */}
+            <div className="flex items-center gap-6 text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-primary" />
+                <span className="text-sm">{post.readingTime}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <time
+                  dateTime={new Date(post.publishedAt).toISOString()}
+                  className="text-sm font-medium"
+                >
+                  {formatCustomDate(post.publishedAt, "MMMM d, yyyy")}
+                </time>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Featured Image */}
+      {/* Featured Image with enhanced presentation */}
       {post.image && (
-        <div className="relative w-full aspect-video mb-8 md:mb-10 rounded-xl overflow-hidden shadow-md">
+        <div className="relative w-full max-w-5xl mx-auto aspect-[21/9] mb-16 rounded-xl overflow-hidden shadow-2xl">
           <Image
             src={post.image}
             alt={post.title}
@@ -87,15 +120,16 @@ export default async function BlogPost(props: { post: Post; locale: string }) {
             priority={true}
           />
 
-          {/* Image credit - moved inside the image container */}
-          <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm px-2 py-1 rounded text-xs">
+          {/* Enhanced image credit */}
+          <div className="absolute bottom-4 right-4 bg-background/80 backdrop-blur-sm px-3 py-2 rounded-full text-xs font-medium shadow-lg">
             <Link
               href={post.image}
               target="_blank"
               rel="nofollow noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
             >
-              Photo: {extractDomain(post.image)}
+              <span className="text-primary">Photo:</span>{" "}
+              {extractDomain(post.image)}
             </Link>
           </div>
         </div>
@@ -161,12 +195,12 @@ export default async function BlogPost(props: { post: Post; locale: string }) {
         {post.author && (
           <div className="max-w-2xl mx-auto">
             <Card className="border-0 shadow-none overflow-hidden">
-              <CardHeader className="pb-2 pt-4">
+              {/* <CardHeader className="pb-2 pt-4">
                 <CardTitle className="text-base flex items-center gap-2">
                   <BookOpen className="h-4 w-4" />
                   About the Author
                 </CardTitle>
-              </CardHeader>
+              </CardHeader> */}
               <CardContent className="pb-6">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
                   <Avatar className="h-16 w-16 border-2 border-background">
