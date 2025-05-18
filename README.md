@@ -44,6 +44,24 @@ The style guide serves as:
 - A design system documentation
 - A tool to ensure UI consistency
 
+## Navigation Progress Indicator
+
+This project includes a navigation progress indicator that appears at the top of the page during navigation between routes. This provides visual feedback to users that the page is loading, even when the navigation happens quickly.
+
+Key features:
+- Slim, animated progress bar that appears at the top of the screen during navigation
+- Automatically detects navigation events including link clicks and browser back/forward actions
+- Provides visual feedback even for very quick navigations with minimum display time
+- Smooth transition effects when appearing and disappearing
+- Uses a shared context to manage navigation state across components
+
+The implementation uses:
+- React Context API for state management
+- Tailwind CSS for styling and animations
+- Custom hooks for detecting navigation events in Next.js App Router
+
+Note: We've deliberately disabled the default Next.js loading UI (in `app/loading.tsx`) since the progress bar provides a less intrusive loading indication.
+
 ## Internationalization (i18n)
 
 This project is set up with internationalization support using [next-intl](https://next-intl-docs.vercel.app/). The current setup includes:

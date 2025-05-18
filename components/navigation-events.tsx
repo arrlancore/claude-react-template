@@ -1,49 +1,93 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { useNavigationState } from "@/hooks/use-navigation-state";
 
 /**
- * This component handles toast cleanup on navigation events
- * It captures Next.js router changes and cleans up toasts
+ * This component tracks navigation state and cleans up toasts
  */
 export function NavigationEvents() {
-  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { setIsNavigating } = useNavigationState();
+  const navigationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Clear timeout on unmount to prevent memory leaks
   useEffect(() => {
-    // This function will clear any toast-related DOM operations when navigating
-    function onRouteChangeStart() {
-      // Find any toast elements and remove them gracefully
-      if (typeof document !== 'undefined') {
-        // Find toast elements by their data attributes (common in shadcn/ui implementation)
-        const toastElements = document.querySelectorAll('[data-state]');
-
-        // Remove them one by one
-        toastElements.forEach(element => {
-          if (element.parentNode) {
-            try {
-              element.parentNode.removeChild(element);
-            } catch (e) {
-              // Ignore errors if the node has already been removed
-              console.debug('Navigation cleanup: Error removing toast element', e);
-            }
-          }
-        });
+    return () => {
+      if (navigationTimeoutRef.current) {
+        clearTimeout(navigationTimeoutRef.current);
       }
+    };
+  }, []);
+
+  // Effect to detect when navigation has completed
+  useEffect(() => {
+    // Navigation has completed since pathname or searchParams have changed
+    const handleRouteChangeComplete = () => {
+      // Add a small delay before hiding to ensure progress bar is visible
+      // even for very quick navigations
+      navigationTimeoutRef.current = setTimeout(() => {
+        setIsNavigating(false);
+      }, 500);
+    };
+
+    // Call immediately when component mounts or when route changes
+    handleRouteChangeComplete();
+
+    // Clean up toasts
+    if (typeof document !== 'undefined') {
+      const toastElements = document.querySelectorAll('[data-state]');
+      toastElements.forEach(element => {
+        if (element.parentNode) {
+          try {
+            element.parentNode.removeChild(element);
+          } catch (e) {
+            console.debug('Navigation cleanup: Error removing toast element', e);
+          }
+        }
+      });
     }
 
-    // We can't directly listen to Next.js App Router navigation events,
-    // so we rely on DOM events as a proxy
-    window.addEventListener('beforeunload', onRouteChangeStart);
+    // No cleanup needed here as we want this to run on every pathname/searchParams change
+  }, [pathname, searchParams, setIsNavigating]);
 
-    // Browser back/forward button
+  // Effect to handle navigation start events
+  useEffect(() => {
+    // This function signals that navigation is starting
+    function onRouteChangeStart() {
+      // Clear any existing timeout to avoid race conditions
+      if (navigationTimeoutRef.current) {
+        clearTimeout(navigationTimeoutRef.current);
+        navigationTimeoutRef.current = null;
+      }
+
+      // Signal that navigation is starting
+      setIsNavigating(true);
+    }
+
+    // Events that indicate navigation is starting
+    window.addEventListener('beforeunload', onRouteChangeStart);
     window.addEventListener('popstate', onRouteChangeStart);
+
+    // Click events that may initiate navigation
+    const handleDocumentClick = (e: MouseEvent) => {
+      // Check if the click is on an anchor tag
+      const link = (e.target as Element).closest('a');
+      if (link && link.href && !link.target && !link.download && link.origin === window.location.origin) {
+        onRouteChangeStart();
+      }
+    };
+
+    document.addEventListener('click', handleDocumentClick);
 
     return () => {
       window.removeEventListener('beforeunload', onRouteChangeStart);
       window.removeEventListener('popstate', onRouteChangeStart);
+      document.removeEventListener('click', handleDocumentClick);
     };
-  }, [router]);
+  }, [setIsNavigating]);
 
   return null;
 }
