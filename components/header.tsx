@@ -40,6 +40,14 @@ function Header() {
   // Generate blog link based on locale
   const blogLink = locale === defaultLocale ? "/blog" : `/${locale}/blog`;
 
+  // Generate auth link based on locale
+  const authLink = locale === defaultLocale ? "/auth" : `/${locale}/auth`;
+
+  // Check URL params to set the right form mode
+  const handleAuthClick = () => {
+    toggleMenu();
+  };
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -106,8 +114,12 @@ function Header() {
 
         {/* Desktop Action Buttons */}
         <div className="hidden md:flex items-center gap-4">
-          <Button variant="ghost">{t("nav.signIn")}</Button>
-          <Button>{t("nav.getStarted")}</Button>
+          <Button variant="ghost" asChild>
+            <Link href={authLink}>{t("nav.signIn")}</Link>
+          </Button>
+          <Button asChild>
+            <Link href={authLink + "?form=signup"}>{t("nav.getStarted")}</Link>
+          </Button>
           <LanguageSelector />
           <ModeToggle />
         </div>
@@ -186,12 +198,16 @@ function Header() {
                 <Button
                   variant="outline"
                   className="w-full justify-center"
-                  onClick={toggleMenu}
+                  asChild
                 >
-                  {t("nav.signIn")}
+                  <Link href={authLink} onClick={toggleMenu}>
+                    {t("nav.signIn")}
+                  </Link>
                 </Button>
-                <Button className="w-full justify-center" onClick={toggleMenu}>
-                  {t("home.hero.getStarted")}
+                <Button className="w-full justify-center" asChild>
+                  <Link href={authLink + "?form=signup"} onClick={toggleMenu}>
+                    {t("home.hero.getStarted")}
+                  </Link>
                 </Button>
               </div>
             </nav>

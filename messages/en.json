@@ -38,6 +38,47 @@
       "security": "Security"
     }
   },
+  "auth": {
+    "login": {
+      "title": "Sign In to Account",
+      "description": "Enter your credentials to access your account",
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "••••••••",
+      "button": "Sign In",
+      "loading": "Processing",
+      "tabLabel": "Sign In",
+      "forgotPassword": "Forgot Password?",
+      "failure": {
+        "title": "Login failed",
+        "description": "There was an error during login. Please check your credentials."
+      }
+    },
+    "signup": {
+      "title": "Create New Account",
+      "description": "Create an account to get started",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "First name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Last name (optional)",
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Minimum 6 characters",
+      "button": "Sign Up",
+      "loading": "Processing",
+      "tabLabel": "Sign Up",
+      "success": {
+        "title": "Registration successful",
+        "description": "Please check your email for verification"
+      },
+      "failure": {
+        "title": "Registration failed",
+        "description": "There was an error during registration. Please try again."
+      }
+    }
+  },
   "home": {
     "hero": {
       "badge": "\u2728 Now in Beta",
