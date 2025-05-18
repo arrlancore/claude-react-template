@@ -3,6 +3,7 @@ import { getMessages } from "@/lib/i18n";
 import { i18nConfig } from "@/config";
 import { I18nProvider } from "@/components/i18n-provider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
 import localFont from "next/font/local";
 import "../globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -53,6 +54,7 @@ export default async function LocaleLayout({
           <AuthProvider>
             <I18nProvider locale={locale} messages={messages}>
               {children}
+              <Toaster />
             </I18nProvider>
           </AuthProvider>
         </ThemeProvider>

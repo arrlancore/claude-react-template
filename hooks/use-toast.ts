@@ -9,7 +9,7 @@ import type {
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+const TOAST_REMOVE_DELAY = 5000 // 5 seconds
 
 type ToasterToast = ToastProps & {
   id: string
@@ -117,11 +117,24 @@ export const reducer = (state: State, action: Action): State => {
     }
     case "REMOVE_TOAST":
       if (action.toastId === undefined) {
+        // Clear all timeouts if we're removing all toasts
+        toastTimeouts.forEach((timeout, id) => {
+          clearTimeout(timeout);
+          toastTimeouts.delete(id);
+        });
+
         return {
           ...state,
           toasts: [],
         }
       }
+
+      // Clear the specific timeout
+      if (action.toastId && toastTimeouts.has(action.toastId)) {
+        clearTimeout(toastTimeouts.get(action.toastId));
+        toastTimeouts.delete(action.toastId);
+      }
+
       return {
         ...state,
         toasts: state.toasts.filter((t) => t.id !== action.toastId),
@@ -176,13 +189,19 @@ function useToast() {
 
   React.useEffect(() => {
     listeners.push(setState)
+
+    // Cleanup function to remove event listener and clear timeouts
     return () => {
+      // Remove the state setter from listeners
       const index = listeners.indexOf(setState)
       if (index > -1) {
         listeners.splice(index, 1)
       }
+
+      // Optionally dismiss all toasts when component unmounts
+      // dispatch({ type: "DISMISS_TOAST" })
     }
-  }, [state])
+  }, []) // Empty dependency array so this only runs on mount/unmount
 
   return {
     ...state,
