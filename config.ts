@@ -44,7 +44,7 @@ export const i18nConfig = {
 
 export const analyticsConfig = {
   googleAnalytics: {
-    measurementId: "G-XXXXXXXXXX", // Replace with your Google Analytics measurement ID
+    measurementId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-XXXXXXXXXX", // Replace with your Google Analytics measurement ID
     enabled: true, // Set to false to disable Google Analytics
   },
 };

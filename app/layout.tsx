@@ -5,6 +5,7 @@ import { NavigationEvents } from "@/components/navigation-events";
 import { OrganizationJsonLd, WebsiteJsonLd } from "@/components/json-ld";
 import { generateAlternatesMetadata } from "@/lib/metadata";
 import localFont from "next/font/local";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import {
   appTitle,
@@ -14,6 +15,7 @@ import {
   defaultAuthor,
   appLocale,
   i18nConfig,
+  analyticsConfig,
 } from "@/config";
 
 // Generate metadata for the root layout
@@ -105,6 +107,9 @@ export default function RootLayout({
           <NavigationEvents />
         </ThemeProvider>
       </body>
+      {analyticsConfig.googleAnalytics.enabled && (
+        <GoogleAnalytics gaId={analyticsConfig.googleAnalytics.measurementId} />
+      )}
     </html>
   );
 }
