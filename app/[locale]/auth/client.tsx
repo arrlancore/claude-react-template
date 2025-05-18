@@ -28,8 +28,16 @@ export const AuthForm = () => {
   const [authLoading, setAuthLoading] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
+  // Add client-side only rendering flag
+  const [isClient, setIsClient] = useState(false);
+
   const searchParams = useSearchParams();
   const form = searchParams.get("form");
+
+  // Mark that we're on the client - this prevents hydration mismatch
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Set initial auth mode based on form parameter
   useEffect(() => {
@@ -118,12 +126,23 @@ export const AuthForm = () => {
   // Debug log for Tabs component state
   useEffect(() => {
     console.log("Current authMode:", authMode);
-    console.log("Tabs defaultValue:", authMode);
   }, [authMode]);
 
   if (user) {
     router.push("/profile");
     return null;
+  }
+
+  // Show a simple loading state if not on client yet to prevent hydration mismatch
+  if (!isClient) {
+    return (
+      <div className="w-full max-w-md">
+        <div className="text-center p-8">
+          <div className="animate-pulse bg-muted h-12 w-full rounded-lg mb-6"></div>
+          <div className="animate-pulse bg-muted h-64 w-full rounded-lg"></div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -132,6 +151,7 @@ export const AuthForm = () => {
         value={authMode}
         onValueChange={(v) => setAuthMode(v as "login" | "signup")}
         className="w-full"
+        defaultValue={authMode}
       >
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="login">{t("login.tabLabel")}</TabsTrigger>
