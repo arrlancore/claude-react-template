@@ -115,7 +115,10 @@ export default function ShareButtons({
       {/* Success Notification */}
       {showThanksBadge && (
         <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4">
-          <Badge variant="default" className="px-4 py-2 shadow-md flex items-center gap-2">
+          <Badge
+            variant="default"
+            className="px-4 py-2 shadow-md flex items-center gap-2"
+          >
             <Sparkles className="h-4 w-4" />
             <span>Thank you for sharing!</span>
           </Badge>
@@ -124,7 +127,7 @@ export default function ShareButtons({
 
       {/* Share Card */}
       <div className="w-full">
-        <Card className="border border-border/40">
+        <Card className="border-0 shadow-none">
           <CardHeader className="pb-2 pt-4">
             <CardTitle className="text-base flex items-center gap-2">
               <Share2 className="h-4 w-4" />
@@ -139,7 +142,13 @@ export default function ShareButtons({
                 <Button
                   key={platform.name}
                   onClick={platform.action}
-                  variant={platform.name === "copy" ? (showCopiedToast ? "default" : "outline") : "outline"}
+                  variant={
+                    platform.name === "copy"
+                      ? showCopiedToast
+                        ? "default"
+                        : "outline"
+                      : "outline"
+                  }
                   size="sm"
                   className="rounded-full transition-all hover:shadow-md hover:-translate-y-0.5"
                 >

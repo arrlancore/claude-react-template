@@ -6,7 +6,14 @@ import { Post } from "@/types/blog";
 import ShareButtons from "../share-button";
 import { extractDomain } from "@/lib/utils";
 import Link from "next/link";
-import { Github, Linkedin, Twitter, BookOpen, Clock, ListOrdered } from "lucide-react";
+import {
+  Github,
+  Linkedin,
+  Twitter,
+  BookOpen,
+  Clock,
+  ListOrdered,
+} from "lucide-react";
 import { Separator } from "../ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
@@ -100,7 +107,8 @@ export default async function BlogPost(props: { post: Post }) {
                 href={`#${item.slug}`}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                {item.text}{index < Math.min(2, (post.toc?.length || 1) - 1) && ","}
+                {item.text}
+                {index < Math.min(2, (post.toc?.length || 1) - 1) && ","}
               </a>
             ))}
             {(post.toc?.length || 0) > 3 && (
@@ -134,19 +142,19 @@ export default async function BlogPost(props: { post: Post }) {
       {/* Share and Author Sections Container */}
       <div className="mt-16 space-y-12">
         {/* Share Section */}
-        <div className="max-w-lg mx-auto">
-          <Separator className="mb-8" />
+        <div className="max-w-2xl mx-auto">
           <ShareButtons
             title={post.title}
             description="Share this article if you found it helpful"
           />
         </div>
 
+        <Separator className="my-4 w-[30%] mx-auto" />
+
         {/* Author Section */}
         {post.author && (
-          <div className="max-w-lg mx-auto">
-            <Separator className="mb-8" />
-            <Card className="border border-border/40 overflow-hidden">
+          <div className="max-w-2xl mx-auto">
+            <Card className="border-0 shadow-none">
               <CardHeader className="pb-2 pt-4">
                 <CardTitle className="text-base flex items-center gap-2">
                   <BookOpen className="h-4 w-4" />
@@ -156,8 +164,13 @@ export default async function BlogPost(props: { post: Post }) {
               <CardContent className="pb-6">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
                   <Avatar className="h-16 w-16 border-2 border-background">
-                    <AvatarImage src={post.author.avatar} alt={post.author.name} />
-                    <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
+                    <AvatarImage
+                      src={post.author.avatar}
+                      alt={post.author.name}
+                    />
+                    <AvatarFallback>
+                      {post.author.name.charAt(0)}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="flex-grow text-center sm:text-left">
                     <Link
@@ -171,7 +184,12 @@ export default async function BlogPost(props: { post: Post }) {
                     </div>
                     <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
                       {post.author.socialLinks?.twitter && (
-                        <Button size="sm" variant="outline" className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5" asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5"
+                          asChild
+                        >
                           <Link
                             href={post.author.socialLinks.twitter}
                             target="_blank"
@@ -184,7 +202,12 @@ export default async function BlogPost(props: { post: Post }) {
                         </Button>
                       )}
                       {post.author.socialLinks?.github && (
-                        <Button size="sm" variant="outline" className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5" asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5"
+                          asChild
+                        >
                           <Link
                             href={post.author.socialLinks.github}
                             target="_blank"
@@ -197,7 +220,12 @@ export default async function BlogPost(props: { post: Post }) {
                         </Button>
                       )}
                       {post.author.socialLinks?.linkedin && (
-                        <Button size="sm" variant="outline" className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5" asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5"
+                          asChild
+                        >
                           <Link
                             href={post.author.socialLinks.linkedin}
                             target="_blank"
