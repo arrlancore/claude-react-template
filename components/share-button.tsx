@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import {
+  Share2,
   MessageCircle,
   Facebook,
   Twitter,
@@ -11,14 +12,14 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 /**
- *
- * @param title - The title of the shared content. e.g Cara menghemat listrik
- * @param description - The description of the shared content. e.g Bagikan artikel ini jika Anda merasa terbantu
- * @returns
+ * @param title - The title of the shared content. e.g Article title
+ * @param description - The description of the shared content. e.g Share this article if you found it helpful
+ * @returns Share buttons component with notification
  */
 export default function ShareButtons({
   title,
@@ -40,10 +41,10 @@ export default function ShareButtons({
       }
 
       const url = window.location.href;
-      const shareText = `Bagaimana pandangan Anda tentang: ${title}? Sepertinya menarik.\n`;
+      const shareText = `${title}\n`;
 
-      const shareLinks: any = {
-        whatsapp: `https://wa.me/?text=${encodeURIComponent(shareText + "\n\n" + url)}`,
+      const shareLinks: Record<string, string> = {
+        whatsapp: `https://wa.me/?text=${encodeURIComponent(shareText + "\n" + url)}`,
         facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
         twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`,
         linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
@@ -75,87 +76,81 @@ export default function ShareButtons({
     }
   };
 
+  // Social media platforms config
+  const socialPlatforms = [
+    {
+      name: "whatsapp",
+      label: "WhatsApp",
+      icon: MessageCircle,
+      action: () => shareToSocial("whatsapp"),
+    },
+    {
+      name: "twitter",
+      label: "Twitter",
+      icon: Twitter,
+      action: () => shareToSocial("twitter"),
+    },
+    {
+      name: "facebook",
+      label: "Facebook",
+      icon: Facebook,
+      action: () => shareToSocial("facebook"),
+    },
+    {
+      name: "linkedin",
+      label: "LinkedIn",
+      icon: Linkedin,
+      action: () => shareToSocial("linkedin"),
+    },
+    {
+      name: "copy",
+      label: showCopiedToast ? "Copied!" : "Copy Link",
+      icon: showCopiedToast ? Check : Copy,
+      action: copyToClipboard,
+    },
+  ];
+
   return (
     <>
-      {/* Floating Thank You Badge */}
+      {/* Success Notification */}
       {showThanksBadge && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50">
-          <div
-            className="bg-gradient-to-r from-primary/80 to-primary text-primary-foreground 
-                        px-6 py-3 rounded-full shadow-lg animate-in fade-in slide-in-from-top-4
-                        flex items-center gap-2"
-          >
-            <Sparkles className="h-5 w-5" />
-            <span className="font-medium">Terima kasih telah berbagi! ✨</span>
-          </div>
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4">
+          <Badge variant="default" className="px-4 py-2 shadow-md flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            <span>Thank you for sharing!</span>
+          </Badge>
         </div>
       )}
 
-      {/* Main Share Container */}
-      <Card className="shadow-lg mt-8 max-w-screen-md mx-auto w-full">
-        <CardContent className="p-4 space-y-4">
-          {/* Share Message */}
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">{description}</p>
-          </div>
+      {/* Share Card */}
+      <div className="w-full">
+        <Card className="border border-border/40">
+          <CardHeader className="pb-2 pt-4">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Share2 className="h-4 w-4" />
+              Share This
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0 pb-4">
+            <p className="text-sm text-muted-foreground mb-4">{description}</p>
 
-          {/* Primary Share Button - WhatsApp */}
-          <Button
-            onClick={() => shareToSocial("whatsapp")}
-            className={`w-full bg-green-500 hover:bg-green-600 text-white
-                      transition-all duration-200 group`}
-          >
-            <MessageCircle
-              className="mr-2 h-5 w-5 
-                                  group-hover:animate-bounce"
-            />
-            <span>Bagikan via WhatsApp</span>
-          </Button>
-
-          {/* Secondary Share Options */}
-          <div className="grid grid-cols-4 gap-2">
-            {[
-              {
-                name: "facebook",
-                icon: Facebook,
-                className: "bg-blue-600 hover:bg-blue-700",
-                action: () => shareToSocial("facebook"),
-              },
-              {
-                name: "twitter",
-                icon: Twitter,
-                className: "bg-sky-500 hover:bg-sky-600",
-                action: () => shareToSocial("twitter"),
-              },
-              {
-                name: "linkedin",
-                icon: Linkedin,
-                className: "bg-blue-700 hover:bg-blue-800",
-                action: () => shareToSocial("linkedin"),
-              },
-              {
-                name: "copy",
-                icon: showCopiedToast ? Check : Copy,
-                className: "bg-gray-600 hover:bg-gray-700",
-                action: copyToClipboard,
-              },
-            ].map((btn) => (
-              <Button
-                key={btn.name}
-                onClick={btn.action}
-                variant="ghost"
-                className={`${btn.className} p-3 h-auto
-                          transition-all duration-200 
-                          hover:scale-105 active:scale-95
-                          text-white`}
-                aria-label={`Share on ${btn.name}`}
-              >
-                <btn.icon className="h-5 w-5" />
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {socialPlatforms.map((platform) => (
+                <Button
+                  key={platform.name}
+                  onClick={platform.action}
+                  variant={platform.name === "copy" ? (showCopiedToast ? "default" : "outline") : "outline"}
+                  size="sm"
+                  className="rounded-full transition-all hover:shadow-md hover:-translate-y-0.5"
+                >
+                  <platform.icon className="h-4 w-4 mr-1.5" />
+                  <span className="text-xs">{platform.label}</span>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </>
   );
 }

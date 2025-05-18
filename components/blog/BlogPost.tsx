@@ -10,6 +10,7 @@ import { Github, Linkedin, Twitter, BookOpen, Clock, ListOrdered } from "lucide-
 import { Separator } from "../ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import TableOfContents from "./TableOfContents";
 
 export default async function BlogPost(props: { post: Post }) {
@@ -130,83 +131,92 @@ export default async function BlogPost(props: { post: Post }) {
         </div>
       </div>
 
-      {/* Share Section */}
-      <div className="mb-12 border-t border-b py-8 bg-muted/10 mt-12">
-        <div className="max-w-2xl mx-auto">
+      {/* Share and Author Sections Container */}
+      <div className="mt-16 space-y-12">
+        {/* Share Section */}
+        <div className="max-w-lg mx-auto">
+          <Separator className="mb-8" />
           <ShareButtons
             title={post.title}
             description="Share this article if you found it helpful"
           />
         </div>
-      </div>
 
-      {/* Author Section */}
-      {post.author && (
-        <div className="mb-12 max-w-2xl mx-auto">
-          <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-            <BookOpen className="h-5 w-5" />
-            <span>About the Author</span>
-          </h2>
-          <div className="flex flex-col sm:flex-row items-start gap-6 bg-muted/20 rounded-xl p-6">
-            <Avatar className="h-20 w-20 border-2 border-background">
-              <AvatarImage src={post.author.avatar} alt={post.author.name} />
-              <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-grow">
-              <Link
-                href={`/authors/${post.author.slug}`}
-                className="text-xl font-semibold hover:underline"
-              >
-                {post.author.name}
-              </Link>
-              <div className="text-sm text-muted-foreground mt-2 mb-4">
-                {post.author.summary}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {post.author.socialLinks?.twitter && (
-                  <Button size="sm" variant="outline" className="rounded-full" asChild>
+        {/* Author Section */}
+        {post.author && (
+          <div className="max-w-lg mx-auto">
+            <Separator className="mb-8" />
+            <Card className="border border-border/40 overflow-hidden">
+              <CardHeader className="pb-2 pt-4">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <BookOpen className="h-4 w-4" />
+                  About the Author
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pb-6">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                  <Avatar className="h-16 w-16 border-2 border-background">
+                    <AvatarImage src={post.author.avatar} alt={post.author.name} />
+                    <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-grow text-center sm:text-left">
                     <Link
-                      href={post.author.socialLinks.twitter}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Twitter"
+                      href={`/authors/${post.author.slug}`}
+                      className="text-lg font-semibold hover:underline inline-flex items-center gap-1"
                     >
-                      <Twitter className="h-4 w-4 mr-1" />
-                      <span>Twitter</span>
+                      {post.author.name}
                     </Link>
-                  </Button>
-                )}
-                {post.author.socialLinks?.github && (
-                  <Button size="sm" variant="outline" className="rounded-full" asChild>
-                    <Link
-                      href={post.author.socialLinks.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="GitHub"
-                    >
-                      <Github className="h-4 w-4 mr-1" />
-                      <span>GitHub</span>
-                    </Link>
-                  </Button>
-                )}
-                {post.author.socialLinks?.linkedin && (
-                  <Button size="sm" variant="outline" className="rounded-full" asChild>
-                    <Link
-                      href={post.author.socialLinks.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="LinkedIn"
-                    >
-                      <Linkedin className="h-4 w-4 mr-1" />
-                      <span>LinkedIn</span>
-                    </Link>
-                  </Button>
-                )}
-              </div>
-            </div>
+                    <div className="text-sm text-muted-foreground mt-2 mb-4 max-w-prose">
+                      {post.author.summary}
+                    </div>
+                    <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+                      {post.author.socialLinks?.twitter && (
+                        <Button size="sm" variant="outline" className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5" asChild>
+                          <Link
+                            href={post.author.socialLinks.twitter}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Twitter"
+                          >
+                            <Twitter className="h-3.5 w-3.5 mr-1.5" />
+                            <span className="text-xs">Twitter</span>
+                          </Link>
+                        </Button>
+                      )}
+                      {post.author.socialLinks?.github && (
+                        <Button size="sm" variant="outline" className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5" asChild>
+                          <Link
+                            href={post.author.socialLinks.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="GitHub"
+                          >
+                            <Github className="h-3.5 w-3.5 mr-1.5" />
+                            <span className="text-xs">GitHub</span>
+                          </Link>
+                        </Button>
+                      )}
+                      {post.author.socialLinks?.linkedin && (
+                        <Button size="sm" variant="outline" className="rounded-full h-8 px-3 transition-all hover:shadow-md hover:-translate-y-0.5" asChild>
+                          <Link
+                            href={post.author.socialLinks.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="LinkedIn"
+                          >
+                            <Linkedin className="h-3.5 w-3.5 mr-1.5" />
+                            <span className="text-xs">LinkedIn</span>
+                          </Link>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
