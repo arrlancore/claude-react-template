@@ -28,6 +28,21 @@ You can start editing the page by modifying `app/[locale]/page.tsx`. The page au
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Style Guide
+
+This project includes a comprehensive style guide that showcases all UI components, typography, colors, and design patterns. The style guide is only accessible in development mode.
+
+To access the style guide:
+
+1. Run the development server
+2. Navigate to [http://localhost:3000/styleguide](http://localhost:3000/styleguide)
+3. You can also click the "Style Guide" link in the main navigation (only visible in development mode)
+
+The style guide serves as:
+- A visual reference for all UI components
+- A design system documentation
+- A tool to ensure UI consistency
+
 ## Internationalization (i18n)
 
 This project is set up with internationalization support using [next-intl](https://next-intl-docs.vercel.app/). The current setup includes:

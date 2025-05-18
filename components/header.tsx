@@ -1,22 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ModeToggle } from "./mode-toggle";
 import { Button } from "./ui/button";
 import { brand, i18nConfig } from "@/config";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Palette } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LanguageSelector } from "./language-selector";
 import { useParams } from "next/navigation";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDevMode, setIsDevMode] = useState(false);
   const t = useTranslations("common");
   const params = useParams();
   // Get locale from params or use default if we're on the root route
   const locale = (params.locale as string) || "en";
   const { defaultLocale } = i18nConfig;
+
+  // Check if we're in development mode
+  useEffect(() => {
+    setIsDevMode(process.env.NODE_ENV === 'development');
+  }, []);
 
   // Generate link paths based on the locale
   const getLocalizedLink = (path: string) => {
@@ -87,6 +93,15 @@ function Header() {
           >
             {t("nav.blog")}
           </Link>
+          {isDevMode && (
+            <Link
+              href="/styleguide"
+              className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              <Palette className="h-4 w-4" />
+              <span>Style Guide</span>
+            </Link>
+          )}
         </nav>
 
         {/* Desktop Action Buttons */}
@@ -156,6 +171,16 @@ function Header() {
               >
                 {t("nav.blog")}
               </Link>
+              {isDevMode && (
+                <Link
+                  href="/styleguide"
+                  className="py-2 text-muted-foreground hover:text-foreground flex items-center gap-1"
+                  onClick={toggleMenu}
+                >
+                  <Palette className="h-4 w-4" />
+                  <span>Style Guide</span>
+                </Link>
+              )}
 
               <div className="pt-4 flex flex-col space-y-3">
                 <Button
