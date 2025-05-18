@@ -39,5 +39,5 @@ export const i18nConfig = {
   localeNames: {
     en: "English",
   },
-  timeZone: "UTC", // Default timezone for internationalization
+  timeZone: "Asia/Jakarta", // Default timezone for internationalization
 };
