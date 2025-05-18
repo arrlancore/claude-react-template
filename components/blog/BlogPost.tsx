@@ -19,8 +19,8 @@ import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import TableOfContents from "./TableOfContents";
 
-export default async function BlogPost(props: { post: Post }) {
-  const { post } = props;
+export default async function BlogPost(props: { post: Post; locale: string }) {
+  const { post, locale } = props;
   const hasToc = post.toc && post.toc.length > 0 && post.showToc !== false;
 
   return (
@@ -46,7 +46,7 @@ export default async function BlogPost(props: { post: Post }) {
               <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <Link
-              href={`/authors/${post.author.slug}`}
+              href={`/${locale}/authors/${post.author.slug}`}
               className="text-sm font-medium hover:underline"
             >
               {post.author.name}
@@ -171,7 +171,7 @@ export default async function BlogPost(props: { post: Post }) {
                   </Avatar>
                   <div className="flex-grow text-center sm:text-left">
                     <Link
-                      href={`/authors/${post.author.slug}`}
+                      href={`/${locale}/authors/${post.author.slug}`}
                       className="text-lg font-semibold hover:underline inline-flex items-center gap-1"
                     >
                       {post.author.name}

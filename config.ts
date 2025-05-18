@@ -31,3 +31,12 @@ export const dateConfig = {
   format: "dd-MM-yyyy",   // Default date format
   formatWithMonth: "MMM d, yyyy", // Format with month name
 };
+
+// i18n configuration
+export const i18nConfig = {
+  defaultLocale: "en",
+  locales: ["en"],
+  localeNames: {
+    en: "English",
+  },
+};

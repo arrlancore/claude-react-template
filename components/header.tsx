@@ -6,9 +6,15 @@ import { ModeToggle } from "./mode-toggle";
 import { Button } from "./ui/button";
 import { brand } from "@/config";
 import { Menu, X } from "lucide-react";
+import { useTranslations } from 'next-intl';
+import { LanguageSelector } from "./language-selector";
+import { useParams } from 'next/navigation';
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const t = useTranslations('common');
+  const params = useParams();
+  const locale = params.locale as string || 'en';
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -19,7 +25,7 @@ function Header() {
       <div className="container flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo section */}
         <div className="flex items-center">
-          <Link href="/" className="flex items-center">
+          <Link href={`/${locale}`} className="flex items-center">
             <h1 className="text-xl md:text-2xl font-extrabold">
               <span>{brand.title}</span>
               {brand.domain && (
@@ -37,40 +43,45 @@ function Header() {
             href="#features"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            Features
+            {t('nav.features')}
           </a>
           <a
             href="#pricing"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            Pricing
+            {t('nav.pricing')}
           </a>
           <a
             href="#about"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            About
+            {t('nav.about')}
           </a>
           <a
             href="#contact"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            Contact
+            {t('nav.contact')}
           </a>
-          <Link href="/blog" className="text-muted-foreground hover:text-foreground transition-colors">
-            Blog
+          <Link
+            href={`/${locale}/blog`}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {t('nav.blog')}
           </Link>
         </nav>
 
         {/* Desktop Action Buttons */}
         <div className="hidden md:flex items-center gap-4">
-          <Button variant="ghost">Sign In</Button>
-          <Button>Get Started</Button>
+          <Button variant="ghost">{t('nav.signIn')}</Button>
+          <Button>{t('home.hero.getStarted')}</Button>
+          <LanguageSelector />
           <ModeToggle />
         </div>
 
         {/* Mobile Menu Button */}
         <div className="flex items-center gap-4 md:hidden">
+          <LanguageSelector />
           <ModeToggle />
           <Button variant="ghost" size="icon" onClick={toggleMenu} aria-label="Toggle Menu">
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -88,43 +99,43 @@ function Header() {
                 className="py-2 text-muted-foreground hover:text-foreground"
                 onClick={toggleMenu}
               >
-                Features
+                {t('nav.features')}
               </a>
               <a
                 href="#pricing"
                 className="py-2 text-muted-foreground hover:text-foreground"
                 onClick={toggleMenu}
               >
-                Pricing
+                {t('nav.pricing')}
               </a>
               <a
                 href="#about"
                 className="py-2 text-muted-foreground hover:text-foreground"
                 onClick={toggleMenu}
               >
-                About
+                {t('nav.about')}
               </a>
               <a
                 href="#contact"
                 className="py-2 text-muted-foreground hover:text-foreground"
                 onClick={toggleMenu}
               >
-                Contact
+                {t('nav.contact')}
               </a>
               <Link
-                href="/blog"
+                href={`/${locale}/blog`}
                 className="py-2 text-muted-foreground hover:text-foreground"
                 onClick={toggleMenu}
               >
-                Blog
+                {t('nav.blog')}
               </Link>
 
               <div className="pt-4 flex flex-col space-y-3">
                 <Button variant="outline" className="w-full justify-center" onClick={toggleMenu}>
-                  Sign In
+                  {t('nav.signIn')}
                 </Button>
                 <Button className="w-full justify-center" onClick={toggleMenu}>
-                  Get Started
+                  {t('home.hero.getStarted')}
                 </Button>
               </div>
             </nav>

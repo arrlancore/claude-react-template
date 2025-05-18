@@ -1,104 +1,109 @@
+"use client";
+
 import { Github, Twitter, Linkedin } from "lucide-react";
 import Link from "next/link";
 import { Separator } from "./ui/separator";
 import { brand } from "@/config";
+import { useTranslations } from 'next-intl';
 
 export default function Footer() {
+  const t = useTranslations('common.footer');
+
   return (
     <footer className="border-t bg-background">
       <div className="container py-8 md:py-16 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
           <div>
-            <h3 className="font-semibold mb-3 md:mb-4">Product</h3>
+            <h3 className="font-semibold mb-3 md:mb-4">{t('product')}</h3>
             <ul className="space-y-2 md:space-y-3 text-sm text-muted-foreground">
               <li>
                 <a href="#features" className="hover:text-foreground transition-colors">
-                  Features
+                  {t('features')}
                 </a>
               </li>
               <li>
                 <a href="#pricing" className="hover:text-foreground transition-colors">
-                  Pricing
+                  {t('pricing')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-foreground transition-colors">
-                  Updates
+                  {t('updates')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-foreground transition-colors">
-                  Beta
+                  {t('beta')}
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-3 md:mb-4">Company</h3>
+            <h3 className="font-semibold mb-3 md:mb-4">{t('company')}</h3>
             <ul className="space-y-2 md:space-y-3 text-sm text-muted-foreground">
               <li>
                 <a href="#about" className="hover:text-foreground transition-colors">
-                  About
+                  {t('about')}
                 </a>
               </li>
               <li>
                 <Link href="/blog" className="hover:text-foreground transition-colors">
-                  Blog
+                  {t('blog')}
                 </Link>
               </li>
               <li>
                 <a href="#" className="hover:text-foreground transition-colors">
-                  Careers
+                  {t('careers')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-foreground transition-colors">
-                  Press
+                  {t('press')}
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-3 md:mb-4">Resources</h3>
+            <h3 className="font-semibold mb-3 md:mb-4">{t('resources')}</h3>
             <ul className="space-y-2 md:space-y-3 text-sm text-muted-foreground">
               <li>
                 <a href="#" className="hover:text-foreground transition-colors">
-                  Documentation
+                  {t('documentation')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-foreground transition-colors">
-                  Help Center
+                  {t('helpCenter')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-foreground transition-colors">
-                  Support
+                  {t('support')}
                 </a>
               </li>
               <li>
                 <a href="#contact" className="hover:text-foreground transition-colors">
-                  Contact
+                  {t('contact')}
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h3 className="font-semibold mb-3 md:mb-4">Legal</h3>
+            <h3 className="font-semibold mb-3 md:mb-4">{t('legal')}</h3>
             <ul className="space-y-2 md:space-y-3 text-sm text-muted-foreground">
               <li>
                 <a href="#" className="hover:text-foreground transition-colors">
-                  Privacy
+                  {t('privacy')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-foreground transition-colors">
-                  Terms
+                  {t('terms')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-foreground transition-colors">
-                  Security
+                  {t('security')}
                 </a>
               </li>
             </ul>
@@ -110,7 +115,7 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} {brand.title}
-            {brand.domain ? "." + brand.domain : ""} All rights reserved.
+            {brand.domain ? "." + brand.domain : ""} {t('allRightsReserved')}
           </div>
           <div className="flex gap-4">
             <a

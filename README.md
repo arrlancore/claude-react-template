@@ -6,6 +6,7 @@ And use some popular library like:
 - tailwindcss
 - shadcn ui
 - mdx
+- next-intl (for internationalization)
 
 ## Getting Started
 
@@ -23,9 +24,67 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You can start editing the page by modifying `app/[locale]/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Internationalization (i18n)
+
+This project is set up with internationalization support using [next-intl](https://next-intl-docs.vercel.app/). The current setup includes:
+
+- Localized routing with the `/[locale]/` parameter
+- Translation files in the `messages/` directory
+- English (en) as the default language
+
+### Adding a new language
+
+1. Update the `i18nConfig` in `config.ts` to include your new locale:
+
+```typescript
+export const i18nConfig = {
+  defaultLocale: "en",
+  locales: ["en", "es"],  // Add new locales here
+  localeNames: {
+    en: "English",
+    es: "Español",       // Add the locale's display name
+  },
+}
+```
+
+2. Run the script to create a new language file:
+
+```bash
+npm run i18n:create
+```
+
+3. Edit the generated language file in the `messages/` directory to add your translations.
+
+### Using translations
+
+In client components:
+
+```tsx
+'use client';
+import { useTranslations } from 'next-intl';
+
+export default function MyComponent() {
+  const t = useTranslations('namespace');
+
+  return <h1>{t('title')}</h1>;
+}
+```
+
+In server components:
+
+```tsx
+import { getTranslations } from 'next-intl/server';
+
+export default async function MyServerComponent() {
+  const t = await getTranslations('namespace');
+
+  return <h1>{t('title')}</h1>;
+}
+```
 
 ## Learn More
 
@@ -46,4 +105,3 @@ npx shadcn@latest add <component-name>
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# claude-react-template
