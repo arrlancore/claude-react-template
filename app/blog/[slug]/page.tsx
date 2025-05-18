@@ -1,10 +1,11 @@
 import { getPostBySlug } from "@/lib/mdx/mdx-utils";
 import { Metadata } from "next";
-import { appLocale, appUrl, blogUrl, brandName } from "@/config";
+import { appLocale, appUrl, blogUrl, brandName, i18nConfig } from "@/config";
 import { format } from "date-fns";
 import BlogPost from "@/components/blog/BlogPost";
 import MainLayout from "@/components/layout/main-layout";
 import { notFound } from "next/navigation";
+import { generateAlternatesMetadata } from "@/lib/metadata";
 
 interface PageProps {
   params: {
@@ -25,9 +26,20 @@ export async function generateMetadata({
     };
   }
 
+  // Generate alternates for this specific blog post
+  const { canonical, languages } = generateAlternatesMetadata({
+    currentLocale: i18nConfig.defaultLocale,
+    pathWithoutLocale: `/blog/${post.slug}`,
+  });
+
   return {
     title: `${post.title}`,
     description: post.summary,
+    // Add canonical URL and hreflang tags
+    alternates: {
+      canonical,
+      languages,
+    },
     openGraph: {
       title: post.title,
       description: post.summary,

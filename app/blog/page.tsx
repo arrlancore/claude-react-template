@@ -12,13 +12,25 @@ import {
   blogUrl,
   brandName,
   paginationConfig,
+  appUrl,
+  i18nConfig,
 } from "@/config";
 import { formatDate } from "@/lib/date-utils";
 import BlogPagination from "@/components/blog/BlogPagination";
+import { WebsiteJsonLd } from "@/components/json-ld";
+import { Breadcrumbs } from "@/components/breadcrumbs";
+import { generateAlternatesMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = {
   title: blogTitle,
   description: blogDescription,
+  // Add alternates for canonical and hreflang
+  alternates: {
+    ...generateAlternatesMetadata({
+      currentLocale: i18nConfig.defaultLocale,
+      pathWithoutLocale: "/blog",
+    }),
+  },
   openGraph: {
     title: blogTitle,
     description: blogDescription,
@@ -26,6 +38,20 @@ export const metadata: Metadata = {
     siteName: brandName,
     locale: appLocale,
     type: "website",
+    images: [
+      {
+        url: `${appUrl}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: blogTitle,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: blogTitle,
+    description: blogDescription,
+    images: [`${appUrl}/og-image.jpg`],
   },
 };
 
@@ -41,9 +67,26 @@ export default async function BlogPage({
   // Get posts with pagination
   const { posts, total, totalPages } = await getAllPosts(currentPage, paginationConfig.postsPerPage);
 
+  // Prepare breadcrumb items
+  const breadcrumbItems = [
+    {
+      label: "Blog",
+      href: "/blog",
+      isCurrent: true,
+    },
+  ];
+
   return (
     <MainLayout>
+      {/* Add WebsiteJsonLd for blog section */}
+      <WebsiteJsonLd />
+
       <div className="py-12">
+        {/* Add breadcrumbs for navigation and SEO */}
+        <div className="container mx-auto mb-8 px-4">
+          <Breadcrumbs items={breadcrumbItems} />
+        </div>
+
         <h1 className="text-3xl md:text-4xl font-bold mb-6 md:mb-12 text-center">Blog</h1>
 
         {total > 0 && (

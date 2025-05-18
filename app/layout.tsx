@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SafeToaster } from "@/components/ui/safe-toaster";
 import { NavigationEvents } from "@/components/navigation-events";
+import { OrganizationJsonLd, WebsiteJsonLd } from "@/components/json-ld";
+import { generateAlternatesMetadata } from "@/lib/metadata";
 import localFont from "next/font/local";
 import "./globals.css";
 import {
@@ -11,8 +13,10 @@ import {
   brandName,
   defaultAuthor,
   appLocale,
+  i18nConfig,
 } from "@/config";
 
+// Generate metadata for the root layout
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
   title: {
@@ -22,6 +26,13 @@ export const metadata: Metadata = {
   description: appDescription,
   authors: [{ name: defaultAuthor }],
   creator: defaultAuthor,
+  // Generate canonical and hreflang tags
+  alternates: {
+    ...generateAlternatesMetadata({
+      currentLocale: i18nConfig.defaultLocale,
+      pathWithoutLocale: "",
+    }),
+  },
   openGraph: {
     type: "website",
     locale: appLocale,
@@ -29,6 +40,14 @@ export const metadata: Metadata = {
     title: appTitle,
     description: appDescription,
     siteName: brandName,
+    images: [
+      {
+        url: `${appUrl}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: appTitle,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -67,6 +86,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Add structured data for the website and organization */}
+        <OrganizationJsonLd />
+        <WebsiteJsonLd />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

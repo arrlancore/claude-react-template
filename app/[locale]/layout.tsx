@@ -1,10 +1,13 @@
 import { notFound } from "next/navigation";
 import { getMessages } from "@/lib/i18n";
-import { i18nConfig } from "@/config";
+import { i18nConfig, appUrl } from "@/config";
 import { I18nProvider } from "@/components/i18n-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SafeToaster } from "@/components/ui/safe-toaster";
 import { NavigationEvents } from "@/components/navigation-events";
+import { OrganizationJsonLd, WebsiteJsonLd } from "@/components/json-ld";
+import { generateAlternatesMetadata } from "@/lib/metadata";
+import { Metadata } from "next";
 import localFont from "next/font/local";
 import "../globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -29,6 +32,29 @@ type Props = {
   params: { locale: string };
 };
 
+// Generate metadata for localized pages
+export async function generateMetadata({
+  params: { locale }
+}: { params: { locale: string } }): Promise<Metadata> {
+  // Validate locale
+  if (!i18nConfig.locales.includes(locale)) {
+    return {};
+  }
+
+  // Generate alternates for canonical and hreflang
+  const { canonical, languages } = generateAlternatesMetadata({
+    currentLocale: locale,
+    pathWithoutLocale: ""
+  });
+
+  return {
+    alternates: {
+      canonical,
+      languages
+    }
+  };
+}
+
 export default async function LocaleLayout({
   children,
   params: { locale },
@@ -43,6 +69,11 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      <head>
+        {/* Add structured data for the website and organization */}
+        <OrganizationJsonLd />
+        <WebsiteJsonLd />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

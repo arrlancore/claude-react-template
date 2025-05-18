@@ -7,12 +7,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { brand } from "@/config";
 import { ArrowRight, CheckCircle2, Sparkles, Zap, Shield } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { LandingPageJsonLd } from "@/components/json-ld";
 
 function LandingPage() {
   const t = useTranslations();
 
   return (
     <MainLayout fullWidth>
+      {/* Add structured data specific to the landing page */}
+      <LandingPageJsonLd />
+
       {/* Hero Section */}
       <section className="mx-auto max-w-6xl py-12 md:py-20 px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16">

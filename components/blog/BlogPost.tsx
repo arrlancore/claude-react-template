@@ -18,7 +18,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import TableOfContents from "./TableOfContents";
-import { i18nConfig } from "@/config";
+import { i18nConfig, appUrl } from "@/config";
+import { Breadcrumbs } from "@/components/breadcrumbs";
+import { ArticleJsonLd } from "@/components/json-ld";
 
 export default async function BlogPost(props: { post: Post; locale: string }) {
   const { post, locale } = props;
@@ -32,8 +34,41 @@ export default async function BlogPost(props: { post: Post; locale: string }) {
       : `/${locale}/authors/${authorSlug}`;
   };
 
+  // Generate article URL
+  const articleUrl = locale === defaultLocale
+    ? `${appUrl}/blog/${post.slug}`
+    : `${appUrl}/${locale}/blog/${post.slug}`;
+
+  // Generate breadcrumb items
+  const breadcrumbItems = [
+    {
+      label: "Blog",
+      href: locale === defaultLocale ? "/blog" : `/${locale}/blog`
+    },
+    {
+      label: post.title,
+      href: locale === defaultLocale ? `/blog/${post.slug}` : `/${locale}/blog/${post.slug}`,
+      isCurrent: true
+    }
+  ];
+
   return (
     <div className="w-full">
+      {/* Add structured data for article */}
+      <ArticleJsonLd
+        title={post.title}
+        description={post.summary}
+        publishedTime={new Date(post.publishedAt).toISOString()}
+        authorName={post.author.name}
+        url={articleUrl}
+        imageUrl={post.image}
+      />
+
+      {/* Add breadcrumbs for navigation and SEO */}
+      <div className="max-w-4xl mx-auto mb-8 px-4">
+        <Breadcrumbs items={breadcrumbItems} />
+      </div>
+
       {/* Header Section */}
       <div className="relative mb-16">
         {/* Background decorative elements */}
@@ -195,12 +230,6 @@ export default async function BlogPost(props: { post: Post; locale: string }) {
         {post.author && (
           <div className="max-w-2xl mx-auto">
             <Card className="border-0 shadow-none overflow-hidden">
-              {/* <CardHeader className="pb-2 pt-4">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
-                  About the Author
-                </CardTitle>
-              </CardHeader> */}
               <CardContent className="pb-6">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
                   <Avatar className="h-16 w-16 border-2 border-background">
