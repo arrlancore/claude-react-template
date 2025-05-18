@@ -7,6 +7,7 @@ And use some popular library like:
 - shadcn ui
 - mdx
 - next-intl (for internationalization)
+- Brevo integration for newsletter subscriptions
 
 ## Getting Started
 
@@ -114,6 +115,20 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 ```bash
 npx shadcn@latest add <component-name>
 ```
+
+## Newsletter Subscription
+
+This template includes a newsletter subscription feature powered by Brevo (formerly Sendinblue). To set it up:
+
+1. Create a Brevo account and obtain your API key
+2. Create a contact list and note the List ID
+3. Add the following to your `.env.local` file:
+   ```
+   BREVO_API_KEY=your_brevo_api_key_here
+   BREVO_LIST_ID=your_list_id_here
+   ```
+
+The newsletter subscription form will automatically be enabled when these variables are present. For more details, see the [Newsletter documentation](./docs/newsletter.md).
 
 ## Deploy on Vercel
 

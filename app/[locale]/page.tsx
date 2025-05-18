@@ -4,10 +4,11 @@ import MainLayout from "@/components/layout/main-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { brand } from "@/config";
+import { brand, newsletterConfig } from "@/config";
 import { ArrowRight, CheckCircle2, Sparkles, Zap, Shield } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LandingPageJsonLd } from "@/components/json-ld";
+import NewsletterForm from "@/components/newsletter-form";
 
 function LandingPage() {
   const t = useTranslations();
@@ -233,6 +234,15 @@ function LandingPage() {
             {t("home.cta.button")}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
+
+          {/* Newsletter Section - Only show if Brevo is configured */}
+          {newsletterConfig.brevo.enabled && (
+            <div className="mt-16 max-w-md mx-auto">
+              <div className="bg-background/10 backdrop-blur-sm rounded-lg p-6">
+                <NewsletterForm variant="inline" />
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </MainLayout>

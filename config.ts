@@ -41,3 +41,18 @@ export const i18nConfig = {
   },
   timeZone: "Asia/Jakarta", // Default timezone for internationalization
 };
+
+export const analyticsConfig = {
+  googleAnalytics: {
+    measurementId: "G-XXXXXXXXXX", // Replace with your Google Analytics measurement ID
+    enabled: true, // Set to false to disable Google Analytics
+  },
+};
+
+// Newsletter configuration
+export const newsletterConfig = {
+  brevo: {
+    enabled: process.env.BREVO_API_KEY ? true : false, // Automatically enables if API key is present
+    listId: process.env.BREVO_LIST_ID || "", // Brevo list ID for newsletter subscribers
+  },
+};

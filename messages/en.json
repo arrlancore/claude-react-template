@@ -179,6 +179,23 @@
       "featuredPost": "Featured"
     }
   },
+  "newsletter": {
+    "title": "Subscribe to Our Newsletter",
+    "description": "Get the latest updates, news, and exclusive content delivered to your inbox.",
+    "emailPlaceholder": "Enter your email",
+    "subscribeButton": "Subscribe",
+    "subscribeButtonLoading": "Subscribing...",
+    "success": {
+      "title": "Thank you for subscribing!",
+      "message": "You've been added to our mailing list. Watch your inbox for updates!"
+    },
+    "error": {
+      "title": "Subscription failed",
+      "message": "There was an error subscribing to the newsletter. Please try again.",
+      "alreadySubscribed": "This email is already subscribed to our newsletter.",
+      "invalidEmail": "Please enter a valid email address."
+    }
+  },
   "i18n": {
     "title": "Date & Time Formatting with TimeZone",
     "description": "This page demonstrates the internationalization features including time zone support.",
