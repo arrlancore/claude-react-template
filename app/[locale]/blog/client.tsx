@@ -7,13 +7,22 @@ import { id } from "date-fns/locale";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import MainLayout from "@/components/layout/main-layout";
-import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 
-import type { Post } from "@/types/blog";
+import type { Post, PostMeta } from "@/types/blog";
+import BlogPagination from "@/components/blog/BlogPagination";
 
-export default function BlogPageClient({ posts }: { posts: Post[] }) {
-  const t = useTranslations('blog');
+export default function BlogPageClient({
+  posts,
+  totalPages,
+  currentPage,
+}: {
+  posts: PostMeta[];
+  totalPages: number;
+  currentPage: number;
+}) {
+  const t = useTranslations("blog");
   const params = useParams();
   const locale = params.locale as string;
 
@@ -21,7 +30,7 @@ export default function BlogPageClient({ posts }: { posts: Post[] }) {
     <MainLayout>
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="pt-12" />
-        <h1 className="text-4xl font-bold mb-12 text-center">{t('title')}</h1>
+        <h1 className="text-4xl font-bold mb-12 text-center">{t("title")}</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {posts.map((post) => (
             <Card
@@ -50,7 +59,10 @@ export default function BlogPageClient({ posts }: { posts: Post[] }) {
                   ))}
                 </div>
                 <CardTitle className="text-xl mb-2">
-                  <Link href={`/${locale}/blog/${post.slug}`} className="hover:underline">
+                  <Link
+                    href={`/${locale}/blog/${post.slug}`}
+                    className="hover:underline"
+                  >
                     {post.title}
                   </Link>
                 </CardTitle>
@@ -58,7 +70,7 @@ export default function BlogPageClient({ posts }: { posts: Post[] }) {
               <CardContent className="flex-grow">
                 <div className="flex justify-between items-center mb-4">
                   <p className="text-muted-foreground text-sm">
-                    {t('writtenBy')} {post.author.name}
+                    {t("writtenBy")} {post.author.name}
                   </p>
 
                   <p className="text-muted-foreground text-sm">
@@ -74,6 +86,7 @@ export default function BlogPageClient({ posts }: { posts: Post[] }) {
             </Card>
           ))}
         </div>
+        <BlogPagination totalPages={totalPages} currentPage={currentPage} />
       </div>
     </MainLayout>
   );

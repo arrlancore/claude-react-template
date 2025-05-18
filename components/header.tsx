@@ -6,15 +6,15 @@ import { ModeToggle } from "./mode-toggle";
 import { Button } from "./ui/button";
 import { brand } from "@/config";
 import { Menu, X } from "lucide-react";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 import { LanguageSelector } from "./language-selector";
-import { useParams } from 'next/navigation';
+import { useParams } from "next/navigation";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const t = useTranslations('common');
+  const t = useTranslations("common");
   const params = useParams();
-  const locale = params.locale as string || 'en';
+  const locale = (params.locale as string) || "en";
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -43,38 +43,38 @@ function Header() {
             href="#features"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            {t('nav.features')}
+            {t("nav.features")}
           </a>
           <a
             href="#pricing"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            {t('nav.pricing')}
+            {t("nav.pricing")}
           </a>
           <a
             href="#about"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            {t('nav.about')}
+            {t("nav.about")}
           </a>
           <a
             href="#contact"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            {t('nav.contact')}
+            {t("nav.contact")}
           </a>
           <Link
             href={`/${locale}/blog`}
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            {t('nav.blog')}
+            {t("nav.blog")}
           </Link>
         </nav>
 
         {/* Desktop Action Buttons */}
         <div className="hidden md:flex items-center gap-4">
-          <Button variant="ghost">{t('nav.signIn')}</Button>
-          <Button>{t('home.hero.getStarted')}</Button>
+          <Button variant="ghost">{t("nav.signIn")}</Button>
+          <Button>{t("nav.getStarted")}</Button>
           <LanguageSelector />
           <ModeToggle />
         </div>
@@ -83,8 +83,17 @@ function Header() {
         <div className="flex items-center gap-4 md:hidden">
           <LanguageSelector />
           <ModeToggle />
-          <Button variant="ghost" size="icon" onClick={toggleMenu} aria-label="Toggle Menu">
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleMenu}
+            aria-label="Toggle Menu"
+          >
+            {isMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </Button>
         </div>
       </div>
@@ -99,43 +108,47 @@ function Header() {
                 className="py-2 text-muted-foreground hover:text-foreground"
                 onClick={toggleMenu}
               >
-                {t('nav.features')}
+                {t("nav.features")}
               </a>
               <a
                 href="#pricing"
                 className="py-2 text-muted-foreground hover:text-foreground"
                 onClick={toggleMenu}
               >
-                {t('nav.pricing')}
+                {t("nav.pricing")}
               </a>
               <a
                 href="#about"
                 className="py-2 text-muted-foreground hover:text-foreground"
                 onClick={toggleMenu}
               >
-                {t('nav.about')}
+                {t("nav.about")}
               </a>
               <a
                 href="#contact"
                 className="py-2 text-muted-foreground hover:text-foreground"
                 onClick={toggleMenu}
               >
-                {t('nav.contact')}
+                {t("nav.contact")}
               </a>
               <Link
                 href={`/${locale}/blog`}
                 className="py-2 text-muted-foreground hover:text-foreground"
                 onClick={toggleMenu}
               >
-                {t('nav.blog')}
+                {t("nav.blog")}
               </Link>
 
               <div className="pt-4 flex flex-col space-y-3">
-                <Button variant="outline" className="w-full justify-center" onClick={toggleMenu}>
-                  {t('nav.signIn')}
+                <Button
+                  variant="outline"
+                  className="w-full justify-center"
+                  onClick={toggleMenu}
+                >
+                  {t("nav.signIn")}
                 </Button>
                 <Button className="w-full justify-center" onClick={toggleMenu}>
-                  {t('home.hero.getStarted')}
+                  {t("home.hero.getStarted")}
                 </Button>
               </div>
             </nav>

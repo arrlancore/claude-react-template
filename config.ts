@@ -27,8 +27,8 @@ export const paginationConfig = {
 
 // date formatting
 export const dateConfig = {
-  locale: "id",           // Locale for date-fns (id = Indonesian)
-  format: "dd-MM-yyyy",   // Default date format
+  locale: "en", // Locale for date-fns (id = Indonesian)
+  format: "dd-MM-yyyy", // Default date format
   formatWithMonth: "MMM d, yyyy", // Format with month name
 };
 
