@@ -52,7 +52,6 @@ export const analyticsConfig = {
 // Newsletter configuration
 export const newsletterConfig = {
   brevo: {
-    enabled: process.env.BREVO_API_KEY ? true : false, // Automatically enables if API key is present
-    listId: process.env.BREVO_LIST_ID || "", // Brevo list ID for newsletter subscribers
+    enabled: true,
   },
 };
