@@ -1,6 +1,11 @@
 // server component
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 import { getAllPosts } from "@/lib/mdx/mdx-utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import MainLayout from "@/components/layout/main-layout";
 import { Metadata } from "next";
 import {
   appLocale,
@@ -11,6 +16,8 @@ import {
   i18nConfig,
   paginationConfig,
 } from "@/config";
+import { formatDate } from "@/lib/date-utils";
+import BlogPagination from "@/components/blog/BlogPagination";
 import { getMessages } from "@/lib/i18n";
 import BlogPageClient from "./client";
 
@@ -67,6 +74,7 @@ export default async function Page({
   return (
     <BlogPageClient
       posts={posts}
+      total={total}
       totalPages={totalPages}
       currentPage={currentPage}
     />
