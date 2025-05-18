@@ -4,7 +4,13 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,19 +31,12 @@ export const AuthForm = () => {
   const searchParams = useSearchParams();
   const form = searchParams.get("form");
 
-  // Debug log - will only show in development
-  useEffect(() => {
-    console.log("Form parameter:", form);
-  }, [form]);
-
   // Set initial auth mode based on form parameter
   useEffect(() => {
     if (form === "signup") {
       setAuthMode("signup");
-      console.log("Setting auth mode to signup");
     } else {
       setAuthMode("login");
-      console.log("Setting auth mode to login");
     }
   }, [form]); // Include form in dependency array
 
@@ -191,11 +190,7 @@ export const AuthForm = () => {
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={authLoading}
-                >
+                <Button type="submit" className="w-full" disabled={authLoading}>
                   {authLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -269,7 +264,9 @@ export const AuthForm = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">{t("signup.password")}</Label>
+                  <Label htmlFor="signup-password">
+                    {t("signup.password")}
+                  </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -285,11 +282,7 @@ export const AuthForm = () => {
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={authLoading}
-                >
+                <Button type="submit" className="w-full" disabled={authLoading}>
                   {authLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

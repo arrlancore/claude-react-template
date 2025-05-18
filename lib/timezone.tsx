@@ -1,5 +1,6 @@
-import React, { createContext, useContext } from 'react';
-import { i18nConfig } from '@/config';
+"use client";
+import React, { createContext, useContext } from "react";
+import { i18nConfig } from "@/config";
 
 // Context to store and provide the current timezone
 const TimeZoneContext = createContext<string>(i18nConfig.timeZone);
@@ -15,7 +16,7 @@ export interface TimeProviderProps {
 
 export const TimeProvider: React.FC<TimeProviderProps> = ({
   timeZone = i18nConfig.timeZone,
-  children
+  children,
 }) => {
   return (
     <TimeZoneContext.Provider value={timeZone}>
@@ -35,19 +36,20 @@ export const formatDateInTimeZone = (
   format: string,
   timeZone: string = i18nConfig.timeZone
 ): string => {
-  const dateObject = typeof date === 'string' || typeof date === 'number'
-    ? new Date(date)
-    : date;
+  const dateObject =
+    typeof date === "string" || typeof date === "number"
+      ? new Date(date)
+      : date;
 
   // Format the date using Intl.DateTimeFormat
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat("en-US", {
     timeZone,
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
     hour12: true,
   }).format(dateObject);
 };
