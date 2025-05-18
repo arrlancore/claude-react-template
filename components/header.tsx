@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ModeToggle } from "./mode-toggle";
 import { Button } from "./ui/button";
-import { brand } from "@/config";
+import { brand, i18nConfig } from "@/config";
 import { Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LanguageSelector } from "./language-selector";
@@ -29,10 +29,10 @@ function Header() {
   };
 
   // Generate homepage link based on locale
-  const homeLink = locale === defaultLocale ? '/' : `/${locale}`;
+  const homeLink = locale === defaultLocale ? "/" : `/${locale}`;
 
   // Generate blog link based on locale
-  const blogLink = locale === defaultLocale ? '/blog' : `/${locale}/blog`;
+  const blogLink = locale === defaultLocale ? "/blog" : `/${locale}/blog`;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
