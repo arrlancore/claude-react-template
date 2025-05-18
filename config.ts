@@ -39,4 +39,5 @@ export const i18nConfig = {
   localeNames: {
     en: "English",
   },
+  timeZone: "UTC", // Default timezone for internationalization
 };
