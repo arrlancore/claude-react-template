@@ -11,16 +11,14 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { paginationConfig } from "@/config";
+import withSuspense from "@/lib/with-suspense";
 
 interface BlogPaginationProps {
   totalPages: number;
   currentPage: number;
 }
 
-export default function BlogPagination({
-  totalPages,
-  currentPage,
-}: BlogPaginationProps) {
+function _BlogPagination({ totalPages, currentPage }: BlogPaginationProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -124,3 +122,7 @@ export default function BlogPagination({
     </Pagination>
   );
 }
+
+const BlogPagination = withSuspense(_BlogPagination);
+
+export default BlogPagination;

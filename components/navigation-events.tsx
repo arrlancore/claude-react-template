@@ -3,11 +3,12 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useNavigationState } from "@/hooks/use-navigation-state";
+import withSuspense from "@/lib/with-suspense";
 
 /**
  * This component tracks navigation state and cleans up toasts
  */
-export function NavigationEvents() {
+function _NavigationEvents() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { setIsNavigating } = useNavigationState();
@@ -37,14 +38,17 @@ export function NavigationEvents() {
     handleRouteChangeComplete();
 
     // Clean up toasts
-    if (typeof document !== 'undefined') {
-      const toastElements = document.querySelectorAll('[data-state]');
-      toastElements.forEach(element => {
+    if (typeof document !== "undefined") {
+      const toastElements = document.querySelectorAll("[data-state]");
+      toastElements.forEach((element) => {
         if (element.parentNode) {
           try {
             element.parentNode.removeChild(element);
           } catch (e) {
-            console.debug('Navigation cleanup: Error removing toast element', e);
+            console.debug(
+              "Navigation cleanup: Error removing toast element",
+              e
+            );
           }
         }
       });
@@ -68,26 +72,34 @@ export function NavigationEvents() {
     }
 
     // Events that indicate navigation is starting
-    window.addEventListener('beforeunload', onRouteChangeStart);
-    window.addEventListener('popstate', onRouteChangeStart);
+    window.addEventListener("beforeunload", onRouteChangeStart);
+    window.addEventListener("popstate", onRouteChangeStart);
 
     // Click events that may initiate navigation
     const handleDocumentClick = (e: MouseEvent) => {
       // Check if the click is on an anchor tag
-      const link = (e.target as Element).closest('a');
-      if (link && link.href && !link.target && !link.download && link.origin === window.location.origin) {
+      const link = (e.target as Element).closest("a");
+      if (
+        link &&
+        link.href &&
+        !link.target &&
+        !link.download &&
+        link.origin === window.location.origin
+      ) {
         onRouteChangeStart();
       }
     };
 
-    document.addEventListener('click', handleDocumentClick);
+    document.addEventListener("click", handleDocumentClick);
 
     return () => {
-      window.removeEventListener('beforeunload', onRouteChangeStart);
-      window.removeEventListener('popstate', onRouteChangeStart);
-      document.removeEventListener('click', handleDocumentClick);
+      window.removeEventListener("beforeunload", onRouteChangeStart);
+      window.removeEventListener("popstate", onRouteChangeStart);
+      document.removeEventListener("click", handleDocumentClick);
     };
   }, [setIsNavigating]);
 
   return null;
 }
+
+export const NavigationEvents = withSuspense(_NavigationEvents);
