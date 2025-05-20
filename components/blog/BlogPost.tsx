@@ -35,21 +35,25 @@ export default async function BlogPost(props: { post: Post; locale: string }) {
   };
 
   // Generate article URL
-  const articleUrl = locale === defaultLocale
-    ? `${appUrl}/blog/${post.slug}`
-    : `${appUrl}/${locale}/blog/${post.slug}`;
+  const articleUrl =
+    locale === defaultLocale
+      ? `${appUrl}/blog/${post.slug}`
+      : `${appUrl}/${locale}/blog/${post.slug}`;
 
   // Generate breadcrumb items
   const breadcrumbItems = [
     {
       label: "Blog",
-      href: locale === defaultLocale ? "/blog" : `/${locale}/blog`
+      href: locale === defaultLocale ? "/blog" : `/${locale}/blog`,
     },
     {
       label: post.title,
-      href: locale === defaultLocale ? `/blog/${post.slug}` : `/${locale}/blog/${post.slug}`,
-      isCurrent: true
-    }
+      href:
+        locale === defaultLocale
+          ? `/blog/${post.slug}`
+          : `/${locale}/blog/${post.slug}`,
+      isCurrent: true,
+    },
   ];
 
   return (
@@ -79,19 +83,6 @@ export default async function BlogPost(props: { post: Post; locale: string }) {
         </div>
 
         <div className="max-w-4xl mx-auto px-4">
-          {/* Tags with enhanced styling */}
-          <div className="flex flex-wrap justify-center gap-2 mb-6">
-            {post.tags?.map((tag) => (
-              <Badge
-                key={tag}
-                variant="secondary"
-                className="px-4 py-1 text-sm font-medium rounded-full bg-secondary/10 text-secondary-foreground/80 backdrop-blur-sm"
-              >
-                {tag}
-              </Badge>
-            ))}
-          </div>
-
           {/* Title with improved typography */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center leading-tight mb-8 bg-clip-text">
             {post.title}
@@ -212,6 +203,19 @@ export default async function BlogPost(props: { post: Post; locale: string }) {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Tags with enhanced styling */}
+      <div className="flex flex-wrap justify-center gap-2 my-6">
+        {post.tags?.map((tag) => (
+          <Badge
+            key={tag}
+            variant="secondary"
+            className="px-4 py-1 text-sm font-medium rounded-full bg-secondary/10 text-secondary-foreground/80 backdrop-blur-sm"
+          >
+            {tag}
+          </Badge>
+        ))}
       </div>
 
       {/* Share and Author Sections Container */}
