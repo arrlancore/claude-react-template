@@ -17,10 +17,13 @@ async function generateSitemap() {
       "app/**/*.tsx",
       "!app/**/_*.tsx",
       "!app/**/layout.tsx",
+      "!app/**/client.tsx",
+      "!app/**/styleguide.tsx",
       "!app/**/loading.tsx",
       "!app/**/error.tsx",
       "!app/**/[slug]/page.tsx",
       "!app/**/[id]/page.tsx",
+      "!app/**/[locale]/**",
       "!app/editor/page.tsx",
       "!app/**/post/route.ts",
     ]);

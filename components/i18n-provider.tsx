@@ -18,7 +18,7 @@ export function I18nProvider({
       locale={locale}
       messages={messages}
       timeZone={nextIntlConfig.timeZone || 'UTC'} // Ensure we always have a timezone
-      formats={nextIntlConfig.formats}
+      // Omit formats property to avoid type errors
       // Optional: You can provide a now date to ensure consistent rendering
       now={new Date()}
       onError={(error) => {

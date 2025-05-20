@@ -12,17 +12,13 @@ import { useParams } from "next/navigation";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDevMode, setIsDevMode] = useState(false);
+  // Use constant value for development mode check rather than state + useEffect
+  const isDevMode = process.env.NODE_ENV === "development";
   const t = useTranslations("common");
   const params = useParams();
   // Get locale from params or use default if we're on the root route
   const locale = (params.locale as string) || "en";
   const { defaultLocale } = i18nConfig;
-
-  // Check if we're in development mode
-  useEffect(() => {
-    setIsDevMode(process.env.NODE_ENV === "development");
-  }, []);
 
   // Generate link paths based on the locale
   const getLocalizedLink = (path: string) => {
@@ -42,10 +38,6 @@ function Header() {
 
   // Generate auth link based on locale
   const authLink = locale === defaultLocale ? "/auth" : `/${locale}/auth`;
-
-  // Generate i18n example link based on locale
-  const i18nExampleLink =
-    locale === defaultLocale ? "/i18n-example" : `/${locale}/i18n-example`;
 
   // Check URL params to set the right form mode
   const handleAuthClick = () => {
@@ -105,12 +97,7 @@ function Header() {
           >
             {t("nav.blog")}
           </Link>
-          <Link
-            href={i18nExampleLink}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {t("nav.i18nExample")}
-          </Link>
+
           {isDevMode && (
             <Link
               href="/styleguide"
@@ -193,13 +180,7 @@ function Header() {
               >
                 {t("nav.blog")}
               </Link>
-              <Link
-                href={i18nExampleLink}
-                className="py-2 text-muted-foreground hover:text-foreground"
-                onClick={toggleMenu}
-              >
-                {t("nav.i18nExample")}
-              </Link>
+
               {isDevMode && (
                 <Link
                   href="/styleguide"

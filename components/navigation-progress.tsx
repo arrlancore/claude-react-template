@@ -35,7 +35,7 @@ export function NavigationProgress() {
     >
       <div className="h-full w-full relative">
         {/* Progress bar with animation */}
-        <div className="absolute inset-0 bg-primary animate-progress-bar origin-left shadow-sm shadow-primary/50" />
+        <div className="absolute inset-0 bg-primary animate-progress-bar origin-left" />
 
         {/* Pulsing overlay */}
         <div className="absolute inset-0 bg-primary/40 animate-pulse" />

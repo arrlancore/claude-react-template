@@ -1,6 +1,6 @@
 import { i18nConfig } from "@/config";
-import AuthPage from "./[locale]/auth/page";
-import RootLayout from "./[locale]/layout";
+import AuthPage from "../[locale]/auth/page";
+import RootLayout from "../[locale]/layout";
 
 // This is the root auth page which will render the default locale content
 export default async function RootAuthPage({

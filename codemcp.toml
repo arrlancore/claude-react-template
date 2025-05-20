@@ -5,6 +5,9 @@ Claude React Template
 [repo]
 path = "/Users/arlan/prj/claude-react-template"
 
+[git]
+auto_commit = false
+
 project_prompt = '''
 - Be concise and dont spammy or noisy, we need to optimize tokens.
 - Please always start with simple way and easy to understand result.

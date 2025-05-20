@@ -114,7 +114,7 @@ export default function Footer() {
 
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} {brand.title}
+            © 2025 {brand.title}
             {brand.domain ? "." + brand.domain : ""} {t('allRightsReserved')}
           </div>
           <div className="flex gap-4">

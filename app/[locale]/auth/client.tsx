@@ -19,8 +19,9 @@ import { Loader2, Mail, Lock, User, ArrowRight } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import withSuspense from "@/lib/with-suspense";
 
-export const AuthForm = () => {
+const _AuthForm = () => {
   const t = useTranslations("auth");
   const { user, loading } = useAuth();
   const { toast } = useToast();
@@ -323,3 +324,8 @@ export const AuthForm = () => {
     </div>
   );
 };
+
+export const AuthForm = withSuspense(
+  _AuthForm,
+  <Loader2 className="animate-spin" />
+);
