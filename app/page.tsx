@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
-import { i18nConfig, appTitle, appDescription, appUrl } from "@/config";
+import { i18nConfig, appDescription, appUrl, appSlogan } from "@/config";
 import { Metadata } from "next";
 import { generateMetadata as baseGenerateMetadata } from "@/lib/metadata";
 
 // Generate metadata for the root page
 export const metadata: Metadata = {
   ...baseGenerateMetadata(
-    appTitle,
+    appSlogan,
     appDescription,
-    "",  // Empty path for homepage
+    "", // Empty path for homepage
     i18nConfig.defaultLocale,
     "website",
     `${appUrl}/og-image.jpg`

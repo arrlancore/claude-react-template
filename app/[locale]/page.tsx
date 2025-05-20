@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { appTitle, appDescription, appUrl, appSlogan, appLocale } from "@/config";
+import { appDescription, appUrl, appSlogan, appLocale } from "@/config";
 import { generateMetadata as baseGenerateMetadata } from "@/lib/metadata";
 import { getMessages } from "@/lib/i18n";
 import { i18nConfig } from "@/config";
@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 import ClientLandingPage from "./landing-client";
 
 export async function generateMetadata({
-  params: { locale }
+  params: { locale },
 }: {
   params: { locale: string };
 }): Promise<Metadata> {
@@ -21,9 +21,9 @@ export async function generateMetadata({
 
   // Use the appTitle and appDescription from config
   return baseGenerateMetadata(
-    appTitle,
+    appSlogan,
     appDescription,
-    "",  // Path is empty for the homepage
+    "", // Path is empty for the homepage
     locale,
     "website",
     `${appUrl}/og-image.jpg`
@@ -31,7 +31,7 @@ export async function generateMetadata({
 }
 
 export default async function LandingPage({
-  params: { locale }
+  params: { locale },
 }: {
   params: { locale: string };
 }) {
