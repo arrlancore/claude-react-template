@@ -21,7 +21,7 @@ function Header() {
 
   // Check if we're in development mode
   useEffect(() => {
-    setIsDevMode(process.env.NODE_ENV === 'development');
+    setIsDevMode(process.env.NODE_ENV === "development");
   }, []);
 
   // Generate link paths based on the locale
@@ -44,7 +44,8 @@ function Header() {
   const authLink = locale === defaultLocale ? "/auth" : `/${locale}/auth`;
 
   // Generate i18n example link based on locale
-  const i18nExampleLink = locale === defaultLocale ? "/i18n-example" : `/${locale}/i18n-example`;
+  const i18nExampleLink =
+    locale === defaultLocale ? "/i18n-example" : `/${locale}/i18n-example`;
 
   // Check URL params to set the right form mode
   const handleAuthClick = () => {
@@ -222,7 +223,7 @@ function Header() {
                 </Button>
                 <Button className="w-full justify-center" asChild>
                   <Link href={authLink + "?form=signup"} onClick={toggleMenu}>
-                    {t("home.hero.getStarted")}
+                    {t("nav.getStarted")}
                   </Link>
                 </Button>
               </div>

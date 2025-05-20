@@ -27,7 +27,7 @@ export function NavigationProgress() {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 h-1.5 bg-primary/10 z-[100] overflow-hidden transition-opacity duration-300 ${
+      className={`fixed top-0 left-0 right-0 h-1 bg-primary/10 z-[100] overflow-hidden transition-opacity duration-300 ${
         isNavigating ? "opacity-100" : "opacity-0"
       }`}
       aria-hidden="true"

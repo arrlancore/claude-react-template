@@ -14,7 +14,13 @@ import { i18nConfig } from "@/config";
 import Link from "next/link";
 
 export function LanguageSelector() {
+  const [mounted, setMounted] = React.useState(false);
   const pathname = usePathname();
+
+  // Only render the component on the client to avoid hydration issues
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Extract the current locale from the pathname or use default
   const pathnameLocale = pathname.split("/")[1];
@@ -50,8 +56,20 @@ export function LanguageSelector() {
     }
   };
 
+  // Don't render dropdown if only one locale exists
   if (i18nConfig.locales?.length === 1) {
-    return null; // No need to show the language selector if there's only one locale
+    return null;
+  }
+
+  // If not mounted yet, return a placeholder but with the icon
+  if (!mounted) {
+    // Return a placeholder with the icon to prevent layout shift
+    return (
+      <Button variant="outline" size="icon">
+        <GlobeIcon className="h-[1.2rem] w-[1.2rem]" />
+        <span className="sr-only">Switch language</span>
+      </Button>
+    );
   }
 
   return (

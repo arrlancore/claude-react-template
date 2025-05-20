@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SafeToaster } from "@/components/ui/safe-toaster";
 import { NavigationEvents } from "@/components/navigation-events";
-import { NavigationProgress } from "@/components/navigation-progress";
-import { NavigationStateProvider } from "@/hooks/use-navigation-state";
 import { OrganizationJsonLd, WebsiteJsonLd } from "@/components/json-ld";
 import { generateAlternatesMetadata } from "@/lib/metadata";
 import localFont from "next/font/local";
@@ -104,12 +102,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NavigationStateProvider>
-            {children}
-            <SafeToaster />
-            <NavigationEvents />
-            <NavigationProgress />
-          </NavigationStateProvider>
+          {children}
+          <SafeToaster />
+          <NavigationEvents />
         </ThemeProvider>
       </body>
       {analyticsConfig.googleAnalytics.enabled && (

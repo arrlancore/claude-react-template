@@ -1,14 +1,34 @@
-import { i18nConfig } from "@/config";
-import RootLayout from "./[locale]/layout";
-import HomePage from "./[locale]/page";
+import { redirect } from "next/navigation";
+import { i18nConfig, appDescription, appUrl, appSlogan } from "@/config";
+import { Metadata } from "next";
+import { generateMetadata as baseGenerateMetadata } from "@/lib/metadata";
 
-// This is the root page which will render the default locale content
-export default async function RootPage() {
-  const locale = i18nConfig.defaultLocale;
+// Generate metadata for the root page
+export const metadata: Metadata = {
+  ...baseGenerateMetadata(
+    appSlogan,
+    appDescription,
+    "", // Empty path for homepage
+    i18nConfig.defaultLocale,
+    "website",
+    `${appUrl}/og-image.jpg`
+  ),
+  // Make sure robots can index this page
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+};
 
-  return (
-    <RootLayout params={{ locale }}>
-      <HomePage />
-    </RootLayout>
-  );
+// This is the root page which will redirect to the default locale
+export default function RootPage() {
+  const { defaultLocale } = i18nConfig;
+  redirect(`/${defaultLocale}`);
 }

@@ -14,8 +14,24 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function ModeToggle() {
+  const [mounted, setMounted] = React.useState(false);
   const { setTheme } = useTheme();
   const t = useTranslations('common.theme');
+
+  // Only render the toggle on the client to avoid hydration mismatch
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // Return a placeholder with sun icon to prevent layout shift
+    return (
+      <Button variant="outline" size="icon">
+        <SunIcon className="h-[1.2rem] w-[1.2rem]" />
+        <span className="sr-only">Toggle theme</span>
+      </Button>
+    );
+  }
 
   return (
     <DropdownMenu>
