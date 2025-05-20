@@ -4,9 +4,7 @@ import { i18nConfig, appUrl } from "@/config";
 import { I18nProvider } from "@/components/i18n-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SafeToaster } from "@/components/ui/safe-toaster";
-import { NavigationProgress } from "@/components/navigation-progress";
 import { NavigationEvents } from "@/components/navigation-events";
-import { NavigationStateProvider } from "@/hooks/use-navigation-state";
 import { OrganizationJsonLd, WebsiteJsonLd } from "@/components/json-ld";
 import { generateAlternatesMetadata } from "@/lib/metadata";
 import { Metadata } from "next";
@@ -81,14 +79,11 @@ export default async function LocaleLayout({
       >
         <ThemeProvider>
           <AuthProvider>
-            <NavigationStateProvider>
-              <I18nProvider locale={locale} messages={messages}>
-                {children}
-                <SafeToaster />
-                <NavigationEvents />
-                <NavigationProgress />
-              </I18nProvider>
-            </NavigationStateProvider>
+            <I18nProvider locale={locale} messages={messages}>
+              {children}
+              <SafeToaster />
+              <NavigationEvents />
+            </I18nProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
