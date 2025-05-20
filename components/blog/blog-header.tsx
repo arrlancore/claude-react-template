@@ -7,13 +7,20 @@ import { brand, i18nConfig } from "@/config";
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { LanguageSelector } from "../language-selector";
+import { useEffect, useState } from "react";
 
 export function BlogHeader() {
+  const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
   const t = useTranslations('blog');
   const params = useParams();
   const locale = params.locale as string || 'en';
   const { defaultLocale } = i18nConfig;
+
+  // Only render theme-related UI on the client to avoid hydration issues
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Generate homepage link based on locale
   const homeLink = locale === defaultLocale ? '/' : `/${locale}`;
@@ -39,15 +46,22 @@ export function BlogHeader() {
             <Button variant="ghost">{t('title')}</Button>
           </Link>
           <LanguageSelector />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          >
-            <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
-          </Button>
+          {mounted ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            >
+              <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+          ) : (
+            <Button variant="ghost" size="icon">
+              <SunIcon className="h-[1.2rem] w-[1.2rem]" />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+          )}
         </div>
       </div>
     </header>
