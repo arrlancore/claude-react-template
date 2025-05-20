@@ -4,16 +4,95 @@
 
   <url>
     <loc>https://brand.ai</loc>
-    <lastmod>2024-11-24T03:04:43.841Z</lastmod>
+    <lastmod>2025-05-20T13:52:55.422Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://brand.ai/blog</loc>
-    <lastmod>2024-11-24T03:04:43.842Z</lastmod>
+    <loc>https://brand.ai/[locale]/landing-client</loc>
+    <lastmod>2025-05-20T13:52:55.422Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://brand.ai/[locale]</loc>
+    <lastmod>2025-05-20T13:52:55.422Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://brand.ai/auth</loc>
+    <lastmod>2025-05-20T13:52:55.422Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://brand.ai/blog</loc>
+    <lastmod>2025-05-20T13:52:55.422Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://brand.ai/[locale]/auth/client</loc>
+    <lastmod>2025-05-20T13:52:55.422Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://brand.ai/[locale]/auth</loc>
+    <lastmod>2025-05-20T13:52:55.422Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://brand.ai/[locale]/blog/client</loc>
+    <lastmod>2025-05-20T13:52:55.422Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://brand.ai/[locale]/blog</loc>
+    <lastmod>2025-05-20T13:52:55.422Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://brand.ai/[locale]/i18n-example</loc>
+    <lastmod>2025-05-20T13:52:55.422Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://brand.ai/[locale]/styleguide</loc>
+    <lastmod>2025-05-20T13:52:55.422Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://brand.ai/[locale]/authors/[slug]/client</loc>
+    <lastmod>2025-05-20T13:52:55.422Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Author Pages -->
+
+  <url>
+    <loc>https://brand.ai/authors/tim-redaksi</loc>
+    <lastmod>2025-05-20T13:52:55.422Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 
   <!-- Blog Posts -->
@@ -42,6 +121,20 @@
   <url>
     <loc>https://brand.ai/blog/example-post</loc>
     <lastmod>2024-03-15T07:00:00+07:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://brand.ai/blog/modern-web-development-best-practices</loc>
+    <lastmod>2024-05-01T07:00:00+07:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://brand.ai/blog/simplicity-in-design</loc>
+    <lastmod>2024-04-20T07:00:00+07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
