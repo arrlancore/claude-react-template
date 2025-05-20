@@ -1,5 +1,5 @@
-import createMiddleware from 'next-intl/middleware';
-import nextIntlConfig from './next-intl.config';
+import createMiddleware from "next-intl/middleware";
+import nextIntlConfig from "./next-intl.config";
 
 export default createMiddleware({
   // A list of all locales that are supported
@@ -9,13 +9,10 @@ export default createMiddleware({
   defaultLocale: nextIntlConfig.defaultLocale,
 
   // This instructs next-intl to not add the locale prefix for the default locale
-  localePrefix: 'as-needed',
-
-  // Default timezone for date/time formatting
-  timeZone: nextIntlConfig.timeZone || 'UTC' // Ensure we always have a fallback timezone
+  localePrefix: "as-needed",
 });
 
 export const config = {
   // Match only internationalized pathnames
-  matcher: ['/((?!api|_next|.*\\..*).*)', '/']
+  matcher: ["/((?!api|_next|.*\\..*).*)", "/"],
 };
