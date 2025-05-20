@@ -12,17 +12,13 @@ import { useParams } from "next/navigation";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDevMode, setIsDevMode] = useState(false);
+  // Use constant value for development mode check rather than state + useEffect
+  const isDevMode = process.env.NODE_ENV === "development";
   const t = useTranslations("common");
   const params = useParams();
   // Get locale from params or use default if we're on the root route
   const locale = (params.locale as string) || "en";
   const { defaultLocale } = i18nConfig;
-
-  // Check if we're in development mode
-  useEffect(() => {
-    setIsDevMode(process.env.NODE_ENV === "development");
-  }, []);
 
   // Generate link paths based on the locale
   const getLocalizedLink = (path: string) => {

@@ -16,19 +16,24 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function StyleguidePage() {
-  // const [isDevMode, setIsDevMode] = useState(false);
+  // Use constant value for development mode check
   const isDevMode = process.env.NODE_ENV === "development";
-  console.log("isDev", isDevMode);
+  const [isMounted, setIsMounted] = useState(false);
 
-  // useEffect(() => {
-  //   // Check if we're in development mode
-  //   // This can only be accurately determined on the client side when using Next.js
-  //   setIsDevMode(process.env.NODE_ENV === "development");
-  // }, []);
+  // Use useEffect to set mounted state on client-side
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
-  // If not in development mode, show 404
-  if (!isDevMode) {
+  // Create a safe version of notFound that only runs on the client
+  // to avoid hydration mismatches
+  if (isMounted && !isDevMode) {
     notFound();
+  }
+
+  // Show a loading state if not mounted and server thinks it's not dev mode
+  if (!isMounted && !isDevMode) {
+    return null; // Return empty to avoid flash of content
   }
 
   return (

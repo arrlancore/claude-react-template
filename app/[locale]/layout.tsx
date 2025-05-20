@@ -2,28 +2,9 @@ import { notFound } from "next/navigation";
 import { getMessages } from "@/lib/i18n";
 import { i18nConfig, appUrl } from "@/config";
 import { I18nProvider } from "@/components/i18n-provider";
-import { ThemeProvider } from "@/components/theme-provider";
-import { SafeToaster } from "@/components/ui/safe-toaster";
-import { NavigationProgress } from "@/components/navigation-progress";
-import { NavigationEvents } from "@/components/navigation-events";
-import { NavigationStateProvider } from "@/hooks/use-navigation-state";
-import { OrganizationJsonLd, WebsiteJsonLd } from "@/components/json-ld";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { generateAlternatesMetadata } from "@/lib/metadata";
 import { Metadata } from "next";
-import localFont from "next/font/local";
-import "../globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
-
-const geistSans = localFont({
-  src: "../fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "../fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 export function generateStaticParams() {
   return i18nConfig.locales.map((locale) => ({ locale }));
@@ -70,28 +51,10 @@ export default async function LocaleLayout({
   const messages = await getMessages(locale);
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <head>
-        {/* Add structured data for the website and organization */}
-        <OrganizationJsonLd />
-        <WebsiteJsonLd />
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider>
-          <AuthProvider>
-            <NavigationStateProvider>
-              <I18nProvider locale={locale} messages={messages}>
-                {children}
-                <SafeToaster />
-                <NavigationEvents />
-                <NavigationProgress />
-              </I18nProvider>
-            </NavigationStateProvider>
-          </AuthProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+    <AuthProvider>
+      <I18nProvider locale={locale} messages={messages}>
+        {children}
+      </I18nProvider>
+    </AuthProvider>
   );
 }
