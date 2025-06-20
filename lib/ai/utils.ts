@@ -1,4 +1,4 @@
-import type { UserProfile, AIUsageTracking } from './types';
+import type { UserProfile, AIUsageTracking } from "./types";
 
 export class AIUtils {
   // Cost management utilities
@@ -7,14 +7,19 @@ export class AIUtils {
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
     return usageRecords
-      .filter(record => record.timestamp >= monthStart)
+      .filter((record) => record.timestamp >= monthStart)
       .reduce((total, record) => total + record.cost_estimate, 0);
   }
 
-  static isNearCostLimit(usageRecords: AIUsageTracking[], monthlyLimit: number = 3.0): boolean {
+  static isNearCostLimit(
+    usageRecords: AIUsageTracking[],
+    monthlyLimit: number = 3.0
+  ): boolean {
     const monthlyCost = this.calculateMonthlyCost(usageRecords);
-    const warningThreshold = parseFloat(process.env.AI_COST_WARNING_THRESHOLD || '0.8');
-    return monthlyCost >= (monthlyLimit * warningThreshold);
+    const warningThreshold = parseFloat(
+      process.env.AI_COST_WARNING_THRESHOLD ?? "0.8"
+    );
+    return monthlyCost >= monthlyLimit * warningThreshold;
   }
 
   static formatCost(cost: number): string {
@@ -27,16 +32,17 @@ export class AIUtils {
 
     // Adjust for learning pace
     const paceInstructions = {
-      fast: 'Keep explanations concise and move quickly to the core concept.',
-      balanced: 'Provide balanced explanations with examples.',
-      thorough: 'Give detailed explanations with multiple examples and edge cases.'
+      fast: "Keep explanations concise and move quickly to the core concept.",
+      balanced: "Provide balanced explanations with examples.",
+      thorough:
+        "Give detailed explanations with multiple examples and edge cases.",
     };
 
     // Adjust for preferred style
     const styleInstructions = {
-      visual: 'Use visual metaphors and step-by-step breakdowns.',
-      conceptual: 'Focus on the underlying concepts and why they work.',
-      practical: 'Emphasize practical application and real-world examples.'
+      visual: "Use visual metaphors and step-by-step breakdowns.",
+      conceptual: "Focus on the underlying concepts and why they work.",
+      practical: "Emphasize practical application and real-world examples.",
     };
 
     const paceInstruction = paceInstructions[profile.learning_pace];
@@ -50,65 +56,77 @@ export class AIUtils {
     return adaptedPrompt;
   }
 
-  static determineOptimalModel(operation: string, userProfile: UserProfile): 'pro' | 'flash' {
+  static determineOptimalModel(
+    operation: string,
+    userProfile: UserProfile
+  ): "pro" | "flash" {
     // Use Pro model for:
     // - Initial assessments
     // - Solution validation
     // - Complex pattern explanations for beginners
 
-    if (operation === 'assessment' || operation === 'validation') {
-      return 'pro';
+    if (operation === "assessment" || operation === "validation") {
+      return "pro";
     }
 
-    if (operation === 'guidance' && userProfile.experience_level === 'beginner') {
-      return 'pro';
+    if (
+      operation === "guidance" &&
+      userProfile.experience_level === "beginner"
+    ) {
+      return "pro";
     }
 
     // Use Flash model for:
     // - Chat interactions
     // - Simple hints
     // - Quick responses for advanced users
-    return 'flash';
+    return "flash";
   }
 
   // Response quality utilities
-  static validateResponseQuality(response: string, expectedLength: number = 100): {
+  static validateResponseQuality(
+    response: string,
+    expectedLength: number = 100
+  ): {
     isValid: boolean;
     issues: string[];
   } {
     const issues: string[] = [];
 
     if (!response || response.trim().length === 0) {
-      issues.push('Empty response');
+      issues.push("Empty response");
     }
 
     if (response.length < expectedLength * 0.5) {
-      issues.push('Response too short');
+      issues.push("Response too short");
     }
 
     if (response.length > expectedLength * 3) {
-      issues.push('Response too long');
+      issues.push("Response too long");
     }
 
-    if (response.includes('[object Object]') || response.includes('undefined')) {
-      issues.push('Contains formatting errors');
+    if (
+      response.includes("[object Object]") ||
+      response.includes("undefined")
+    ) {
+      issues.push("Contains formatting errors");
     }
 
-    if (response.includes('I cannot') || response.includes('I am unable')) {
-      issues.push('AI declined to respond');
+    if (response.includes("I cannot") || response.includes("I am unable")) {
+      issues.push("AI declined to respond");
     }
 
     return {
       isValid: issues.length === 0,
-      issues
+      issues,
     };
   }
 
   static sanitizeAIResponse(response: string): string {
     return response
-      .replace(/```json\s*/g, '')
-      .replace(/```\s*/g, '')
-      .replace(/^\s*{\s*|\s*}\s*$/g, match => match.trim())
+      .replace(/```json\s*/g, "")
+      .replace(/```\s*/g, "")
+      .replace(/^\s*{\s*|\s*}\s*$/g, (match) => match.trim())
       .trim();
   }
 
@@ -125,23 +143,26 @@ export class AIUtils {
     }
 
     const maxChars = maxTokens * 4;
-    return text.substring(0, maxChars - 3) + '...';
+    return text.substring(0, maxChars - 3) + "...";
   }
 
   // Conversation utilities
-  static formatConversationHistory(messages: { role: string; content: string; timestamp: Date }[]): string {
+  static formatConversationHistory(
+    messages: { role: string; content: string; timestamp: Date }[]
+  ): string {
     return messages
       .slice(-10) // Last 10 messages to stay within token limits
-      .map(msg => {
+      .map((msg) => {
         const time = msg.timestamp.toLocaleTimeString();
         return `[${time}] ${msg.role}: ${msg.content}`;
       })
-      .join('\n');
+      .join("\n");
   }
 
   static extractCodeFromResponse(response: string): string | null {
     // Extract code blocks from AI responses
-    const codeBlockRegex = /```(?:javascript|typescript|js|ts)?\s*([\s\S]*?)```/i;
+    const codeBlockRegex =
+      /```(?:javascript|typescript|js|ts)?\s*([\s\S]*?)```/i;
     const match = response.match(codeBlockRegex);
     return match ? match[1].trim() : null;
   }
@@ -149,16 +170,16 @@ export class AIUtils {
   // Pattern utilities
   static formatPatternName(patternId: string): string {
     return patternId
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   }
 
   static formatProblemName(problemId: string): string {
     return problemId
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   }
 
   // Error handling utilities
@@ -167,36 +188,42 @@ export class AIUtils {
     shouldRetry: boolean;
     fallbackResponse?: string;
   } {
-    const errorMessage = error.message || 'Unknown AI error';
+    const errorMessage = error.message || "Unknown AI error";
+    console.log("Error message:", errorMessage);
 
-    if (errorMessage.includes('quota') || errorMessage.includes('limit')) {
+    if (errorMessage.includes("Quota") || errorMessage.includes("limit")) {
       return {
-        message: 'AI service temporarily unavailable due to usage limits',
+        message: "AI service temporarily unavailable due to usage limits",
         shouldRetry: false,
-        fallbackResponse: 'Please try again later or contact support if this persists.'
+        fallbackResponse:
+          "Please try again later or contact support if this persists.",
       };
     }
 
-    if (errorMessage.includes('timeout') || errorMessage.includes('network')) {
+    if (errorMessage.includes("timeout") || errorMessage.includes("network")) {
       return {
-        message: 'Network connection issue',
+        message: "Network connection issue",
         shouldRetry: true,
-        fallbackResponse: 'Please check your connection and try again.'
+        fallbackResponse: "Please check your connection and try again.",
       };
     }
 
-    if (errorMessage.includes('invalid') || errorMessage.includes('malformed')) {
+    if (
+      errorMessage.includes("invalid") ||
+      errorMessage.includes("malformed")
+    ) {
       return {
-        message: 'Invalid request format',
+        message: "Invalid request format",
         shouldRetry: false,
-        fallbackResponse: 'There was an issue with your request. Please try rephrasing.'
+        fallbackResponse:
+          "There was an issue with your request. Please try rephrasing.",
       };
     }
 
     return {
-      message: 'AI service error',
+      message: "AI service error",
       shouldRetry: true,
-      fallbackResponse: 'Something went wrong. Please try again.'
+      fallbackResponse: "Something went wrong. Please try again.",
     };
   }
 
@@ -206,9 +233,9 @@ export class AIUtils {
     duration: number;
   }> {
     const start = Date.now();
-    return operation().then(result => ({
+    return operation().then((result) => ({
       result,
-      duration: Date.now() - start
+      duration: Date.now() - start,
     }));
   }
 
@@ -230,7 +257,7 @@ export class AIUtils {
 
       recordRequest(): void {
         requests.push(Date.now());
-      }
+      },
     };
   }
 
@@ -239,7 +266,8 @@ export class AIUtils {
     const cache = new Map<string, { value: T; timestamp: number }>();
 
     return {
-      get(key: string, maxAge: number = 300000): T | null { // 5 min default
+      get(key: string, maxAge: number = 300000): T | null {
+        // 5 min default
         const entry = cache.get(key);
         if (!entry) return null;
 
@@ -255,7 +283,7 @@ export class AIUtils {
         if (cache.size >= maxSize) {
           // Remove oldest entry
           const firstKey = cache.keys().next().value;
-          cache.delete(firstKey);
+          cache.delete(firstKey!);
         }
 
         cache.set(key, { value, timestamp: Date.now() });
@@ -263,18 +291,20 @@ export class AIUtils {
 
       clear(): void {
         cache.clear();
-      }
+      },
     };
   }
 }
 
 // Validation helpers
 export function validateEnvironmentVars(): void {
-  const required = ['GOOGLE_AI_API_KEY'];
-  const missing = required.filter(key => !process.env[key]);
+  const required = ["GOOGLE_AI_API_KEY"];
+  const missing = required.filter((key) => !process.env[key]);
 
   if (missing.length > 0) {
-    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+    throw new Error(
+      `Missing required environment variables: ${missing.join(", ")}`
+    );
   }
 }
 
@@ -282,21 +312,27 @@ export function validateEnvironmentVars(): void {
 export function isValidAssessmentResponse(obj: any): boolean {
   return (
     obj &&
-    typeof obj === 'object' &&
-    ['beginner', 'intermediate', 'advanced'].includes(obj.user_level) &&
-    ['fast', 'balanced', 'thorough'].includes(obj.learning_pace) &&
+    typeof obj === "object" &&
+    ["beginner", "intermediate", "advanced"].includes(obj.user_level) &&
+    ["fast", "balanced", "thorough"].includes(obj.learning_pace) &&
     Array.isArray(obj.recommended_path) &&
-    typeof obj.confidence_score === 'number'
+    typeof obj.confidence_score === "number"
   );
 }
 
 export function isValidGuidanceResponse(obj: any): boolean {
   return (
     obj &&
-    typeof obj === 'object' &&
-    typeof obj.content === 'string' &&
-    typeof obj.hint_level === 'number' &&
-    ['hint', 'explanation', 'encouragement', 'correction', 'next_step'].includes(obj.response_type)
+    typeof obj === "object" &&
+    typeof obj.content === "string" &&
+    typeof obj.hint_level === "number" &&
+    [
+      "hint",
+      "explanation",
+      "encouragement",
+      "correction",
+      "next_step",
+    ].includes(obj.response_type)
   );
 }
 
