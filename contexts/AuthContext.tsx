@@ -22,6 +22,7 @@ interface AuthContextType {
     password: string,
     metadata?: any
   ) => Promise<{ error: any }>;
+  signInWithGitHub: () => Promise<{ error: any }>;
   isAuthenticated: boolean;
 }
 
@@ -105,6 +106,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  // Sign in with GitHub
+  const signInWithGitHub = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
+
+      return { error };
+    } catch (err: any) {
+      toast({
+        description: "Terjadi kesalahan: " + err.message,
+        variant: "destructive",
+      });
+      return { error: err };
+    }
+  };
+
   useEffect(() => {
     // Set up the auth state listener
     const {
@@ -148,6 +169,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     refreshUser,
     signIn,
     signUp,
+    signInWithGitHub,
     isAuthenticated,
   };
 

@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Lock, User, ArrowRight } from "lucide-react";
+import { Loader2, Mail, Lock, User, ArrowRight, Github } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -23,7 +23,7 @@ import withSuspense from "@/lib/with-suspense";
 
 const _AuthForm = () => {
   const t = useTranslations("auth");
-  const { user, loading } = useAuth();
+  const { user, loading, signInWithGitHub } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
   const [authLoading, setAuthLoading] = useState(false);
@@ -60,9 +60,25 @@ const _AuthForm = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user && !loading) {
-      router.push("/profile");
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirectTo = searchParams.get('redirect') || '/dashboard';
+      router.push(redirectTo);
     }
   }, [user, loading, router]);
+
+  const handleGitHubSignIn = async () => {
+    setAuthLoading(true);
+    const { error } = await signInWithGitHub();
+
+    if (error) {
+      toast({
+        title: "GitHub Sign-In Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+    setAuthLoading(false);
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,7 +92,11 @@ const _AuthForm = () => {
 
       if (error) throw error;
 
-      // Redirect is handled by useEffect watching for user state
+      // Get redirect URL from query params or default to dashboard
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirectTo = searchParams.get('redirect') || '/dashboard';
+      router.push(redirectTo);
+
     } catch (error: any) {
       toast({
         title: t("login.failure.title"),
@@ -130,7 +150,9 @@ const _AuthForm = () => {
   }, [authMode]);
 
   if (user) {
-    router.push("/profile");
+    const searchParams = new URLSearchParams(window.location.search);
+    const redirectTo = searchParams.get('redirect') || '/dashboard';
+    router.push(redirectTo);
     return null;
   }
 
@@ -170,7 +192,30 @@ const _AuthForm = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleGitHubSignIn}
+                  disabled={authLoading}
+                >
+                  <Github className="mr-2 h-4 w-4" />
+                  Continue with GitHub
+                </Button>
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      Or continue with email
+                    </span>
+                  </div>
+                </div>
+
+                <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">{t("login.email")}</Label>
                   <div className="relative">
@@ -211,20 +256,21 @@ const _AuthForm = () => {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={authLoading}>
-                  {authLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t("login.loading")}
-                    </>
-                  ) : (
-                    <>
-                      {t("login.button")}
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </>
-                  )}
-                </Button>
-              </form>
+                  <Button type="submit" className="w-full" disabled={authLoading}>
+                    {authLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t("login.loading")}
+                      </>
+                    ) : (
+                      <>
+                        {t("login.button")}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -240,7 +286,30 @@ const _AuthForm = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSignup} className="space-y-4">
+              <div className="space-y-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleGitHubSignIn}
+                  disabled={authLoading}
+                >
+                  <Github className="mr-2 h-4 w-4" />
+                  Continue with GitHub
+                </Button>
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                      Or create account with email
+                    </span>
+                  </div>
+                </div>
+
+                <form onSubmit={handleSignup} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">{t("signup.firstName")}</Label>
@@ -303,20 +372,21 @@ const _AuthForm = () => {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={authLoading}>
-                  {authLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t("signup.loading")}
-                    </>
-                  ) : (
-                    <>
-                      {t("signup.button")}
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </>
-                  )}
-                </Button>
-              </form>
+                  <Button type="submit" className="w-full" disabled={authLoading}>
+                    {authLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t("signup.loading")}
+                      </>
+                    ) : (
+                      <>
+                        {t("signup.button")}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
