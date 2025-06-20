@@ -5,7 +5,7 @@ import path from "path";
 import prettier from "prettier";
 import matter from "gray-matter";
 
-const domain = "https://brand.ai";
+const domain = "https://dsapatternmaster.com";
 
 async function generateSitemap() {
   try {

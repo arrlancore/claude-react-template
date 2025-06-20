@@ -1,7 +1,11 @@
 User-agent: *
 Allow: /
+
+# Disallow admin and API routes
 Disallow: /api/
 Disallow: /_next/static/
+Disallow: /admin/
+Disallow: /dashboard/
 
 # Block search results and filtering
 Disallow: */?s=
@@ -10,5 +14,6 @@ Disallow: */?*
 # Allow media and assets
 Allow: /images/
 Allow: /assets/
+Allow: /patterns/
 
-Sitemap: https://brand.ai/sitemap.xml
+Sitemap: https://dsapatternmaster.com/sitemap.xml

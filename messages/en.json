@@ -1,14 +1,14 @@
 {
   "common": {
     "nav": {
-      "features": "Features",
+      "features": "Patterns",
       "pricing": "Pricing",
       "about": "About",
       "contact": "Contact",
-      "blog": "Blog",
+      "blog": "Learning Blog",
       "signIn": "Sign In",
-      "getStarted": "Get Started",
-      "i18nExample": "I18n Example"
+      "getStarted": "Start Learning",
+      "i18nExample": "Dashboard"
     },
     "theme": {
       "toggle": "Toggle theme",
@@ -82,78 +82,78 @@
   },
   "home": {
     "hero": {
-      "badge": "\u2728 Now in Beta",
-      "title": "Build Better, Ship Faster",
-      "description": "The complete development platform for building and scaling your next project. Trusted by over 20,000 developers worldwide.",
-      "getStarted": "Get Started",
-      "liveDemo": "Live Demo"
+      "badge": "🎯 Master DSA Patterns",
+      "title": "Master DSA Patterns in 30 Days with Your Personal AI Mentor",
+      "description": "Stop grinding LeetCode blindly. Learn the 8 essential algorithm patterns that unlock 90% of coding interviews. Guided by AI that teaches like the best tutors at $200/hour.",
+      "getStarted": "Start Learning for $19/month",
+      "liveDemo": "Try Free Pattern"
     },
     "features": {
       "speed": {
-        "title": "Lightning Fast",
-        "description": "Built for speed and performance, deploy in seconds not minutes."
+        "title": "Socratic Learning",
+        "description": "AI asks the right questions to guide you to insights. Build deep understanding, not memorization."
       },
       "security": {
-        "title": "Enterprise Security",
-        "description": "Bank-grade security with end-to-end encryption and compliance."
+        "title": "Pattern-First Approach",
+        "description": "Master 8 essential patterns that solve 90% of interview problems. Quality over quantity."
       },
       "ai": {
-        "title": "AI-Powered",
-        "description": "Smart automation and insights powered by latest AI technology."
+        "title": "24/7 AI Mentor",
+        "description": "Your personal tutor that never sleeps. Available anytime, patient like the best professors."
       }
     },
-    "socialProof": { "title": "Trusted by Industry Leaders" },
+    "socialProof": { "title": "Used by Engineers at Top Companies" },
     "featureHighlights": {
-      "title": "Everything You Need",
-      "description": "All the tools and features you need to build amazing products",
+      "title": "Everything You Need to Master DSA",
+      "description": "Complete learning system designed for coding interview success",
       "features": {
-        "deployments": "Automatic deployments",
-        "versionControl": "Version control",
-        "analytics": "Advanced analytics",
-        "collaboration": "Team collaboration",
-        "support": "24/7 support",
-        "domains": "Custom domains",
-        "api": "API access",
-        "uptime": "99.9% uptime"
+        "deployments": "8 Essential Patterns",
+        "versionControl": "Adaptive AI Tutoring",
+        "analytics": "Progress Tracking",
+        "collaboration": "Interview Simulation",
+        "support": "Pattern Recognition",
+        "domains": "Spaced Repetition",
+        "api": "Code Review & Hints",
+        "uptime": "89% Interview Success"
       }
     },
     "cta": {
-      "title": "Ready to Get Started?",
-      "description": "Join thousands of developers building the future of web development.",
-      "button": "Start Building Now"
+      "title": "Ready to Master DSA Patterns?",
+      "description": "Join 2,000+ developers who've transformed their careers with pattern mastery.",
+      "button": "Start Your DSA Journey"
     },
     "about": {
-      "title": "About Our Platform",
-      "description1": "was founded with a simple but powerful mission: to make development more accessible, efficient, and enjoyable for teams of all sizes.",
-      "description2": "Our platform combines cutting-edge technology with intuitive design, enabling developers to focus on what matters most\u2014building exceptional software that solves real problems.",
-      "description3": "Whether you're a startup or an enterprise, our scalable solutions grow with you, providing the tools and support you need at every stage of your journey."
+      "title": "Why DSA Pattern Master?",
+      "description1": "was built by engineers who've been on both sides of the interview table. We know that pattern recognition is the key to algorithmic thinking.",
+      "description2": "Instead of memorizing hundreds of solutions, our AI mentor teaches you to recognize the 8 fundamental patterns that unlock 90% of coding problems.",
+      "description3": "Whether you're a bootcamp grad or seasoned developer, our Socratic approach builds the deep understanding that gets you hired at top tech companies."
     },
     "pricing": {
-      "title": "Simple, Transparent Pricing",
-      "subtitle": "Choose the plan that's right for you and your team. All plans include a 14-day free trial.",
-      "mostPopular": "Most Popular",
+      "title": "Get World-Class DSA Mentorship",
+      "subtitle": "For less than one tutoring session. 14-day money-back guarantee.",
+      "mostPopular": "Best Value",
       "plans": {
         "starter": {
-          "name": "Starter",
-          "price": "$29",
-          "description": "Perfect for individuals and small teams getting started",
-          "features": "5 team members,20GB storage,Basic analytics,24/7 support"
+          "name": "Monthly",
+          "price": "$19",
+          "description": "Perfect for interview preparation and skill building",
+          "features": "All 8 DSA patterns,Unlimited AI interactions,Progress tracking,Interview simulation,24/7 learning support"
         },
         "pro": {
-          "name": "Pro",
-          "price": "$79",
-          "description": "For growing teams needing more power and features",
-          "features": "Unlimited team members,100GB storage,Advanced analytics,Priority support,Custom domains,API access"
+          "name": "Annual",
+          "price": "$149",
+          "description": "Save 37% with annual plan - just $12.42/month",
+          "features": "Everything in Monthly,Priority AI response,Advanced progress insights,Early access to new patterns,Annual pricing lock"
         },
         "enterprise": {
-          "name": "Enterprise",
-          "price": "$199",
-          "description": "For large organizations with advanced requirements",
-          "features": "Unlimited everything,500GB storage,Enterprise analytics,Dedicated support,Custom integrations,SLA guarantees"
+          "name": "Free Preview",
+          "price": "$0",
+          "description": "Try one complete pattern before you commit",
+          "features": "Two Pointer pattern,Full AI mentoring,Pattern mastery assessment,No credit card required"
         }
       },
-      "getStarted": "Get Started",
-      "contactSales": "Contact Sales"
+      "getStarted": "Start Learning",
+      "contactSales": "Try Free Pattern"
     }
   },
   "blog": {

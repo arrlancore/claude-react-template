@@ -1,13 +1,40 @@
-# Claude React Template
+# DSA Pattern Master
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app) and Typescript support.
+**Master Data Structures and Algorithms through AI-powered pattern learning**
 
-And use some popular library like:
-- tailwindcss
-- shadcn ui
-- mdx
-- next-intl (for internationalization)
-- Brevo integration for newsletter subscriptions
+DSA Pattern Master is an innovative platform that teaches you to master the 8 essential algorithm patterns that unlock 90% of coding interviews. Using a personal AI Socratic mentor, you'll learn to think algorithmically rather than memorize solutions.
+
+## 🎯 Key Features
+
+- **AI-Powered Socratic Learning**: Your personal mentor that asks the right questions to build deep understanding
+- **Pattern-First Approach**: Master 8 core patterns instead of grinding hundreds of problems
+- **Adaptive Curriculum**: AI adjusts to your learning pace and style in real-time
+- **Interview Simulation**: Practice with real questions from Google, Meta, Microsoft, and Amazon
+- **Progress Tracking**: Detailed analytics and mastery scores for each pattern
+
+## 🚀 Technology Stack
+
+Built with modern technologies for optimal performance:
+
+- **Next.js 14** with App Router
+- **TypeScript** for type safety
+- **Tailwind CSS** + **Shadcn/ui** for beautiful, consistent UI
+- **Supabase** for authentication and data storage
+- **Google AI (Gemini)** for intelligent tutoring
+- **MDX** for rich content and interactive components
+- **Next-intl** for internationalization support
+
+## 🏗️ Project Structure
+
+```
+dsa-pattern-master/
+├── app/                    # Next.js App Router pages
+├── components/             # Reusable UI components
+├── lib/                   # Utility functions and configurations
+├── patterns/              # DSA pattern configurations and content
+├── public/                # Static assets
+└── content/               # Blog and educational content
+```
 
 ## Getting Started
 
