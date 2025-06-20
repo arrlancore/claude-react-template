@@ -1,1 +1,54 @@
-{"pattern_id": "two-pointer", "metadata": {"name": "Two Pointer Technique", "description": "Master the art of using two pointers to solve array and string problems efficiently", "difficulty": "beginner", "estimated_time": {"level_1": "4-8 hours", "level_2": "2-4 hours", "level_3": "3-5 hours", "total": "9-17 hours"}, "prerequisites": ["arrays", "basic_loops"], "companies": ["Google", "Microsoft", "Amazon", "Meta", "Apple"], "interview_frequency": "very_high", "success_metrics": {"pattern_recognition_time": 30, "implementation_time": 15, "transfer_success_rate": 80}}, "curriculum": {"levels": {"level_1": {"name": "Interview Ready", "objective": "Master core Two Pointer patterns for interview success", "problems": ["two-sum-ii", "valid-palindrome", "container-with-water", "move-zeroes", "three-sum", "remove-duplicates", "sort-colors", "remove-nth-node"], "success_criteria": {"pattern_recognition_speed": 45, "implementation_accuracy": 80, "transfer_success_rate": 75}}}}}
+{
+  "pattern_id": "two-pointer",
+  "metadata": {
+    "name": "Two Pointer Technique",
+    "description": "Master the art of using two pointers to solve array and string problems efficiently",
+    "difficulty": "beginner",
+    "estimated_time": {
+      "level_1": "4-8 hours",
+      "level_2": "2-4 hours",
+      "level_3": "3-5 hours",
+      "total": "9-17 hours"
+    },
+    "prerequisites": [
+      "arrays",
+      "basic_loops"
+    ],
+    "companies": [
+      "Google",
+      "Microsoft",
+      "Amazon",
+      "Meta",
+      "Apple"
+    ],
+    "interview_frequency": "very_high",
+    "success_metrics": {
+      "pattern_recognition_time": 30,
+      "implementation_time": 15,
+      "transfer_success_rate": 80
+    }
+  },
+  "curriculum": {
+    "levels": {
+      "level_1": {
+        "name": "Interview Ready",
+        "objective": "Master core Two Pointer patterns for interview success",
+        "problems": [
+          "two-sum-ii",
+          "valid-palindrome",
+          "container-with-water",
+          "move-zeroes",
+          "three-sum",
+          "remove-duplicates",
+          "sort-colors",
+          "remove-nth-node"
+        ],
+        "success_criteria": {
+          "pattern_recognition_speed": 45,
+          "implementation_accuracy": 80,
+          "transfer_success_rate": 75
+        }
+      }
+    }
+  }
+}
