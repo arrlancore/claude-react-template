@@ -178,18 +178,59 @@ done
 
 ## 🔄 Production Deployment
 
-### Environment Setup
-1. Create Supabase project at https://supabase.com
-2. Link local project: `supabase link --project-ref your-project-ref`
-3. Push migrations: `supabase db push`
-4. Update environment variables with production URLs
+### Quick Production Setup
+```bash
+# Set your Supabase project reference
+export SUPABASE_PROJECT_REF="your-project-ref-here"
+
+# Run the automated production setup
+./supabase/setup/remote-setup.sh
+```
+
+### Manual Production Setup
+1. **Create Supabase Project**: Visit https://supabase.com and create a new project
+2. **Set Environment Variables**:
+   ```bash
+   export SUPABASE_PROJECT_REF="your-project-ref-here"
+   export DEPLOYMENT_ENVIRONMENT="production"  # optional, defaults to production
+   ```
+3. **Authentication**: Ensure you're logged in to Supabase CLI:
+   ```bash
+   supabase login
+   ```
+4. **Deploy Database**: Run the remote setup script:
+   ```bash
+   ./supabase/setup/remote-setup.sh
+   ```
+
+### Environment Variables for Database Setup
+After running the setup script, you only need these 3 environment variables for database connectivity:
+
+```bash
+# Supabase Database Connection (provided by setup script)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+```
+
+For complete application environment variables (AI, payments, etc.), see the main project documentation.
 
 ### Security Checklist
-- [ ] RLS policies tested and verified
-- [ ] Service role key secured
-- [ ] Database backups configured
-- [ ] Monitoring alerts set up
+- [ ] RLS policies tested and verified (automatically validated by setup script)
+- [ ] Service role key secured in environment variables
+- [ ] Database backups configured in Supabase dashboard
+- [ ] Monitoring alerts set up for AI usage and costs
 - [ ] Connection pooling configured for scale
+- [ ] Test authentication flow in production
+- [ ] Verify AI cost tracking is working
+
+### Production Verification
+After deployment, verify these work:
+1. **Authentication**: User signup/signin
+2. **AI Interactions**: Pattern learning with Gemini AI
+3. **Cost Tracking**: AI usage appears in dashboard
+4. **Payments**: Subscription creation (test mode first)
+5. **Data Isolation**: Users can only see their own data
 
 ## 📝 Migration History
 

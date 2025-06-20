@@ -38,7 +38,24 @@ dsa-pattern-master/
 
 ## Getting Started
 
-First, run the development server:
+### Database Setup (Required)
+
+Before running the application, you need to set up the database:
+
+```bash
+# For local development
+./supabase/setup/local-setup.sh
+
+# For production deployment
+export SUPABASE_PROJECT_REF="your-project-ref"
+./supabase/setup/remote-setup.sh
+```
+
+See the [Supabase Setup Guide](./supabase/README.md) for detailed instructions.
+
+### Development Server
+
+After setting up the database, run the development server:
 
 ```bash
 npm run dev
@@ -175,8 +192,23 @@ This template includes a newsletter subscription feature powered by Brevo (forme
 
 The newsletter subscription form will automatically be enabled when these variables are present. For more details, see the [Newsletter documentation](./docs/newsletter.md).
 
-## Deploy on Vercel
+## Production Deployment
+
+### Prerequisites
+Before deploying your Next.js app, you must set up the production database:
+
+1. **Set up Supabase Database**:
+   ```bash
+   export SUPABASE_PROJECT_REF="your-project-ref"
+   ./supabase/setup/remote-setup.sh
+   ```
+
+2. **Configure Environment Variables**: Use the output from the setup script to configure your deployment platform with the required environment variables.
+
+### Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+**Important**: Make sure to set up your Supabase database first using the remote-setup script, then add all the environment variables to your Vercel project settings.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

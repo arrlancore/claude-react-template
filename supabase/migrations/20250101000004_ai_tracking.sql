@@ -16,7 +16,7 @@ CREATE TABLE ai_interactions (
 );
 
 -- Indexes for cost queries
-CREATE INDEX idx_ai_interactions_user_month ON ai_interactions(user_id, date_trunc('month', created_at));
+CREATE INDEX idx_ai_interactions_user_created ON ai_interactions(user_id, created_at);
 CREATE INDEX idx_ai_interactions_cost ON ai_interactions(user_id, created_at, cost_usd);
 CREATE INDEX idx_ai_interactions_session ON ai_interactions(session_id) WHERE session_id IS NOT NULL;
 
