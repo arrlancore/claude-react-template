@@ -1,8 +1,8 @@
-# DSA Pattern Master - AI System
+# PatternLift - AI System
 
 ## Overview
 
-The AI system powers the adaptive learning experience in DSA Pattern Master using Google's Gemini AI models. It provides personalized assessments, intelligent guidance, solution validation, and interactive chat capabilities.
+The AI system powers the adaptive learning experience in PatternLift using Google's Gemini AI models. It provides personalized assessments, intelligent guidance, solution validation, and interactive chat capabilities.
 
 ## Architecture
 

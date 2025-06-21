@@ -1,8 +1,8 @@
-# DSA Pattern Master
+# PatternLift
 
 **Master Data Structures and Algorithms through AI-powered pattern learning**
 
-DSA Pattern Master is an innovative platform that teaches you to master the 8 essential algorithm patterns that unlock 90% of coding interviews. Using a personal AI Socratic mentor, you'll learn to think algorithmically rather than memorize solutions.
+PatternLift is an innovative platform that teaches you to master the 8 essential algorithm patterns that unlock 90% of coding interviews. Using a personal AI Socratic mentor, you'll learn to think algorithmically rather than memorize solutions.
 
 ## 🎯 Key Features
 

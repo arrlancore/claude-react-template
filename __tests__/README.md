@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains comprehensive tests for the DSA Pattern Master AI system, following testing best practices with Jest and proper mocking strategies.
+This directory contains comprehensive tests for the PatternLift AI system, following testing best practices with Jest and proper mocking strategies.
 
 ## Test Structure
 

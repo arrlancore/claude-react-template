@@ -1,4 +1,4 @@
--- Production Data Seed for DSA Pattern Master
+-- Production Data Seed for PatternLift
 -- Only includes essential pattern data needed for production
 -- No test users or sample data
 

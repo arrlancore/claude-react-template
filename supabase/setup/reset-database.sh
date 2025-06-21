@@ -1,5 +1,5 @@
 #!/bin/bash
-# Reset database script for DSA Pattern Master
+# Reset database script for PatternLift
 
 set -e
 

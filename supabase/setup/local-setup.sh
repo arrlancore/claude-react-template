@@ -1,9 +1,9 @@
 #!/bin/bash
-# Local Supabase setup script for DSA Pattern Master MVP
+# Local Supabase setup script for PatternLift MVP
 
 set -e
 
-echo "🚀 Setting up local Supabase database for DSA Pattern Master..."
+echo "🚀 Setting up local Supabase database for PatternLift..."
 
 # Check if supabase CLI is installed
 if ! command -v supabase &> /dev/null; then

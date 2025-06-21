@@ -1,6 +1,6 @@
-# DSA Pattern Master - Supabase Database Setup
+# PatternLift - Supabase Database Setup
 
-This directory contains the complete database setup for DSA Pattern Master, serving as the single source of truth for all database configuration.
+This directory contains the complete database setup for PatternLift, serving as the single source of truth for all database configuration.
 
 ## 📁 Directory Structure
 

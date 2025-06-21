@@ -16,7 +16,7 @@ export const appLocale = "en_US";
 export const blogTitle = "PatternLift Blog";
 export const blogDescription = `Algorithm patterns, interview tips, and learning strategies from the ${brand.title} team.`;
 export const blogUrl = appUrl + "/blog";
-export const defaultAuthor = "DSA Pattern Master Team";
+export const defaultAuthor = "PatternLift Team";
 
 // pagination
 export const paginationConfig = {

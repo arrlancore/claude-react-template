@@ -1,5 +1,5 @@
 #!/bin/bash
-# Remote Supabase setup script for DSA Pattern Master Production
+# Remote Supabase setup script for PatternLift Production
 # This script deploys the database schema, functions, and essential data to production
 
 set -e
@@ -472,7 +472,7 @@ display_final_results() {
         echo "4. 🚀 Deploy your Next.js application"
     fi
     echo ""
-    log_success "Database is ready for DSA Pattern Master!"
+    log_success "Database is ready for PatternLift!"
     echo ""
     log_warning "Important Notes:"
     echo "- 🔒 RLS policies are active - users can only access their own data"
@@ -486,7 +486,7 @@ display_final_results() {
 # =============================================================================
 
 main() {
-    echo -e "${BLUE}🚀 DSA Pattern Master - Production Supabase Setup${NC}"
+    echo -e "${BLUE}🚀 PatternLift - Production Supabase Setup${NC}"
     echo "=================================================================="
 
     # Phase 1: Validation

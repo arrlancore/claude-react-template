@@ -103,30 +103,17 @@
       }
     },
     "socialProof": { "title": "Used by Engineers at Top Companies" },
-    "featureHighlights": {
-      "title": "Everything You Need to Master DSA",
-      "description": "Complete learning system designed for coding interview success",
-      "features": {
-        "deployments": "8 Essential Patterns",
-        "versionControl": "Adaptive AI Tutoring",
-        "analytics": "Progress Tracking",
-        "collaboration": "Interview Simulation",
-        "support": "Pattern Recognition",
-        "domains": "Spaced Repetition",
-        "api": "Code Review & Hints",
-        "uptime": "89% Interview Success"
-      }
-    },
     "cta": {
       "title": "Ready to Master DSA Patterns?",
       "description": "Join 2,000+ developers who've transformed their careers with pattern mastery.",
       "button": "Start Your DSA Journey"
     },
     "about": {
-      "title": "Why DSA Pattern Master?",
+      "title": "Why PatternLift?",
       "description1": "was built by engineers who've been on both sides of the interview table. We know that pattern recognition is the key to algorithmic thinking.",
-      "description2": "Instead of memorizing hundreds of solutions, our AI mentor teaches you to recognize the 8 fundamental patterns that unlock 90% of coding problems.",
-      "description3": "Whether you're a bootcamp grad or seasoned developer, our Socratic approach builds the deep understanding that gets you hired at top tech companies."
+      "description2": "Instead of memorizing solutions, our AI mentor teaches you to recognize the patterns that unlock 90% of coding problems.",
+      "description3": "Our approach builds the deep understanding that gets you hired.",
+      "videoDescription": "Compelling video explaining our unique approach"
     },
     "pricing": {
       "title": "Get World-Class DSA Mentorship",
@@ -215,7 +202,10 @@
     "decimal": "Decimal:",
     "currency": "Currency:",
     "percent": "Percent:",
-    "timezone": { "utc": "UTC", "newYork": "New York", "tokyo": "Tokyo" },
-    "footer": "All date and time formatting in this application is powered by next-intl and configured to use the {timezone} timezone by default. This ensures consistency across the application and prevents markup mismatches caused by environment differences."
+    "timezone": {
+      "utc": "UTC",
+      "newYork": "New York",
+      "tokyo": "Tokyo"
+    }
   }
 }

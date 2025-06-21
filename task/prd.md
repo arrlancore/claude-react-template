@@ -1,4 +1,4 @@
-# DSA Pattern Master - Enhanced PRD & MVP Roadmap
+# PatternLift - Enhanced PRD & MVP Roadmap
 ## **Adaptive AI Learning Platform: 6-Week Sprint to Product-Market Fit**
 
 ---

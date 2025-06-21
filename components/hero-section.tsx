@@ -67,19 +67,20 @@ export default function HeroSection() {
           <div className="space-y-8">
             <div className="space-y-4">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-                Master DSA Patterns in
-                <span className="text-primary"> 30 Days</span>
+                The Smartest Way to Prep for
+                <span className="text-primary"> Your Coding Interview</span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground max-w-xl">
-                Stop grinding LeetCode blindly. Learn the 8 essential algorithm
-                patterns that unlock 90% of coding interviews.
+                Don't just grind problems—master the system. Learn the 8
+                essential DSA patterns that top engineers use to solve 90% of
+                interview questions, guided by your AI mentor.
               </p>
             </div>
 
             <div className="flex justify-start">
               <Button size="lg" asChild>
-                <a href="/dashboard">
-                  Get Started
+                <a href="/dashboard" className="flex items-center">
+                  Start Learning Smarter
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
               </Button>
