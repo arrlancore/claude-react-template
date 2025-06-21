@@ -7,6 +7,7 @@ export interface PatternStep {
   sum?: number
   match?: boolean
   swap?: [any, any] | null
+  arrayState?: any[]  // Track array state at each step for animations
   log: string
 }
 
@@ -50,6 +51,7 @@ export function usePatternGeneration() {
         right,
         found: sum === target,
         sum,
+        arrayState: [...arr], // Array doesn't change for pair sum
         log: `Check if ${arr[left]} + ${arr[right]} = ${target}. Sum is ${sum}. ${
           sum === target
             ? 'Found target!'
@@ -79,6 +81,7 @@ export function usePatternGeneration() {
         right,
         found: left >= right,
         match,
+        arrayState: [...arr], // Array doesn't change for palindrome check
         log: `Compare '${arr[left]}' with '${arr[right]}'. ${
           match ? 'Characters match!' : "Characters don't match - not a palindrome"
         } ${left >= right ? 'Reached center - palindrome confirmed!' : ''}`,
@@ -94,28 +97,51 @@ export function usePatternGeneration() {
 
   const generateReverseSteps = useCallback((arr: any[]): PatternStep[] => {
     const steps: PatternStep[] = []
+    let workingArray = [...arr] // Create working copy to modify
     let left = 0
     let right = arr.length - 1
 
+    // Add initial state
+    steps.push({
+      left,
+      right,
+      found: false,
+      swap: null,
+      arrayState: [...workingArray],
+      log: `Starting array reversal with [${workingArray.join(', ')}]. Two pointers will meet in the middle.`,
+    })
+
     while (left < right) {
+      // Record the values that will be swapped
+      const leftVal = workingArray[left]
+      const rightVal = workingArray[right]
+
+      // Actually perform the swap using temporary variable
+      const temp = workingArray[left]
+      workingArray[left] = workingArray[right]
+      workingArray[right] = temp
+
       steps.push({
         left,
         right,
         found: false,
-        swap: [arr[left], arr[right]],
-        log: `Swap elements at positions ${left} and ${right}: ${arr[left]} ↔ ${arr[right]}`,
+        swap: [leftVal, rightVal],
+        arrayState: [...workingArray], // Capture state after swap
+        log: `Swapped positions ${left} and ${right}: ${leftVal} ↔ ${rightVal}. Array: [${workingArray.join(', ')}]`,
       })
 
       left++
       right--
     }
 
+    // Final completion step
     steps.push({
       left: Math.floor(arr.length / 2),
       right: Math.floor(arr.length / 2),
       found: true,
       swap: null,
-      log: 'Array reversal complete! All elements have been swapped.',
+      arrayState: [...workingArray],
+      log: `Array reversal complete! Final result: [${workingArray.join(', ')}]`,
     })
 
     return steps

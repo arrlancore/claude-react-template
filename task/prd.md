@@ -87,9 +87,9 @@ User Input → AI Calibration → Personalized Guidance → Pattern Transfer Val
 - Target: Confident with any Two Pointer variation
 
 #### **Level 3: Expert Optimization (+advanced techniques, +3-5 hours)**
-- Complex optimizations and hybrid approaches
+- Complex optimizations and hybrid approaches, including combining Two Pointer with other patterns.
 - Completion criteria: Teaching-level understanding
-- Target: Can explain and optimize any related problem
+- Target: Can explain and optimize any related problem, including identifying opportunities to combine Two Pointer with other patterns.
 
 ---
 
@@ -232,6 +232,7 @@ class PatternLoader {
 - **Community Content**: User-contributed problems and explanations
 - **Advanced Analytics**: Pattern effectiveness and user learning paths
 - **Multi-Language Support**: Same pattern structure, different implementations
+- **Comprehensive Multi-Pattern Problem Solving Module**: A dedicated system where the AI can guide users through problems that inherently require 2+ patterns, helping them identify which patterns are suitable and how to combine them. This will be a key feature added post-MVP.
 
 ### **Content Architecture Features**
 - **Problem Markdown Structure**: Standardized format with learning objectives, interactive components, test cases, and hints

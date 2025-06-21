@@ -39,10 +39,10 @@ export function VisualizationCanvas({
         )}
       </motion.div>
 
-      {/* Array Visualization - no stagger, instant appearance */}
+      {/* Array Visualization - show current step's array state */}
       <div className="flex justify-center items-center mb-8">
         <div className="flex gap-3">
-          {pattern.array.map((item, index) => (
+          {(currentData.arrayState || pattern.array).map((item, index) => (
             <ArrayElement
               key={index}
               value={item}
