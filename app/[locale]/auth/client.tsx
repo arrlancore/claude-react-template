@@ -42,6 +42,7 @@ const _AuthForm = () => {
 
   // Initialize authMode with a stable default
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
 
   // Extract search params data only on client side
   useEffect(() => {
@@ -196,7 +197,8 @@ const _AuthForm = () => {
         description: t("signup.success.description"),
       });
 
-      // Switch to login tab
+      // Show email verification state and switch to login
+      setShowEmailVerification(true);
       setAuthMode("login");
     } catch (error: any) {
       toast({
@@ -263,12 +265,36 @@ const _AuthForm = () => {
 
         <TabsContent value="login">
           <Card className="border shadow-sm">
+            {showEmailVerification && (
+              <div className="bg-blue-50 border-b border-blue-200 p-4 rounded-t-lg">
+                <div className="flex items-center gap-3">
+                  <Mail className="h-5 w-5 text-blue-600" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-blue-900">
+                      Please check your email for verification
+                    </p>
+                    <p className="text-xs text-blue-700 mt-1">
+                      Click the verification link in your email before logging in. Check spam if you don't see it.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowEmailVerification(false)}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            )}
             <CardHeader className="space-y-1">
               <CardTitle className="text-2xl text-center font-bold">
                 {t("login.title")}
               </CardTitle>
               <CardDescription className="text-center">
-                {t("login.description")}
+                {showEmailVerification
+                  ? "Enter your credentials after verifying your email"
+                  : t("login.description")
+                }
               </CardDescription>
             </CardHeader>
             <CardContent>
