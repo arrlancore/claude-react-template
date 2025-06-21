@@ -23,7 +23,8 @@ import withSuspense from "@/lib/with-suspense";
 
 const _AuthForm = () => {
   const t = useTranslations("auth");
-  const { user, loading, signInWithGitHub } = useAuth();
+  // Use a more descriptive name for context loading to avoid confusion
+  const { user, loading: authContextLoading, signInWithGitHub } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
   const [authLoading, setAuthLoading] = useState(false);
@@ -33,7 +34,7 @@ const _AuthForm = () => {
   const [searchParamsData, setSearchParamsData] = useState({
     form: null as string | null,
     error: null as string | null,
-    errorDescription: null as string | null
+    errorDescription: null as string | null,
   });
 
   // Only use useSearchParams on client side to avoid hydration issues
@@ -44,7 +45,7 @@ const _AuthForm = () => {
 
   // Extract search params data only on client side
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       const formParam = urlParams.get("form");
       const errorParam = urlParams.get("error");
@@ -53,7 +54,7 @@ const _AuthForm = () => {
       setSearchParamsData({
         form: formParam,
         error: errorParam,
-        errorDescription: errorDescriptionParam
+        errorDescription: errorDescriptionParam,
       });
 
       // Set auth mode based on form parameter
@@ -71,17 +72,21 @@ const _AuthForm = () => {
       let errorMessage = "Authentication failed";
 
       switch (searchParamsData.error) {
-        case 'session_exchange_failed':
+        case "session_exchange_failed":
           errorMessage = "Failed to establish session. Please try again.";
           break;
-        case 'unexpected_error':
+        case "unexpected_error":
           errorMessage = "An unexpected error occurred. Please try again.";
           break;
-        case 'access_denied':
-          errorMessage = "Access was denied. Please authorize the application to continue.";
+        case "access_denied":
+          errorMessage =
+            "Access was denied. Please authorize the application to continue.";
           break;
         default:
-          errorMessage = searchParamsData.errorDescription || searchParamsData.error || "Authentication failed";
+          errorMessage =
+            searchParamsData.errorDescription ||
+            searchParamsData.error ||
+            "Authentication failed";
       }
 
       toast({
@@ -92,11 +97,16 @@ const _AuthForm = () => {
 
       // Clear error from URL
       const newUrl = new URL(window.location.href);
-      newUrl.searchParams.delete('error');
-      newUrl.searchParams.delete('error_description');
-      window.history.replaceState({}, '', newUrl.toString());
+      newUrl.searchParams.delete("error");
+      newUrl.searchParams.delete("error_description");
+      window.history.replaceState({}, "", newUrl.toString());
     }
-  }, [searchParamsData.error, searchParamsData.errorDescription, isClient, toast]);
+  }, [
+    searchParamsData.error,
+    searchParamsData.errorDescription,
+    isClient,
+    toast,
+  ]);
 
   // Mark that we're on the client - this prevents hydration mismatch
   useEffect(() => {
@@ -111,14 +121,16 @@ const _AuthForm = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
-  // Redirect if already logged in
+  // REDIRECTION LOGIC:
+  // This effect handles redirecting the user if they are authenticated.
+  // It waits until authContextLoading is false AND isClient is true.
   useEffect(() => {
-    if (user && !loading) {
-      const searchParams = new URLSearchParams(window.location.search);
-      const redirectTo = searchParams.get('redirect') || '/dashboard';
+    if (user && !authContextLoading && isClient) {
+      const currentSearchParams = new URLSearchParams(window.location.search);
+      const redirectTo = currentSearchParams.get("redirect") || "/dashboard";
       router.push(redirectTo);
     }
-  }, [user, loading, router]);
+  }, [user, authContextLoading, isClient, router]);
 
   const handleGitHubSignIn = async () => {
     setAuthLoading(true);
@@ -148,9 +160,8 @@ const _AuthForm = () => {
 
       // Get redirect URL from query params or default to dashboard
       const searchParams = new URLSearchParams(window.location.search);
-      const redirectTo = searchParams.get('redirect') || '/dashboard';
+      const redirectTo = searchParams.get("redirect") || "/dashboard";
       router.push(redirectTo);
-
     } catch (error: any) {
       toast({
         title: t("login.failure.title"),
@@ -198,25 +209,9 @@ const _AuthForm = () => {
     }
   };
 
-  console.log("🔍 Render state:", {
-    user: !!user,
-    loading,
-    isClient,
-    authMode,
-    shouldShowForm: !user && isClient
-  });
-
-  if (user) {
-    console.log("🔍 User exists, redirecting to dashboard");
-    const searchParams = new URLSearchParams(window.location.search);
-    const redirectTo = searchParams.get('redirect') || '/dashboard';
-    router.push(redirectTo);
-    return null;
-  }
-
-  // Show a simple loading state if not on client yet to prevent hydration mismatch
-  if (!isClient) {
-    console.log("🔍 Not client yet, showing loading skeleton");
+  // LOADING STATE RENDERING:
+  // Show skeleton if AuthContext is still loading OR if we haven't confirmed client-side yet.
+  if (authContextLoading || !isClient) {
     return (
       <div className="w-full max-w-md">
         {/* Mock the tabs structure for consistent loading */}
@@ -241,7 +236,18 @@ const _AuthForm = () => {
     );
   }
 
-  console.log("🔍 Rendering main auth form");
+  // USER ALREADY AUTHENTICATED AND REDIRECT SHOULD BE IN PROGRESS:
+  // If user exists at this point (and authContextLoading is false, isClient is true),
+  // the useEffect above should have initiated a redirect.
+  // We can return null or a minimal loader here to prevent rendering the form
+  // while the redirect is happening.
+  if (user) {
+    // Optionally, show a very minimal "Redirecting..." message or just null
+    return (
+      <div className="w-full max-w-md text-center p-8">Redirecting...</div>
+    );
+    // return null; // Or just null
+  }
 
   return (
     <div className="w-full max-w-md">
@@ -290,47 +296,51 @@ const _AuthForm = () => {
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">{t("login.email")}</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder={t("login.emailPlaceholder")}
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
+                  <div className="space-y-2">
+                    <Label htmlFor="email">{t("login.email")}</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder={t("login.emailPlaceholder")}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">{t("login.password")}</Label>
-                    <Link
-                      href="#"
-                      className="text-xs text-primary hover:underline"
-                    >
-                      {t("login.forgotPassword")}
-                    </Link>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password">{t("login.password")}</Label>
+                      <Link
+                        href="#"
+                        className="text-xs text-primary hover:underline"
+                      >
+                        {t("login.forgotPassword")}
+                      </Link>
+                    </div>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="password"
+                        type="password"
+                        placeholder={t("login.passwordPlaceholder")}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="pl-10"
+                        required
+                      />
+                    </div>
                   </div>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder={t("login.passwordPlaceholder")}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
 
-                  <Button type="submit" className="w-full" disabled={authLoading}>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={authLoading}
+                  >
                     {authLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -384,16 +394,43 @@ const _AuthForm = () => {
                 </div>
 
                 <form onSubmit={handleSignup} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">{t("signup.firstName")}</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">{t("signup.firstName")}</Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="firstName"
+                          placeholder={t("signup.firstNamePlaceholder")}
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          className="pl-10"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">{t("signup.lastName")}</Label>
                       <Input
-                        id="firstName"
-                        placeholder={t("signup.firstNamePlaceholder")}
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
+                        id="lastName"
+                        placeholder={t("signup.lastNamePlaceholder")}
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email">{t("signup.email")}</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="signup-email"
+                        type="email"
+                        placeholder={t("signup.emailPlaceholder")}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         className="pl-10"
                         required
                       />
@@ -401,52 +438,29 @@ const _AuthForm = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="lastName">{t("signup.lastName")}</Label>
-                    <Input
-                      id="lastName"
-                      placeholder={t("signup.lastNamePlaceholder")}
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                    />
+                    <Label htmlFor="signup-password">
+                      {t("signup.password")}
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="signup-password"
+                        type="password"
+                        placeholder={t("signup.passwordPlaceholder")}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="pl-10"
+                        required
+                        minLength={6}
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">{t("signup.email")}</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder={t("signup.emailPlaceholder")}
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">
-                    {t("signup.password")}
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      placeholder={t("signup.passwordPlaceholder")}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
-                      required
-                      minLength={6}
-                    />
-                  </div>
-                </div>
-
-                  <Button type="submit" className="w-full" disabled={authLoading}>
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={authLoading}
+                  >
                     {authLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

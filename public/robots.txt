@@ -16,4 +16,4 @@ Allow: /images/
 Allow: /assets/
 Allow: /patterns/
 
-Sitemap: https://dsapatternmaster.com/sitemap.xml
+Sitemap: https://patternlift.com/sitemap.xml

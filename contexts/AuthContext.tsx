@@ -123,14 +123,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const signInWithGitHub = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'github',
+        provider: "github",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          }
-        }
+            access_type: "offline",
+            prompt: "consent",
+          },
+        },
       });
 
       return { error };
@@ -149,20 +149,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     // Set up the auth state listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsAuthenticated(!!session?.user);
-      setLoading(false);
+    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      setSession(currentSession);
+      const currentUser = currentSession?.user ?? null;
+      setUser(currentUser);
+      setIsAuthenticated(!!currentUser);
+      // DO NOT set loading here for onAuthStateChange,
+      // as initial loading is handled by getSession()
     });
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsAuthenticated(!!session?.user);
-      setLoading(false);
-    });
+    // 1. Get the initial session. This is the primary driver for initial loading state.
+    supabase.auth
+      .getSession()
+      .then(({ data: { session: initialSession } }) => {
+        setSession(initialSession);
+        const currentUser = initialSession?.user ?? null;
+        setUser(currentUser);
+        setIsAuthenticated(!!currentUser);
+        setLoading(false); // <--- SET LOADING FALSE HERE, AFTER INITIAL SESSION IS FETCHED
+      })
+      .catch((error) => {
+        console.error("Error getting initial session:", error);
+        setLoading(false); // Also set loading false on error
+      });
 
     return () => {
       subscription.unsubscribe();
@@ -176,7 +185,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Only show error toast if there's an actual error and component is mounted
       if (error && isMounted) {
-        console.error('Logout error:', error);
+        console.error("Logout error:", error);
         toast({
           description: "Error during logout: " + error.message,
           variant: "destructive",
@@ -185,9 +194,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       // Don't show success toast - the auth state change will handle the redirect
       // This prevents DOM manipulation errors when the page is transitioning
-
     } catch (err: any) {
-      console.error('Unexpected logout error:', err);
+      console.error("Unexpected logout error:", err);
       // Only show error toast if component is still mounted
       if (isMounted) {
         toast({

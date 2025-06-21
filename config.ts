@@ -1,19 +1,19 @@
 export const brand = {
-  title: "DSA Pattern Master",
+  title: "patternlift",
   domain: "com",
 };
-export const brandName = `dsapatternmaster.${brand.domain}`;
+export const brandName = `PatternLift.${brand.domain}`;
 
 // app
-export const appSlogan = "Master DSA Patterns, Ace Interviews";
+export const appSlogan = "Know the Patterns, Ace Interviews";
 export const appTitle = `${brand.title} | ${appSlogan}`;
 export const appDescription =
   "Master Data Structures and Algorithms through AI-powered pattern learning. Learn the 8 essential patterns that unlock 90% of coding interviews with your personal Socratic mentor.";
-export const appUrl = "https://dsapatternmaster.com";
+export const appUrl = "https://patternlift.com";
 export const appLocale = "en_US";
 
 // blog
-export const blogTitle = "DSA Learning Blog";
+export const blogTitle = "PatternLift Blog";
 export const blogDescription = `Algorithm patterns, interview tips, and learning strategies from the ${brand.title} team.`;
 export const blogUrl = appUrl + "/blog";
 export const defaultAuthor = "DSA Pattern Master Team";
