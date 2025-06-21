@@ -134,3 +134,39 @@ export interface PromptTemplate {
   max_tokens?: number;
   temperature?: number;
 }
+
+// AI Persona System Types
+export type PersonaLevel = 'fast_learner' | 'balanced_learner' | 'struggling_learner';
+
+export interface PersonaConfig {
+  core_identity: string;
+  explanation_depth: 'concise' | 'balanced' | 'detailed';
+  challenge_level: 'advanced' | 'standard' | 'reinforcement';
+  hint_style: 'minimal' | 'progressive' | 'gentle';
+  celebration_style: string;
+  pace_preference: string;
+}
+
+export interface TeachingStep {
+  id: number;
+  name: string;
+  objective: string;
+  execution: Record<PersonaLevel, string>;
+}
+
+export interface CalibrationRequest {
+  user_id: string;
+  responses: CalibrationResponse[];
+}
+
+export interface CalibrationResponse {
+  question_id: string;
+  answer: string;
+  confidence?: number;
+}
+
+export interface PersonaCalibrationResult {
+  persona_level: PersonaLevel;
+  confidence_score: number;
+  reasoning: string;
+}

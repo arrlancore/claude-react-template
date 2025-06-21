@@ -1,5 +1,7 @@
 import { createGeminiClient } from './gemini';
 import { getPromptManager } from './prompt-templates';
+import { PersonaManager } from './persona-manager';
+import { TeachingStepManager } from './teaching-steps';
 import type {
   AssessmentRequest,
   AssessmentResponse,
@@ -11,6 +13,7 @@ import type {
   ChatResponse,
   UserProfile,
   AIUsageTracking,
+  PersonaLevel,
 } from './types';
 
 export class AdaptiveEngine {
@@ -114,15 +117,34 @@ export class AdaptiveEngine {
 
   // Chat Methods
   async handleChat(request: ChatRequest): Promise<ChatResponse> {
-    const variables = this.buildChatVariables(request);
+    // Get user's persona level (fallback to balanced if not set)
+    const personaLevel = await this.getUserPersonaLevel(request.user_id);
 
-    const rendered = this.promptManager.renderTemplate('conversational_ai', variables);
-    if (!rendered) {
-      throw new Error('Chat template not found');
+    // Determine current teaching step
+    const currentStepId = TeachingStepManager.determineCurrentStep(request.context);
+    const currentStep = TeachingStepManager.getStep(currentStepId);
+
+    if (!currentStep) {
+      throw new Error(`Invalid teaching step: ${currentStepId}`);
     }
 
+    // Build persona-aware context
+    const personaContext = {
+      pattern_name: request.context.pattern_id?.replace('-', ' ') || 'general DSA',
+      current_problem: request.context.problem_id?.replace('-', ' ') || 'none',
+      user_message: request.message,
+      step_objective: currentStep.objective,
+      conversation_history: request.context.conversation_history
+        .slice(-5)
+        .map(msg => `${msg.role}: ${msg.content}`)
+        .join('\n')
+    };
+
+    // Generate persona-aware prompt
+    const personaPrompt = PersonaManager.buildPersonaPrompt(personaLevel, currentStep, personaContext);
+
     const response = await this.geminiClient.generateResponse(
-      rendered.prompt,
+      personaPrompt,
       {
         model: 'flash',
         maxTokens: 400,
@@ -151,6 +173,12 @@ export class AdaptiveEngine {
       mastery: 'progress_assessment', // Use same for now
     };
     return templates[type as keyof typeof templates] || 'initial_assessment';
+  }
+
+  private async getUserPersonaLevel(userId: string): Promise<PersonaLevel> {
+    // TODO: Get from Supabase user profile
+    // For now, return default
+    return 'balanced_learner';
   }
 
   private getGuidanceTemplate(hintLevel: number): string {
