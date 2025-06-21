@@ -15,7 +15,7 @@ export default function ClientLandingPage() {
   const t = useTranslations();
 
   return (
-    <MainLayout fullWidth>
+    <MainLayout showHeader={false} fullWidth>
       {/* Add structured data specific to the landing page */}
       <LandingPageJsonLd />
 

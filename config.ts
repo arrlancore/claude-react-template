@@ -1,5 +1,5 @@
 export const brand = {
-  title: "patternlift",
+  title: "PatternLift",
   domain: "com",
 };
 export const brandName = `PatternLift.${brand.domain}`;
