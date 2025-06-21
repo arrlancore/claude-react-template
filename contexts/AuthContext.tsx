@@ -35,7 +35,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
+
+  // Track component mount state
+  useEffect(() => {
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
 
   const refreshUser = async () => {
     const { data } = await supabase.auth.getUser();
@@ -51,12 +60,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         password,
       });
 
-      if (!error) {
+      if (!error && isMounted) {
         toast({
           description: "Login berhasil! Selamat datang kembali.",
           variant: "default",
         });
-      } else {
+      } else if (error && isMounted) {
         toast({
           description: "Gagal login: " + error.message,
           variant: "destructive",
@@ -65,10 +74,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       return { error };
     } catch (err: any) {
-      toast({
-        description: "Terjadi kesalahan: " + err.message,
-        variant: "destructive",
-      });
+      if (isMounted) {
+        toast({
+          description: "Terjadi kesalahan: " + err.message,
+          variant: "destructive",
+        });
+      }
       return { error: err };
     }
   };
@@ -84,12 +95,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         },
       });
 
-      if (!error) {
+      if (!error && isMounted) {
         toast({
           description: "Pendaftaran berhasil! Silakan cek email Anda.",
           variant: "default",
         });
-      } else {
+      } else if (error && isMounted) {
         toast({
           description: "Gagal mendaftar: " + error.message,
           variant: "destructive",
@@ -98,10 +109,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       return { error };
     } catch (err: any) {
-      toast({
-        description: "Terjadi kesalahan: " + err.message,
-        variant: "destructive",
-      });
+      if (isMounted) {
+        toast({
+          description: "Terjadi kesalahan: " + err.message,
+          variant: "destructive",
+        });
+      }
       return { error: err };
     }
   };
@@ -112,16 +125,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'github',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
       });
 
       return { error };
     } catch (err: any) {
-      toast({
-        description: "Terjadi kesalahan: " + err.message,
-        variant: "destructive",
-      });
+      if (isMounted) {
+        toast({
+          description: "Terjadi kesalahan: " + err.message,
+          variant: "destructive",
+        });
+      }
       return { error: err };
     }
   };
@@ -151,14 +170,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const signOut = async () => {
-    toast({
-      description: "Logging out...",
-    });
-    await supabase.auth.signOut();
-    toast({
-      description: "Berhasil keluar dari sistem",
-      variant: "default",
-    });
+    try {
+      // Perform logout without showing toasts during the critical logout process
+      const { error } = await supabase.auth.signOut();
+
+      // Only show error toast if there's an actual error and component is mounted
+      if (error && isMounted) {
+        console.error('Logout error:', error);
+        toast({
+          description: "Error during logout: " + error.message,
+          variant: "destructive",
+        });
+      }
+
+      // Don't show success toast - the auth state change will handle the redirect
+      // This prevents DOM manipulation errors when the page is transitioning
+
+    } catch (err: any) {
+      console.error('Unexpected logout error:', err);
+      // Only show error toast if component is still mounted
+      if (isMounted) {
+        toast({
+          description: "Unexpected error during logout",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   const value = {

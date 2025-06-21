@@ -27,27 +27,81 @@ const _AuthForm = () => {
   const { toast } = useToast();
   const router = useRouter();
   const [authLoading, setAuthLoading] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
   // Add client-side only rendering flag
   const [isClient, setIsClient] = useState(false);
+  const [searchParamsData, setSearchParamsData] = useState({
+    form: null as string | null,
+    error: null as string | null,
+    errorDescription: null as string | null
+  });
 
+  // Only use useSearchParams on client side to avoid hydration issues
   const searchParams = useSearchParams();
-  const form = searchParams.get("form");
+
+  // Initialize authMode with a stable default
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+
+  // Extract search params data only on client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const formParam = urlParams.get("form");
+      const errorParam = urlParams.get("error");
+      const errorDescriptionParam = urlParams.get("error_description");
+
+      setSearchParamsData({
+        form: formParam,
+        error: errorParam,
+        errorDescription: errorDescriptionParam
+      });
+
+      // Set auth mode based on form parameter
+      if (formParam === "signup") {
+        setAuthMode("signup");
+      } else {
+        setAuthMode("login");
+      }
+    }
+  }, []);
+
+  // Display OAuth errors if present
+  useEffect(() => {
+    if (searchParamsData.error && isClient) {
+      let errorMessage = "Authentication failed";
+
+      switch (searchParamsData.error) {
+        case 'session_exchange_failed':
+          errorMessage = "Failed to establish session. Please try again.";
+          break;
+        case 'unexpected_error':
+          errorMessage = "An unexpected error occurred. Please try again.";
+          break;
+        case 'access_denied':
+          errorMessage = "Access was denied. Please authorize the application to continue.";
+          break;
+        default:
+          errorMessage = searchParamsData.errorDescription || searchParamsData.error || "Authentication failed";
+      }
+
+      toast({
+        title: "Authentication Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+
+      // Clear error from URL
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('error');
+      newUrl.searchParams.delete('error_description');
+      window.history.replaceState({}, '', newUrl.toString());
+    }
+  }, [searchParamsData.error, searchParamsData.errorDescription, isClient, toast]);
 
   // Mark that we're on the client - this prevents hydration mismatch
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  // Set initial auth mode based on form parameter
-  useEffect(() => {
-    if (form === "signup") {
-      setAuthMode("signup");
-    } else {
-      setAuthMode("login");
-    }
-  }, [form]); // Include form in dependency array
 
   // Login form state
   const [email, setEmail] = useState("");
@@ -144,12 +198,16 @@ const _AuthForm = () => {
     }
   };
 
-  // Debug log for Tabs component state
-  useEffect(() => {
-    console.log("Current authMode:", authMode);
-  }, [authMode]);
+  console.log("🔍 Render state:", {
+    user: !!user,
+    loading,
+    isClient,
+    authMode,
+    shouldShowForm: !user && isClient
+  });
 
   if (user) {
+    console.log("🔍 User exists, redirecting to dashboard");
     const searchParams = new URLSearchParams(window.location.search);
     const redirectTo = searchParams.get('redirect') || '/dashboard';
     router.push(redirectTo);
@@ -158,15 +216,32 @@ const _AuthForm = () => {
 
   // Show a simple loading state if not on client yet to prevent hydration mismatch
   if (!isClient) {
+    console.log("🔍 Not client yet, showing loading skeleton");
     return (
       <div className="w-full max-w-md">
-        <div className="text-center p-8">
-          <div className="animate-pulse bg-muted h-12 w-full rounded-lg mb-6"></div>
-          <div className="animate-pulse bg-muted h-64 w-full rounded-lg"></div>
+        {/* Mock the tabs structure for consistent loading */}
+        <div className="w-full">
+          <div className="h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground grid w-full grid-cols-2 mb-6">
+            <div className="animate-pulse bg-muted-foreground/20 h-6 rounded"></div>
+            <div className="animate-pulse bg-muted-foreground/20 h-6 rounded"></div>
+          </div>
+          <div className="border shadow-sm rounded-lg">
+            <div className="p-6 space-y-4">
+              <div className="text-center space-y-2">
+                <div className="animate-pulse bg-muted h-8 w-32 mx-auto rounded"></div>
+                <div className="animate-pulse bg-muted h-4 w-48 mx-auto rounded"></div>
+              </div>
+              <div className="animate-pulse bg-muted h-10 w-full rounded"></div>
+              <div className="animate-pulse bg-muted h-10 w-full rounded"></div>
+              <div className="animate-pulse bg-muted h-10 w-full rounded"></div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
+
+  console.log("🔍 Rendering main auth form");
 
   return (
     <div className="w-full max-w-md">
@@ -174,7 +249,6 @@ const _AuthForm = () => {
         value={authMode}
         onValueChange={(v) => setAuthMode(v as "login" | "signup")}
         className="w-full"
-        defaultValue={authMode}
       >
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="login">{t("login.tabLabel")}</TabsTrigger>

@@ -61,9 +61,9 @@ export const config = {
     // - _next/image (image optimization files)
     // - favicon.ico (favicon file)
     // - public files (public folder)
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)',
+    // - auth/callback (OAuth callback route)
+    // - auth/callback-client (Client-side OAuth callback)
+    '/((?!api|_next/static|_next/image|favicon.ico|auth/callback|.*\\..*).*)',
     '/',
-    // Also match auth callback
-    '/auth/callback'
   ]
 };
