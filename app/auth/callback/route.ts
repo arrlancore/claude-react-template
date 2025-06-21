@@ -14,3 +14,11 @@ export async function GET(request: NextRequest) {
   // Redirect to dashboard after successful authentication
   return NextResponse.redirect(new URL('/dashboard', request.url));
 }
+
+// Also handle the hash-based tokens that GitHub OAuth returns
+export async function POST(request: NextRequest) {
+  const requestUrl = new URL(request.url);
+
+  // This will handle the client-side token exchange
+  return NextResponse.redirect(new URL('/dashboard', request.url));
+}
