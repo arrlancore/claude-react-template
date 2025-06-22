@@ -18,7 +18,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   // Original .chat-input-container: padding: 24px; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-top: 1px solid rgba(139, 92, 246, 0.1);
   // Responsive padding from original: padding: 16px;
   const containerClasses =
-    "p-4 md:p-6 bg-white/80 backdrop-blur-xl border-t border-purple-500/10";
+    "p-4 md:p-6 backdrop-blur-xl max-w-4xl mx-auto border-t border-purple-500/10";
 
   // Original .chat-input-wrapper: position: relative; max-width: 100%;
   const wrapperClasses = "relative max-w-full";

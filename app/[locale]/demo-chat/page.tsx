@@ -347,8 +347,8 @@ export default function DemoChatPage() {
   return (
     <div className="h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50">
       {/* Fixed Header */}
-      <div className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-xl border-b border-purple-500/10">
-        <div className="container mx-auto px-4 py-4">
+      <div className="fixed top-0 w-full z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-purple-500/10">
+        <div className="container max-w-4xl mx-auto px-4 py-4">
           <h1 className="text-xl font-bold text-gray-900">Two Pointer</h1>
         </div>
       </div>
@@ -358,7 +358,9 @@ export default function DemoChatPage() {
         {/* Chat Area */}
         <div
           className={`flex flex-col transition-all duration-300 ${
-            hasCodePanel || isEditorPanelOpen ? "hidden md:flex md:w-96 md:min-w-96" : "flex-1"
+            hasCodePanel || isEditorPanelOpen
+              ? "hidden md:flex md:w-96 md:min-w-96"
+              : "flex-1"
           }`}
         >
           {/* Messages */}
