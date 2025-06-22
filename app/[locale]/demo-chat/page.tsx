@@ -17,7 +17,7 @@ interface DSAProblem {
   id: string;
   title: string;
   description: string;
-  starterCode?: string;
+  starterCode?: Record<string, string>; // { language: code }
   language: string;
 }
 
@@ -268,8 +268,47 @@ export default function DemoChatPage() {
             title: "Two Sum Challenge",
             description:
               "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\nExample:\nInput: nums = [2,7,11,15], target = 9\nOutput: [0,1]\nExplanation: Because nums[0] + nums[1] == 9, we return [0, 1].",
-            starterCode:
-              "function twoSum(nums, target) {\n  // Your code here\n}",
+            starterCode: {
+              javascript: `/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
+ */
+var twoSum = function(nums, target) {
+    // Your code here
+};`,
+              typescript: `function twoSum(nums: number[], target: number): number[] {
+    // Your code here
+}`,
+              python: `def twoSum(nums: List[int], target: int) -> List[int]:
+    # Your code here
+    pass`,
+              java: `class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        // Your code here
+    }
+}`,
+              cpp: `class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        // Your code here
+    }
+};`,
+              c: `/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* twoSum(int* nums, int numsSize, int target, int* returnSize){
+    // Your code here
+}`,
+              go: `func twoSum(nums []int, target int) []int {
+    // Your code here
+}`,
+              rust: `impl Solution {
+    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
+        // Your code here
+    }
+}`
+            },
             language: "javascript",
           };
           // The ProblemCard will display the problem, so the message content can be simpler
@@ -433,7 +472,7 @@ export default function DemoChatPage() {
             {isEditorPanelOpen && currentProblem ? (
               <MonacoEditorPanel
                 problem={currentProblem}
-                initialCode={currentProblem.starterCode || ""}
+                initialCode={currentProblem.starterCode?.[currentProblem.language] || ""}
                 language={currentProblem.language}
                 onClose={handleCloseEditor}
                 onSubmit={handleEditorSubmit}

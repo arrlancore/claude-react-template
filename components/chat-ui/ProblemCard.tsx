@@ -7,7 +7,7 @@ interface DSAProblem {
   id: string;
   title: string;
   description: string;
-  starterCode?: string;
+  starterCode?: Record<string, string>; // { language: code }
   language: string;
 }
 
@@ -39,7 +39,7 @@ const ProblemCard: React.FC<ProblemCardProps> = ({ problem, onOpenEditor }) => {
             Starter Code ({problem.language}):
           </h4>
           <pre className="bg-gray-800 text-white p-2 rounded-md text-xs overflow-x-auto">
-            <code>{problem.starterCode}</code>
+            <code>{problem.starterCode[problem.language] || "// No starter code available"}</code>
           </pre>
         </div>
       )}
