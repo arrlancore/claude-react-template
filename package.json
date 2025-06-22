@@ -12,7 +12,8 @@
     "test": "jest --config=jest.config.cjs",
     "test:watch": "jest --config=jest.config.cjs --watch",
     "test:ai": "jest --config=jest.config.cjs --testPathPattern=ai",
-    "i18n:create": "cross-env NODE_OPTIONS=\"--loader ts-node/esm\" ts-node --project tsconfig.scripts.json scripts/create-language-files.ts"
+    "i18n:create": "cross-env NODE_OPTIONS=\"--loader ts-node/esm\" ts-node --project tsconfig.scripts.json scripts/create-language-files.ts",
+    "supabase:remote-setup": "supabase/setup/remote-setup.sh gqkbqqkfbclsukqbfnfm"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -31,6 +32,7 @@
     "@radix-ui/react-toast": "^1.2.13",
     "@react-spring/web": "^10.0.1",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.49.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",

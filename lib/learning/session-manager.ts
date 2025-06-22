@@ -1,8 +1,8 @@
-import { SessionState, UserProgress, PersonaType } from '@/lib/types/learning'
-import { createClient } from '@/lib/supabase/client'
+import { SessionState, UserProgress, PersonaType } from "@/lib/types/learning";
+import { supabase } from "@/lib/supabase/client";
 
 export class SessionManager {
-  private supabase = createClient()
+  private supabase = supabase;
 
   async createSession(
     userId: string,
@@ -18,7 +18,7 @@ export class SessionManager {
       best_score: 0,
       current_score: 0,
       attempts_count: 0,
-      persona_type: personaType || 'balanced_learner',
+      persona_type: personaType || "balanced_learner",
       started_at: new Date().toISOString(),
       last_activity_at: new Date().toISOString(),
       progress_data: {
@@ -27,36 +27,39 @@ export class SessionManager {
         pattern_recognition_times: [],
         implementation_times: [],
         hints_used_per_problem: {},
-        achievements_unlocked: []
-      }
-    }
+        achievements_unlocked: [],
+      },
+    };
 
     const { data, error } = await this.supabase
-      .from('learning_sessions')
+      .from("learning_sessions")
       .insert(sessionData)
       .select()
-      .single()
+      .single();
 
-    if (error) throw new Error(`Failed to create session: ${error.message}`)
+    if (error) throw new Error(`Failed to create session: ${error.message}`);
 
     return {
       session_id: data.id,
-      ...sessionData
-    }
+      ...sessionData,
+    };
   }
 
-  async getActiveSession(userId: string, patternId: string): Promise<SessionState | null> {
+  async getActiveSession(
+    userId: string,
+    patternId: string
+  ): Promise<SessionState | null> {
     const { data, error } = await this.supabase
-      .from('learning_sessions')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('pattern_id', patternId)
-      .eq('is_active', true)
-      .order('last_activity_at', { ascending: false })
+      .from("learning_sessions")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("pattern_id", patternId)
+      .eq("is_active", true)
+      .order("last_activity_at", { ascending: false })
       .limit(1)
-      .single()
+      .single();
 
-    if (error || !data) return null
+    if (error || !data) return null;
 
     return {
       session_id: data.id,
@@ -68,7 +71,7 @@ export class SessionManager {
       best_score: data.best_score || 0,
       current_score: data.current_score || 0,
       attempts_count: data.attempts_count || 0,
-      persona_type: data.persona_type || 'balanced_learner',
+      persona_type: data.persona_type || "balanced_learner",
       started_at: data.started_at,
       last_activity_at: data.last_activity_at,
       progress_data: data.progress_data || {
@@ -77,9 +80,9 @@ export class SessionManager {
         pattern_recognition_times: [],
         implementation_times: [],
         hints_used_per_problem: {},
-        achievements_unlocked: []
-      }
-    }
+        achievements_unlocked: [],
+      },
+    };
   }
 
   async resumeOrCreateSession(
@@ -87,105 +90,114 @@ export class SessionManager {
     patternId: string,
     personaType?: string
   ): Promise<SessionState> {
-    const existingSession = await this.getActiveSession(userId, patternId)
+    const existingSession = await this.getActiveSession(userId, patternId);
 
     if (existingSession) {
       // Update last activity
-      await this.updateLastActivity(existingSession.session_id)
-      return existingSession
+      await this.updateLastActivity(existingSession.session_id);
+      return existingSession;
     }
 
-    return this.createSession(userId, patternId, 1, personaType)
+    return this.createSession(userId, patternId, 1, personaType);
   }
 
-  async updateSession(sessionId: string, updates: Partial<SessionState>): Promise<void> {
+  async updateSession(
+    sessionId: string,
+    updates: Partial<SessionState>
+  ): Promise<void> {
     const updateData = {
       ...updates,
-      last_activity_at: new Date().toISOString()
-    }
+      last_activity_at: new Date().toISOString(),
+    };
 
     const { error } = await this.supabase
-      .from('learning_sessions')
+      .from("learning_sessions")
       .update(updateData)
-      .eq('id', sessionId)
+      .eq("id", sessionId);
 
-    if (error) throw new Error(`Failed to update session: ${error.message}`)
+    if (error) throw new Error(`Failed to update session: ${error.message}`);
   }
 
   async updateScore(sessionId: string, newScore: number): Promise<void> {
-    const session = await this.getSessionById(sessionId)
-    if (!session) throw new Error('Session not found')
+    const session = await this.getSessionById(sessionId);
+    if (!session) throw new Error("Session not found");
 
     const updates: Partial<SessionState> = {
       current_score: newScore,
-      attempts_count: session.attempts_count + 1
-    }
+      attempts_count: session.attempts_count + 1,
+    };
 
     // Update best score if this is better
     if (newScore > session.best_score) {
-      updates.best_score = newScore
+      updates.best_score = newScore;
     }
 
-    await this.updateSession(sessionId, updates)
+    await this.updateSession(sessionId, updates);
   }
 
   async updateProgress(
     sessionId: string,
     progressUpdate: {
-      problemId?: string
-      completionTime?: number
-      hintsUsed?: number
-      recognitionTime?: number
-      understandingLevel?: number
-      achievement?: string
+      problemId?: string;
+      completionTime?: number;
+      hintsUsed?: number;
+      recognitionTime?: number;
+      understandingLevel?: number;
+      achievement?: string;
     }
   ): Promise<void> {
-    const session = await this.getSessionById(sessionId)
-    if (!session) throw new Error('Session not found')
+    const session = await this.getSessionById(sessionId);
+    if (!session) throw new Error("Session not found");
 
-    const progressData = { ...session.progress_data }
+    const progressData = { ...session.progress_data };
 
     if (progressUpdate.problemId) {
       if (!progressData.problems_completed.includes(progressUpdate.problemId)) {
-        progressData.problems_completed.push(progressUpdate.problemId)
+        progressData.problems_completed.push(progressUpdate.problemId);
       }
-      session.current_problem_id = progressUpdate.problemId
+      session.current_problem_id = progressUpdate.problemId;
     }
 
     if (progressUpdate.completionTime) {
-      progressData.implementation_times.push(progressUpdate.completionTime)
+      progressData.implementation_times.push(progressUpdate.completionTime);
     }
 
     if (progressUpdate.recognitionTime) {
-      progressData.pattern_recognition_times.push(progressUpdate.recognitionTime)
+      progressData.pattern_recognition_times.push(
+        progressUpdate.recognitionTime
+      );
     }
 
     if (progressUpdate.hintsUsed !== undefined && progressUpdate.problemId) {
-      progressData.hints_used_per_problem[progressUpdate.problemId] = progressUpdate.hintsUsed
+      progressData.hints_used_per_problem[progressUpdate.problemId] =
+        progressUpdate.hintsUsed;
     }
 
     if (progressUpdate.understandingLevel !== undefined) {
-      progressData.understanding_level = progressUpdate.understandingLevel
+      progressData.understanding_level = progressUpdate.understandingLevel;
     }
 
-    if (progressUpdate.achievement && !progressData.achievements_unlocked.includes(progressUpdate.achievement)) {
-      progressData.achievements_unlocked.push(progressUpdate.achievement)
+    if (
+      progressUpdate.achievement &&
+      !progressData.achievements_unlocked.includes(progressUpdate.achievement)
+    ) {
+      progressData.achievements_unlocked.push(progressUpdate.achievement);
     }
 
     await this.updateSession(sessionId, {
       progress_data: progressData,
-      current_problem_id: session.current_problem_id
-    })
+      current_problem_id: session.current_problem_id,
+    });
   }
 
   async getSessionById(sessionId: string): Promise<SessionState | null> {
     const { data, error } = await this.supabase
-      .from('learning_sessions')
-      .select('*')
-      .eq('id', sessionId)
-      .single()
+      .from("learning_sessions")
+      .select("*")
+      .eq("id", sessionId)
+      .single();
 
-    if (error || !data) return null
+    if (error || !data) return null;
 
     return {
       session_id: data.id,
@@ -197,7 +209,7 @@ export class SessionManager {
       best_score: data.best_score || 0,
       current_score: data.current_score || 0,
       attempts_count: data.attempts_count || 0,
-      persona_type: data.persona_type || 'balanced_learner',
+      persona_type: data.persona_type || "balanced_learner",
       started_at: data.started_at,
       last_activity_at: data.last_activity_at,
       progress_data: data.progress_data || {
@@ -206,36 +218,52 @@ export class SessionManager {
         pattern_recognition_times: [],
         implementation_times: [],
         hints_used_per_problem: {},
-        achievements_unlocked: []
-      }
-    }
+        achievements_unlocked: [],
+      },
+    };
   }
 
   async completeLevel(sessionId: string, level: number): Promise<void> {
-    const session = await this.getSessionById(sessionId)
-    if (!session) throw new Error('Session not found')
+    const session = await this.getSessionById(sessionId);
+    if (!session) throw new Error("Session not found");
 
     await this.updateSession(sessionId, {
       level: level + 1,
-      current_problem_id: undefined // Reset for next level
-    })
+      current_problem_id: undefined, // Reset for next level
+    });
   }
 
-  async getUserProgress(userId: string, patternId: string): Promise<UserProgress | null> {
-    const session = await this.getActiveSession(userId, patternId)
-    if (!session) return null
+  async getUserProgress(
+    userId: string,
+    patternId: string
+  ): Promise<UserProgress | null> {
+    const session = await this.getActiveSession(userId, patternId);
+    if (!session) return null;
 
-    const avgRecognitionTime = session.progress_data.pattern_recognition_times.length > 0
-      ? session.progress_data.pattern_recognition_times.reduce((a, b) => a + b, 0) / session.progress_data.pattern_recognition_times.length
-      : 0
+    const avgRecognitionTime =
+      session.progress_data.pattern_recognition_times.length > 0
+        ? session.progress_data.pattern_recognition_times.reduce(
+            (a, b) => a + b,
+            0
+          ) / session.progress_data.pattern_recognition_times.length
+        : 0;
 
-    const avgImplementationTime = session.progress_data.implementation_times.length > 0
-      ? session.progress_data.implementation_times.reduce((a, b) => a + b, 0) / session.progress_data.implementation_times.length
-      : 0
+    const avgImplementationTime =
+      session.progress_data.implementation_times.length > 0
+        ? session.progress_data.implementation_times.reduce(
+            (a, b) => a + b,
+            0
+          ) / session.progress_data.implementation_times.length
+        : 0;
 
-    const totalHints = Object.values(session.progress_data.hints_used_per_problem).reduce((a, b) => a + b, 0)
+    const totalHints = Object.values(
+      session.progress_data.hints_used_per_problem
+    ).reduce((a, b) => a + b, 0);
 
-    const totalTimeSpent = session.progress_data.implementation_times.reduce((a, b) => a + b, 0)
+    const totalTimeSpent = session.progress_data.implementation_times.reduce(
+      (a, b) => a + b,
+      0
+    );
 
     return {
       user_id: userId,
@@ -249,44 +277,44 @@ export class SessionManager {
       hints_used: totalHints,
       total_time_spent: totalTimeSpent,
       achievements: [], // Will be populated by achievement engine
-      persona_type: undefined // Will be populated by calibration engine
-    }
+      persona_type: undefined, // Will be populated by calibration engine
+    };
   }
 
   private getTotalProblemsForLevel(level: number): number {
     const problemCounts = {
-      1: 8,  // Level 1: Interview Ready
-      2: 4,  // Level 2: Additional problems
-      3: 4   // Level 3: Expert level
-    }
-    return problemCounts[level as keyof typeof problemCounts] || 8
+      1: 8, // Level 1: Interview Ready
+      2: 4, // Level 2: Additional problems
+      3: 4, // Level 3: Expert level
+    };
+    return problemCounts[level as keyof typeof problemCounts] || 8;
   }
 
   async updateLastActivity(sessionId: string): Promise<void> {
     const { error } = await this.supabase
-      .from('learning_sessions')
+      .from("learning_sessions")
       .update({ last_activity_at: new Date().toISOString() })
-      .eq('id', sessionId)
+      .eq("id", sessionId);
 
     if (error) {
-      console.error('Failed to update last activity:', error)
+      console.error("Failed to update last activity:", error);
     }
   }
 
   async deactivateSession(sessionId: string): Promise<void> {
-    await this.updateSession(sessionId, { is_active: false })
+    await this.updateSession(sessionId, { is_active: false });
   }
 
   async getUserSessions(userId: string): Promise<SessionState[]> {
     const { data, error } = await this.supabase
-      .from('learning_sessions')
-      .select('*')
-      .eq('user_id', userId)
-      .order('last_activity_at', { ascending: false })
+      .from("learning_sessions")
+      .select("*")
+      .eq("user_id", userId)
+      .order("last_activity_at", { ascending: false });
 
-    if (error) throw new Error(`Failed to get user sessions: ${error.message}`)
+    if (error) throw new Error(`Failed to get user sessions: ${error.message}`);
 
-    return data.map(session => ({
+    return data.map((session) => ({
       session_id: session.id,
       user_id: session.user_id,
       pattern_id: session.pattern_id,
@@ -296,7 +324,7 @@ export class SessionManager {
       best_score: session.best_score || 0,
       current_score: session.current_score || 0,
       attempts_count: session.attempts_count || 0,
-      persona_type: session.persona_type || 'balanced_learner',
+      persona_type: session.persona_type || "balanced_learner",
       started_at: session.started_at,
       last_activity_at: session.last_activity_at,
       progress_data: session.progress_data || {
@@ -305,10 +333,10 @@ export class SessionManager {
         pattern_recognition_times: [],
         implementation_times: [],
         hints_used_per_problem: {},
-        achievements_unlocked: []
-      }
-    }))
+        achievements_unlocked: [],
+      },
+    }));
   }
 }
 
-export const sessionManager = new SessionManager()
+export const sessionManager = new SessionManager();

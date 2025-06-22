@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Send, ArrowLeft, Brain } from 'lucide-react'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
+import { ProblemEngine, ProblemProgress } from '@/lib/problem-engine'
 
 interface Message {
   id: string
@@ -30,6 +31,7 @@ export function LearningChat({ patternId, className = '' }: LearningChatProps) {
   const [input, setInput] = useState('')
   const [currentStep, setCurrentStep] = useState('welcome')
   const [calibrationData, setCalibrationData] = useState<any>({})
+  const [problemProgress, setProblemProgress] = useState<ProblemProgress>(ProblemEngine.createProgressState())
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -88,6 +90,18 @@ export function LearningChat({ patternId, className = '' }: LearningChatProps) {
       await handleCalibrationResponse(optionId, action)
     } else if (action === 'start_learning') {
       await handleStartLearning()
+    } else if (action === 'show_code_editor') {
+      await handleShowCodeEditor()
+    } else if (action === 'show_visualization') {
+      await handleShowVisualization()
+    } else if (action === 'request_hint') {
+      await handleRequestHint()
+    } else if (action === 'execute_code') {
+      await handleExecuteCode()
+    } else if (action === 'submit_solution') {
+      await handleSubmitSolution()
+    } else if (action === 'continue_next_problem') {
+      await handleContinueToNextProblem()
     }
 
     setIsLoading(false)
@@ -183,12 +197,43 @@ export function LearningChat({ patternId, className = '' }: LearningChatProps) {
     const startMessage: Message = {
       id: `start-${Date.now()}`,
       type: 'ai',
-      content: 'Perfect! Let\'s begin with your first problem: Two Sum II. This teaches the foundation of strategic pointer movement.',
+      content: 'Perfect! Let\'s begin with your first problem. This teaches the foundation of strategic pointer movement.',
       timestamp: new Date()
     }
 
     setMessages(prev => [...prev, startMessage])
     setCurrentStep('learning')
+
+    // Start with first problem after a short delay
+    setTimeout(() => {
+      startFirstProblem()
+    }, 2000)
+  }
+
+  const startFirstProblem = () => {
+    const firstProblem = ProblemEngine.getProblemByIndex(0)
+    if (!firstProblem) return
+
+    const problemIntroMessage: Message = {
+      id: `problem-intro-${Date.now()}`,
+      type: 'component',
+      content: '',
+      timestamp: new Date(),
+      component: {
+        type: 'problem_intro',
+        data: {
+          type: 'problem_intro',
+          content: `Let's start with ${firstProblem.title}. This problem teaches the core Two Pointer pattern.`,
+          options: [
+            { id: 'start_coding', text: 'Start Coding', action: 'show_code_editor' },
+            { id: 'see_demo', text: 'See Demo First', action: 'show_visualization' }
+          ],
+          metadata: { problem: firstProblem }
+        }
+      }
+    }
+
+    setMessages(prev => [...prev, problemIntroMessage])
   }
 
   const handleSendMessage = async () => {
@@ -216,6 +261,272 @@ export function LearningChat({ patternId, className = '' }: LearningChatProps) {
       setMessages(prev => [...prev, aiResponse])
       setIsLoading(false)
     }, 1500)
+  }
+
+  const handleShowCodeEditor = async () => {
+    const currentProblem = ProblemEngine.getProblemByIndex(problemProgress.currentProblem)
+    if (!currentProblem) return
+
+    const codeEditorMessage: Message = {
+      id: `code-editor-${Date.now()}`,
+      type: 'component',
+      content: '',
+      timestamp: new Date(),
+      component: {
+        type: 'code_editor',
+        data: {
+          type: 'code_editor',
+          content: 'Here\'s your coding environment. Fill in the TODO sections!',
+          metadata: { problem: currentProblem }
+        }
+      }
+    }
+
+    setTimeout(() => {
+      setMessages(prev => [...prev, codeEditorMessage])
+    }, 1000)
+  }
+
+  const handleShowVisualization = async () => {
+    const demoMessage: Message = {
+      id: `demo-${Date.now()}`,
+      type: 'ai',
+      content: 'Here\'s how Two Pointer works on this problem! Watch the strategic movement.',
+      timestamp: new Date()
+    }
+
+    setTimeout(() => {
+      setMessages(prev => [...prev, demoMessage])
+      // After demo, offer to start coding
+      setTimeout(() => {
+        const followUp: Message = {
+          id: `followup-${Date.now()}`,
+          type: 'component',
+          content: '',
+          timestamp: new Date(),
+          component: {
+            type: 'result',
+            data: {
+              type: 'result',
+              content: 'Now you see the pattern! Ready to implement it yourself?',
+              options: [
+                { id: 'start_coding', text: 'Let\'s Code!', action: 'show_code_editor' }
+              ]
+            }
+          }
+        }
+        setMessages(prev => [...prev, followUp])
+      }, 3000)
+    }, 1000)
+  }
+
+  const handleRequestHint = async () => {
+    const currentProblem = ProblemEngine.getProblemByIndex(problemProgress.currentProblem)
+    if (!currentProblem) return
+
+    const currentHintLevel = (problemProgress.hintsUsed[currentProblem.id] || 0) + 1
+    const hint = currentProblem.hints.find(h => h.level === currentHintLevel)
+
+    if (hint) {
+      // Update hints used
+      setProblemProgress(prev => ({
+        ...prev,
+        hintsUsed: {
+          ...prev.hintsUsed,
+          [currentProblem.id]: currentHintLevel
+        }
+      }))
+
+      const hintMessage: Message = {
+        id: `hint-${Date.now()}`,
+        type: 'component',
+        content: '',
+        timestamp: new Date(),
+        component: {
+          type: 'hint',
+          data: {
+            type: 'hint',
+            content: '',
+            options: [
+              { id: 'thanks', text: 'Thanks!', action: 'continue_coding' },
+              { id: 'more_help', text: 'Still stuck', action: 'request_hint' }
+            ],
+            metadata: { hint }
+          }
+        }
+      }
+
+      setTimeout(() => {
+        setMessages(prev => [...prev, hintMessage])
+      }, 1000)
+    } else {
+      const noMoreHintsMessage: Message = {
+        id: `no-hints-${Date.now()}`,
+        type: 'ai',
+        content: 'You\'ve used all available hints for this problem. Try implementing what you\'ve learned!',
+        timestamp: new Date()
+      }
+
+      setTimeout(() => {
+        setMessages(prev => [...prev, noMoreHintsMessage])
+      }, 1000)
+    }
+  }
+
+  const handleExecuteCode = async () => {
+    const executeMessage: Message = {
+      id: `execute-${Date.now()}`,
+      type: 'ai',
+      content: 'Running your code against test cases... 🔄',
+      timestamp: new Date()
+    }
+
+    setTimeout(() => {
+      setMessages(prev => [...prev, executeMessage])
+
+      // Simulate test results
+      setTimeout(() => {
+        const resultMessage: Message = {
+          id: `result-${Date.now()}`,
+          type: 'ai',
+          content: '✅ Test 1 passed!\n❌ Test 2 failed: Expected [1,3] but got []\n\nLooks like your pointer movement logic needs work. Need a hint?',
+          timestamp: new Date()
+        }
+        setMessages(prev => [...prev, resultMessage])
+      }, 2000)
+    }, 500)
+  }
+
+  const handleSubmitSolution = async () => {
+    const currentProblem = ProblemEngine.getProblemByIndex(problemProgress.currentProblem)
+    if (!currentProblem) return
+
+    const submitMessage: Message = {
+      id: `submit-${Date.now()}`,
+      type: 'ai',
+      content: 'Evaluating your solution... 🔍',
+      timestamp: new Date()
+    }
+
+    setTimeout(() => {
+      setMessages(prev => [...prev, submitMessage])
+
+      // Simulate successful completion
+      setTimeout(() => {
+        handleProblemCompletion()
+      }, 2000)
+    }, 500)
+  }
+
+  const handleProblemCompletion = () => {
+    const currentProblem = ProblemEngine.getProblemByIndex(problemProgress.currentProblem)
+    if (!currentProblem) return
+
+    // Update progress
+    setProblemProgress(prev => ({
+      ...prev,
+      completedProblems: [...prev.completedProblems, currentProblem.id],
+      achievements: [...prev.achievements, 'First Problem Complete!']
+    }))
+
+    const celebrationMessage: Message = {
+      id: `celebration-${Date.now()}`,
+      type: 'component',
+      content: '',
+      timestamp: new Date(),
+      component: {
+        type: 'celebration',
+        data: {
+          type: 'celebration',
+          content: `Excellent work! You've mastered ${currentProblem.title}. You now understand strategic pointer movement!`,
+          options: [
+            { id: 'continue', text: 'Next Problem', action: 'continue_next_problem' },
+            { id: 'review', text: 'Review This Problem', action: 'review_problem' }
+          ],
+          metadata: {
+            achievement: 'First Problem Complete!',
+            nextProblem: ProblemEngine.getProblemByIndex(problemProgress.currentProblem + 1)?.title
+          }
+        }
+      }
+    }
+
+    setTimeout(() => {
+      setMessages(prev => [...prev, celebrationMessage])
+    }, 1000)
+  }
+
+  const handleContinueToNextProblem = async () => {
+    // Move to next problem
+    setProblemProgress(prev => ({
+      ...prev,
+      currentProblem: prev.currentProblem + 1
+    }))
+
+    const nextProblem = ProblemEngine.getProblemByIndex(problemProgress.currentProblem + 1)
+
+    if (nextProblem) {
+      const transitionMessage: Message = {
+        id: `transition-${Date.now()}`,
+        type: 'ai',
+        content: `Great! Let's move to problem ${problemProgress.currentProblem + 2}: ${nextProblem.title}. This builds on what you just learned.`,
+        timestamp: new Date()
+      }
+
+      setTimeout(() => {
+        setMessages(prev => [...prev, transitionMessage])
+
+        // Show next problem intro
+        setTimeout(() => {
+          const problemIntroMessage: Message = {
+            id: `problem-intro-${Date.now()}`,
+            type: 'component',
+            content: '',
+            timestamp: new Date(),
+            component: {
+              type: 'problem_intro',
+              data: {
+                type: 'problem_intro',
+                content: `This problem shows how the SAME Two Pointer pattern applies to different contexts.`,
+                options: [
+                  { id: 'start_coding', text: 'Start Coding', action: 'show_code_editor' },
+                  { id: 'see_demo', text: 'See Demo First', action: 'show_visualization' }
+                ],
+                metadata: { problem: nextProblem }
+              }
+            }
+          }
+          setMessages(prev => [...prev, problemIntroMessage])
+        }, 2000)
+      }, 1000)
+    } else {
+      // Level 1 complete!
+      const completionMessage: Message = {
+        id: `level-complete-${Date.now()}`,
+        type: 'component',
+        content: '',
+        timestamp: new Date(),
+        component: {
+          type: 'celebration',
+          data: {
+            type: 'celebration',
+            content: '🎉 Level 1 Complete! You\'re now Interview Ready with Two Pointer patterns!',
+            options: [
+              { id: 'level_2', text: 'Continue to Level 2', action: 'start_level_2' },
+              { id: 'finish', text: 'I\'m satisfied!', action: 'finish_learning' }
+            ],
+            metadata: {
+              achievement: 'Interview Ready!',
+              nextProblem: null
+            }
+          }
+        }
+      }
+
+      setTimeout(() => {
+        setMessages(prev => [...prev, completionMessage])
+      }, 1000)
+    }
   }
 
   return (
