@@ -2,10 +2,23 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import "@/components/chat-ui/custom-chat-styles.css";
-import ChatLayout from "@/components/chat-ui/ChatLayout";
-import TypingIndicator from "@/components/chat-ui/TypingIndicator"; // Import TypingIndicator
-import CodeCardComponent from "@/components/chat-ui/CodeCard"; // Placeholder for the new CodeCard component
+import MessageList from "@/components/chat-ui/MessageList";
+import ChatInput from "@/components/chat-ui/ChatInput";
+import CodePanel from "@/components/chat-ui/CodePanel";
+import TypingIndicator from "@/components/chat-ui/TypingIndicator";
+import CodeCardComponent from "@/components/chat-ui/CodeCard";
+import MonacoEditorPanel from "@/components/chat-ui/MonacoEditorPanel";
+import ProblemCard from "@/components/chat-ui/ProblemCard";
 import { Button } from "@/components/ui/button";
+
+// Define DSAProblem interface
+interface DSAProblem {
+  id: string;
+  title: string;
+  description: string;
+  starterCode?: string;
+  language: string;
+}
 
 interface Message {
   id: string;
@@ -13,6 +26,7 @@ interface Message {
   sender: "user" | "assistant";
   timestamp: Date;
   codeBlocks?: CodeBlock[];
+  dsaProblem?: DSAProblem; // Add dsaProblem to Message interface
 }
 
 interface CodeBlock {
@@ -33,10 +47,14 @@ export default function DemoChatPage() {
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [activeCodePanel, setActiveCodePanel] = useState<string | null>(null);
-  const [codeBlocks, setCodeBlocks] = useState<Record<string, CodeBlock>>({}); // This will store all code blocks by ID
-  const messagesEndRef = useRef<HTMLDivElement>(null); // This ref should be attached to the MessageList or a wrapper around it
+  const [activeCodePanel, setActiveCodePanel] = useState<string | null>(null); // For existing CodeCard/CodePanel
+  const [codeBlocks, setCodeBlocks] = useState<Record<string, CodeBlock>>({});
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // New state for Monaco Editor Panel
+  const [isEditorPanelOpen, setIsEditorPanelOpen] = useState(false);
+  const [currentProblem, setCurrentProblem] = useState<DSAProblem | null>(null);
 
   const scrollToBottom = () => {
     // Ensure this ref is correctly placed in MessageList or its child for scrolling
@@ -94,15 +112,27 @@ export default function DemoChatPage() {
 
   // Updated to return JSX
   const renderMessageContent = (message: Message): React.ReactNode => {
+    // Handle DSA Problem Card
+    if (message.dsaProblem) {
+      return (
+        <ProblemCard
+          key={`${message.id}-problem`}
+          problem={message.dsaProblem}
+          onOpenEditor={handleOpenEditor}
+        />
+      );
+    }
+
+    // Handle regular code blocks
     const parts = message.content.split(/(\[CODE_BLOCK:[^\]]+\])/g);
     return parts.map((part, index) => {
       const match = part.match(/\[CODE_BLOCK:([^\]]+)\]/);
       if (match) {
         const codeId = match[1];
-        const codeBlock = codeBlocks[codeId]; // Get from the central codeBlocks state
+        const codeBlock = codeBlocks[codeId];
         if (!codeBlock) {
           console.warn(`Code block with ID ${codeId} not found.`);
-          return <span key={`${message.id}-part-${index}`}>{part}</span>; // Fallback
+          return <span key={`${message.id}-part-${index}`}>{part}</span>;
         }
         return (
           <CodeCardComponent
@@ -113,19 +143,71 @@ export default function DemoChatPage() {
           />
         );
       }
-      // Render simple text parts, ensuring newlines are handled (e.g., by MessageItem's dangerouslySetInnerHTML or by splitting and mapping <br />)
-      // For now, MessageItem handles newline conversion.
       return <span key={`${message.id}-part-${index}`}>{part}</span>;
     });
   };
 
-  // This function will be passed to MessageItem, which will then pass it to the actual CodeCardComponent
   const handleCodeCardClick = (codeId: string) => {
     if (activeCodePanel === codeId) {
       setActiveCodePanel(null);
     } else {
       setActiveCodePanel(codeId);
     }
+  };
+
+  // Event handlers for Monaco Editor Panel
+  const handleOpenEditor = (problem: DSAProblem) => {
+    setCurrentProblem(problem);
+    setIsEditorPanelOpen(true);
+    setActiveCodePanel(null); // Close any active static code panel
+  };
+
+  const handleCloseEditor = () => {
+    setIsEditorPanelOpen(false);
+    setCurrentProblem(null);
+  };
+
+  const handleEditorSubmit = (submittedCode: string, language: string) => {
+    if (!currentProblem) return;
+
+    const solutionMessage: Message = {
+      id: Date.now().toString(),
+      content: `Solution submitted for "${currentProblem.title}":\n\`\`\`${language}\n${submittedCode}\n\`\`\``,
+      sender: "user",
+      timestamp: new Date(),
+    };
+
+    const { content: processedContent, codeBlocks: newCodeBlocks } =
+      extractCodeBlocks(solutionMessage.content);
+
+    const newCodeBlocksMap: Record<string, CodeBlock> = {};
+    newCodeBlocks.forEach((block) => {
+      newCodeBlocksMap[block.id] = block;
+    });
+    setCodeBlocks((prev) => ({ ...prev, ...newCodeBlocksMap }));
+
+    const finalSolutionMessage: Message = {
+      ...solutionMessage,
+      content: processedContent,
+      codeBlocks: newCodeBlocks,
+    };
+
+    setMessages((prevMessages) => [...prevMessages, finalSolutionMessage]);
+    // setIsEditorPanelOpen(false); // Optionally close editor on submit, or keep open
+    // setCurrentProblem(null);
+
+    // Simulate AI feedback to the submission
+    setIsTyping(true);
+    setTimeout(() => {
+      const feedbackAssistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: `Thanks for submitting your solution for "${currentProblem.title}"! Let me review it... (Simulated AI feedback)`,
+        sender: "assistant",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, feedbackAssistantMessage]);
+      setIsTyping(false);
+    }, 1500);
   };
 
   const sendMessage = async () => {
@@ -157,20 +239,39 @@ export default function DemoChatPage() {
           "Great question! Here's my response:",
         ];
 
-        let response = responses[Math.floor(Math.random() * responses.length)];
+        let responseContent =
+          responses[Math.floor(Math.random() * responses.length)];
+        let dsaProblemForMessage: DSAProblem | undefined = undefined;
 
-        // Add code if user asks for code
+        // Simulate AI giving a DSA problem
         if (
+          userMessage.content.toLowerCase().includes("dsa problem") ||
+          userMessage.content.toLowerCase().includes("give me a problem")
+        ) {
+          dsaProblemForMessage = {
+            id: `dsa_${Date.now()}`,
+            title: "Two Sum Challenge",
+            description:
+              "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\nExample:\nInput: nums = [2,7,11,15], target = 9\nOutput: [0,1]\nExplanation: Because nums[0] + nums[1] == 9, we return [0, 1].",
+            starterCode:
+              "function twoSum(nums, target) {\n  // Your code here\n}",
+            language: "javascript",
+          };
+          // The ProblemCard will display the problem, so the message content can be simpler
+          responseContent = `Here's a DSA problem for you: ${dsaProblemForMessage.title}. Click below to open the editor.`;
+        }
+        // Add regular code block if user asks for "code", "function", "algorithm" but not "dsa problem"
+        else if (
           userMessage.content.toLowerCase().includes("code") ||
           userMessage.content.toLowerCase().includes("function") ||
           userMessage.content.toLowerCase().includes("algorithm")
         ) {
-          response +=
+          responseContent +=
             "\n\n```javascript\nfunction twoPointerExample(arr, target) {\n    let left = 0;\n    let right = arr.length - 1;\n    \n    while (left < right) {\n        const sum = arr[left] + arr[right];\n        \n        if (sum === target) {\n            return [left, right];\n        } else if (sum < target) {\n            left++;\n        } else {\n            right--;\n        }\n    }\n    \n    return null;\n}\n\n// Example usage\nconst result = twoPointerExample([1, 2, 3, 4, 5], 7);\nconsole.log(result); // [1, 4]\n```";
         }
 
         const { content: processedContent, codeBlocks: newCodeBlocks } =
-          extractCodeBlocks(response);
+          extractCodeBlocks(responseContent);
 
         // Add new code blocks to state
         const newCodeBlocksMap: Record<string, CodeBlock> = {};
@@ -185,6 +286,7 @@ export default function DemoChatPage() {
           sender: "assistant",
           timestamp: new Date(),
           codeBlocks: newCodeBlocks,
+          dsaProblem: dsaProblemForMessage, // Attach DSA problem if any
         };
 
         setMessages((prev) => [...prev, assistantMessage]);
@@ -243,37 +345,76 @@ export default function DemoChatPage() {
   const activeCode = activeCodePanel ? codeBlocks[activeCodePanel] : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50">
-      {" "}
-      {/* Original: #f3e8ff, #fdf2f8, #f3e8ff */}
-      <ChatLayout
-        messages={messages}
-        isTyping={isTyping} // Pass isTyping state
-        typingIndicator={<TypingIndicator />} // Pass TypingIndicator component
-        messagesEndRef={messagesEndRef} // Pass ref for scrolling
-        inputValue={inputValue}
-        onInputChange={(value) => {
-          // Changed 'e' to 'value' for clarity if ChatInput passes string directly
-          setInputValue(value);
-          autoResize();
-        }}
-        onSendMessage={sendMessage}
-        textareaRef={textareaRef}
-        onKeyDown={handleKeyDown}
-        activeCode={activeCode}
-        onToggleCodePanel={() => setActiveCodePanel(null)}
-        copyCode={copyCode}
-        downloadCode={downloadCode}
-        renderMessageContent={
-          renderMessageContent as (message: {
-            id: string;
-            content: string;
-            sender: "user" | "assistant";
-          }) => React.ReactNode
-        } // Cast for ChatLayout
-        handleCodeCardClick={handleCodeCardClick}
-        hasCodePanel={activeCodePanel !== null}
-      />
+    <div className="h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50">
+      {/* Fixed Header */}
+      <div className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-xl border-b border-purple-500/10">
+        <div className="container mx-auto px-4 py-4">
+          <h1 className="text-xl font-bold text-gray-900">Two Pointer</h1>
+        </div>
+      </div>
+
+      {/* Main Layout */}
+      <div className="pt-16 h-screen flex">
+        {/* Chat Area */}
+        <div
+          className={`flex flex-col transition-all duration-300 ${
+            hasCodePanel || isEditorPanelOpen ? "hidden md:flex md:w-96 md:min-w-96" : "flex-1"
+          }`}
+        >
+          {/* Messages */}
+          <div className="flex-1 overflow-hidden">
+            <div className="container mx-auto px-4 overflow-y-auto h-full">
+              <MessageList
+                messages={messages}
+                isTyping={isTyping}
+                typingIndicator={<TypingIndicator />}
+                messagesEndRef={messagesEndRef}
+                renderMessageContent={renderMessageContent}
+                handleCodeCardClick={handleCodeCardClick}
+              />
+            </div>
+          </div>
+
+          {/* Chat Input */}
+          <div className="backdrop-blur-xl border-t border-purple-500/10">
+            <div className="container mx-auto">
+              <ChatInput
+                inputValue={inputValue}
+                onInputChange={(value) => {
+                  setInputValue(value);
+                  autoResize();
+                }}
+                onSendMessage={sendMessage}
+                textareaRef={textareaRef}
+                onKeyDown={handleKeyDown}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Code Panels */}
+        {(hasCodePanel || isEditorPanelOpen) && (
+          <div className="flex-1 md:bg-slate-900 md:border-l md:border-purple-500/20 fixed md:relative top-16 md:top-auto bottom-0 md:bottom-auto left-0 md:left-auto right-0 md:right-auto z-50 md:z-auto bg-slate-900 h-full md:h-auto">
+            {isEditorPanelOpen && currentProblem ? (
+              <MonacoEditorPanel
+                problem={currentProblem}
+                initialCode={currentProblem.starterCode || ""}
+                language={currentProblem.language}
+                onClose={handleCloseEditor}
+                onSubmit={handleEditorSubmit}
+                isVisible={isEditorPanelOpen}
+              />
+            ) : activeCode ? (
+              <CodePanel
+                activeCode={activeCode}
+                onClose={() => setActiveCodePanel(null)}
+                copyCode={copyCode}
+                downloadCode={downloadCode}
+              />
+            ) : null}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

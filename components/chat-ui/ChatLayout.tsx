@@ -37,7 +37,9 @@ interface ChatLayoutProps {
     codeBlocks?: any[];
   }) => React.ReactNode;
   handleCodeCardClick: (codeId: string) => void;
-  hasCodePanel: boolean;
+  hasCodePanel: boolean; // For existing static CodePanel
+  isEditorPanelVisible?: boolean; // For new Monaco Editor Panel
+  editorPanelContent?: React.ReactNode | null; // Content for new Monaco Editor Panel
 }
 
 const ChatLayout: React.FC<ChatLayoutProps> = ({
@@ -57,17 +59,29 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({
   renderMessageContent,
   handleCodeCardClick,
   hasCodePanel,
+  isEditorPanelVisible, // Destructure new prop
+  editorPanelContent, // Destructure new prop
 }) => {
   // Base classes from the original HTML structure
   const appContainerBase =
-    "flex h-screen transition-all duration-400 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] overflow-hidden";
+    "flex h-screen transition-all duration-400 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] overflow-hidden"; // Reverted to h-screen
   const chatContainerBase =
-    "flex flex-col bg-white/80 backdrop-blur-xl border-r border-purple-500/10 transition-all duration-400 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] shadow-[0_0_40px_rgba(139,92,246,0.1)] relative z-10";
+    "flex flex-col transition-all duration-400 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] shadow-[0_0_40px_rgba(139,92,246,0.1)] relative z-10";
+
+  const isAnyPanelVisible = hasCodePanel || isEditorPanelVisible; // Check if either panel should be visible
 
   // Conditional classes for chat container
-  const chatContainerLayoutClasses = hasCodePanel
-    ? "md:max-w-[400px] md:min-w-[350px] md:flex-none shadow-[0_0_60px_rgba(139,92,246,0.15)]" // Desktop: sidebar mode
-    : "w-full flex-1 max-w-none"; // Desktop: full width mode or Mobile: always full width before panel opens
+  let chatContainerLayoutClasses = "";
+  if (isAnyPanelVisible) {
+    // When a side panel IS visible (desktop) or any panel is active on mobile
+    // For desktop, it's a sidebar. For mobile, it might be full width but needs to respect overlay.
+    // Adding h-full ensures the flex-col container has a defined height for MessageList's flex-1.
+    chatContainerLayoutClasses =
+      "md:max-w-[400px] md:min-w-[350px] md:flex-none shadow-[0_0_60px_rgba(139,92,246,0.15)] h-full w-full md:w-auto";
+  } else {
+    // When NO side panel is visible, chat should be full width and full height.
+    chatContainerLayoutClasses = "w-full h-full max-w-none";
+  }
 
   // Conditional classes for code panel
   // Base for transitions and common styles
@@ -75,7 +89,9 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({
     "bg-slate-900 flex flex-col transition-all duration-400 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] overflow-hidden";
 
   let codePanelLayoutClasses = "";
-  if (hasCodePanel) {
+  // const isAnyPanelVisible = hasCodePanel || isEditorPanelVisible; // Already declared above
+
+  if (isAnyPanelVisible) {
     codePanelLayoutClasses =
       // Mobile active: slides from bottom
       "fixed bottom-0 left-0 right-0 h-[80vh] z-20 translate-y-0 opacity-100 " +
@@ -93,15 +109,13 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({
 
   // For mobile overlay effect (backdrop)
   // This class comes from custom-chat-styles.css and is conditionally applied via @media
-  const appContainerMobileOverlay = hasCodePanel
-    ? "mobile-code-panel-overlay"
-    : "";
+  const appContainerMobileOverlay =
+    hasCodePanel || isEditorPanelVisible ? "mobile-code-panel-overlay" : "";
 
   return (
     <div className={`${appContainerBase} ${appContainerMobileOverlay}`}>
       {/* Chat Container */}
       <div className={`${chatContainerBase} ${chatContainerLayoutClasses}`}>
-        <ChatHeader />
         <MessageList
           messages={messages}
           isTyping={isTyping} // Pass down
@@ -110,25 +124,20 @@ const ChatLayout: React.FC<ChatLayoutProps> = ({
           renderMessageContent={renderMessageContent}
           handleCodeCardClick={handleCodeCardClick}
         />
-        <ChatInput
-          inputValue={inputValue}
-          onInputChange={onInputChange}
-          onSendMessage={onSendMessage}
-          textareaRef={textareaRef}
-          onKeyDown={onKeyDown}
-        />
       </div>
 
       {/* Code Panel Container - always in DOM for transition, visibility controlled by classes */}
       <div className={codePanelContainerClasses}>
-        {activeCode && ( // Render CodePanel content only if activeCode exists
+        {isEditorPanelVisible && editorPanelContent ? (
+          editorPanelContent
+        ) : activeCode && hasCodePanel ? (
           <CodePanel
             activeCode={activeCode}
             onClose={onToggleCodePanel}
             copyCode={copyCode}
             downloadCode={downloadCode}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );

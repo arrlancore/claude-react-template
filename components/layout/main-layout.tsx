@@ -9,6 +9,7 @@ interface MainLayoutProps {
   fullWidth?: boolean;
   className?: string;
   showHeader?: boolean;
+  showFooter?: boolean;
 }
 
 export default function MainLayout({
@@ -16,6 +17,7 @@ export default function MainLayout({
   fullWidth = false,
   className = "",
   showHeader = true,
+  showFooter = true,
 }: MainLayoutProps) {
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -25,7 +27,7 @@ export default function MainLayout({
       >
         {children}
       </main>
-      <Footer />
+      {showFooter && <Footer />}
     </div>
   );
 }

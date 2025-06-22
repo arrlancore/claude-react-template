@@ -32,7 +32,7 @@ const MessageList: React.FC<MessageListProps> = ({
   // We can use responsive padding in Tailwind: p-4 md:p-6
   return (
     <div
-      className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col gap-6"
+      className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col gap-6 pb-24"
       ref={messagesEndRef}
     >
       {messages.map((message) => (
