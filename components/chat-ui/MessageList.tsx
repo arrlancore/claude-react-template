@@ -31,22 +31,17 @@ const MessageList: React.FC<MessageListProps> = ({
   // The original HTML also has responsive padding for mobile (padding: 16px;).
   // We can use responsive padding in Tailwind: p-4 md:p-6
   return (
-    <div
-      className="flex-1 p-4 max-w-4xl mx-auto md:p-6 flex flex-col gap-6 pb-24"
-      ref={messagesEndRef}
-    >
+    <div className="flex-1 p-4 max-w-4xl mx-auto md:p-6 flex flex-col gap-6 pb-24">
       {messages.map((message) => (
         <MessageItem
           key={message.id}
-          message={message} // Pass the full message object
-          renderMessageContent={() => renderMessageContent(message)} // Pass a function that calls renderMessageContent with the specific message
+          message={message}
+          renderMessageContent={() => renderMessageContent(message)}
           onCodeCardClick={handleCodeCardClick}
         />
       ))}
-      {isTyping && typingIndicator} {/* Display typing indicator */}
-      {/* The messagesEndRef was originally on DemoChatPage, moving it here or to a child div for scrollIntoView */}
-      {/* If messagesEndRef is for the div itself, it's already applied. If for an empty div at the end: */}
-      {/* <div ref={messagesEndRef} /> */}
+      {isTyping && typingIndicator}
+      <div ref={messagesEndRef} />
     </div>
   );
 };

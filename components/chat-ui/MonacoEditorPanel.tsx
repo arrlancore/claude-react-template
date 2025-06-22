@@ -74,7 +74,7 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
 
       {/* Buttons */}
       <div className="p-4 border-t border-slate-700 flex justify-end space-x-2">
-        <Button variant="outline" onClick={onClose}>
+        <Button variant="secondary" onClick={onClose}>
           Close Panel
         </Button>
         <Button onClick={handleSubmit}>Submit Solution</Button>

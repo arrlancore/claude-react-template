@@ -10,6 +10,7 @@ import CodeCardComponent from "@/components/chat-ui/CodeCard";
 import MonacoEditorPanel from "@/components/chat-ui/MonacoEditorPanel";
 import ProblemCard from "@/components/chat-ui/ProblemCard";
 import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
 
 // Define DSAProblem interface
 interface DSAProblem {
@@ -49,21 +50,35 @@ export default function DemoChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [activeCodePanel, setActiveCodePanel] = useState<string | null>(null); // For existing CodeCard/CodePanel
   const [codeBlocks, setCodeBlocks] = useState<Record<string, CodeBlock>>({});
+  const [isUserNearBottom, setIsUserNearBottom] = useState(true);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // New state for Monaco Editor Panel
   const [isEditorPanelOpen, setIsEditorPanelOpen] = useState(false);
   const [currentProblem, setCurrentProblem] = useState<DSAProblem | null>(null);
 
   const scrollToBottom = () => {
-    // Ensure this ref is correctly placed in MessageList or its child for scrolling
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const checkScrollPosition = () => {
+    if (!chatContainerRef.current) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+    const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100;
+
+    setIsUserNearBottom(isNearBottom);
+    setShowScrollToBottom(!isNearBottom);
+  };
+
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isTyping]); // Scroll when new messages or typing indicator appears
+    if (isUserNearBottom) {
+      scrollToBottom();
+    }
+  }, [messages, isTyping, isUserNearBottom]);
 
   const autoResize = () => {
     if (textareaRef.current) {
@@ -347,9 +362,11 @@ export default function DemoChatPage() {
   return (
     <div className="h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50">
       {/* Fixed Header */}
-      <div className="fixed top-0 w-full z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-purple-500/10">
+      <div className="fixed top-0 w-full z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container max-w-4xl mx-auto px-4 py-4">
-          <h1 className="text-xl font-bold text-gray-900">Two Pointer</h1>
+          <h1 className="text-xl font-bold text-foreground">
+            Two Pointer
+          </h1>
         </div>
       </div>
 
@@ -364,8 +381,12 @@ export default function DemoChatPage() {
           }`}
         >
           {/* Messages */}
-          <div className="flex-1 overflow-hidden">
-            <div className="container mx-auto px-4 overflow-y-auto h-full">
+          <div className="flex-1 overflow-hidden relative">
+            <div
+              ref={chatContainerRef}
+              onScroll={checkScrollPosition}
+              className="container mx-auto px-4 overflow-y-auto h-full"
+            >
               <MessageList
                 messages={messages}
                 isTyping={isTyping}
@@ -375,6 +396,18 @@ export default function DemoChatPage() {
                 handleCodeCardClick={handleCodeCardClick}
               />
             </div>
+
+            {/* Scroll to Bottom Button */}
+            {showScrollToBottom && (
+              <Button
+                onClick={scrollToBottom}
+                size="sm"
+                className="absolute bottom-4 right-4 h-10 w-10 rounded-full bg-purple-500 hover:bg-purple-600 text-white shadow-lg transition-all duration-200 z-10"
+                variant="default"
+              >
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            )}
           </div>
 
           {/* Chat Input */}
