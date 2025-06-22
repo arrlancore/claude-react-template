@@ -159,10 +159,10 @@ export default function PatternOverviewPage({ params }: Props) {
                   <p className="text-sm text-slate-600 mb-4">{level.objective}</p>
 
                   {index === 0 && (
-                    <Link href={`/learn/${pattern.id}/two-sum-ii`}>
+                    <Link href={`/learn/${pattern.id}/start`}>
                       <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700">
                         <Play className="w-4 h-4 mr-2" />
-                        Start Level 1
+                        Start Learning Journey
                       </Button>
                     </Link>
                   )}

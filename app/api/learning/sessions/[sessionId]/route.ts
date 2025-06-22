@@ -1,105 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sessionManager } from '@/lib/progress/session-manager'
+import { sessionManager } from '@/lib/learning/session-manager'
 
-interface Props {
-  params: {
-    sessionId: string
-  }
-}
-
-export async function GET(request: NextRequest, { params }: Props) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { sessionId: string } }
+) {
   try {
-    // Temporary: Skip auth for MVP testing
-    const userId = 'test-user-123'
+    const { sessionId } = params
 
-    const session = await sessionManager.getSession(params.sessionId)
+    const session = await sessionManager.getSessionById(sessionId)
 
-    if (!session || session.user_id !== userId) {
+    if (!session) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 })
     }
 
-    return NextResponse.json({ session })
+    const progress = await sessionManager.getUserProgress(session.user_id, session.pattern_id)
+
+    return NextResponse.json({ session, progress })
   } catch (error) {
-    console.error('Session get error:', error)
+    console.error('Get session error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: Props) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { sessionId: string } }
+) {
   try {
-    // Temporary: Skip auth for MVP testing
-    const userId = 'test-user-123'
-
+    const { sessionId } = params
     const body = await request.json()
-    const {
-      problem_completed,
-      score,
-      understanding_level,
-      hints_used,
-      time_spent_minutes
-    } = body
+    const { progress_update } = body
 
-    const session = await sessionManager.getSession(params.sessionId)
-
-    if (!session || session.user_id !== userId) {
-      return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+    if (!progress_update) {
+      return NextResponse.json({ error: 'Progress update required' }, { status: 400 })
     }
 
-    // Update session data
-    const updates: any = {}
+    await sessionManager.updateProgress(sessionId, progress_update)
 
-    if (understanding_level !== undefined) {
-      updates.understanding_level = understanding_level
-    }
+    const session = await sessionManager.getSessionById(sessionId)
+    const progress = session ? await sessionManager.getUserProgress(session.user_id, session.pattern_id) : null
 
-    if (Object.keys(updates).length > 0) {
-      await sessionManager.updateSession(params.sessionId, updates)
-    }
-
-    // Update progress data
-    const progressUpdates: any = {}
-
-    if (hints_used !== undefined) {
-      progressUpdates.hints_used = hints_used
-    }
-
-    if (time_spent_minutes !== undefined) {
-      progressUpdates.time_spent_minutes = time_spent_minutes
-    }
-
-    if (Object.keys(progressUpdates).length > 0) {
-      await sessionManager.updateProgress(params.sessionId, progressUpdates)
-    }
-
-    // Handle problem completion
-    if (problem_completed && score !== undefined) {
-      await sessionManager.completeProblem(params.sessionId, problem_completed, score)
-    }
-
-    const updatedSession = await sessionManager.getSession(params.sessionId)
-    return NextResponse.json({ session: updatedSession })
+    return NextResponse.json({
+      session,
+      progress,
+      message: 'Progress updated successfully'
+    })
   } catch (error) {
-    console.error('Session update error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
-
-export async function DELETE(request: NextRequest, { params }: Props) {
-  try {
-    // Temporary: Skip auth for MVP testing
-    const userId = 'test-user-123'
-
-    const session = await sessionManager.getSession(params.sessionId)
-
-    if (!session || session.user_id !== userId) {
-      return NextResponse.json({ error: 'Session not found' }, { status: 404 })
-    }
-
-    await sessionManager.completeSession(params.sessionId)
-
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error('Session complete error:', error)
+    console.error('Update progress error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
