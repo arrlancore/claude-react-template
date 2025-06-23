@@ -24,7 +24,7 @@ const ProblemCard: React.FC<ProblemCardProps> = ({ problem, onOpenEditor }) => {
       : problem.description;
 
   return (
-    <div className="my-2">
+    <div className="my-2" data-testid="problem-card">
       {" "}
       {/* Removed p-4, bg-blue-50, border, rounded-lg, shadow. Padding can be adjusted if needed or handled by MessageItem */}
       <h3 className="text-lg font-semibold text-blue-800 mb-2">
@@ -43,7 +43,7 @@ const ProblemCard: React.FC<ProblemCardProps> = ({ problem, onOpenEditor }) => {
           </pre>
         </div>
       )}
-      <Button onClick={() => onOpenEditor(problem)} size="sm">
+      <Button onClick={() => onOpenEditor(problem)} size="sm" data-testid="open-editor-button">
         Solve Problem
       </Button>
     </div>

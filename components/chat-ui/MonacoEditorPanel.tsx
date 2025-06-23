@@ -257,6 +257,7 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
             onClick={handleRun}
             disabled={isRunning}
             className="bg-green-600 hover:bg-green-700"
+            data-testid="run-code-button"
           >
             <Play className="h-4 w-4 mr-1" />
             {isRunning ? "Running..." : "Run"}
@@ -297,18 +298,20 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
               variant="secondary"
               onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
               className="bg-slate-700 hover:bg-slate-600 text-white border-slate-600"
+              data-testid="language-selector"
             >
               {currentLanguage?.label || language}
               <ChevronDown className="h-4 w-4 ml-1" />
             </Button>
 
             {showLanguageDropdown && (
-              <div className="absolute right-0 top-full mt-1 bg-slate-800 border border-slate-600 rounded-md shadow-lg z-50 min-w-32">
+              <div className="absolute right-0 top-full mt-1 bg-slate-800 border border-slate-600 rounded-md shadow-lg z-50 min-w-32" data-testid="language-dropdown">
                 {LANGUAGES.map(lang => (
                   <button
                     key={lang.value}
                     className="w-full px-3 py-2 text-left text-sm hover:bg-slate-700 first:rounded-t-md last:rounded-b-md"
                     onClick={() => handleLanguageChange(lang.value)}
+                    data-testid={`language-option-${lang.value}`}
                   >
                     {lang.label}
                   </button>
@@ -359,7 +362,7 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
             </div>
 
             {/* Test Results Content */}
-            <div className="flex-1 overflow-y-auto p-3">
+            <div className="flex-1 overflow-y-auto p-3" data-testid="test-results-container">
               {/* Execution Error */}
               {executionError && (
                 <div className="mb-4 p-3 bg-red-900/30 border border-red-700 rounded text-sm">
@@ -372,13 +375,14 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
 
               {/* Test Cases */}
               {testResults.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-2" data-testid="test-cases-list">
                   {testResults.map((test, index) => (
                     <div
                       key={index}
                       className={`p-2 rounded text-xs ${
                         test.passed ? 'bg-green-900/30 border border-green-700' : 'bg-red-900/30 border border-red-700'
                       }`}
+                      data-testid={`test-case-${index}`}
                     >
                       <div>Input: {test.input}</div>
                       <div>Expected: {test.expected}</div>
@@ -397,7 +401,7 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
 
       {/* Bottom Buttons */}
       <div className="p-4 border-t border-slate-700 flex justify-end space-x-2">
-        <Button variant="secondary" onClick={onClose}>
+        <Button variant="secondary" onClick={onClose} data-testid="close-panel-button">
           Close Panel
         </Button>
         <Button onClick={handleSubmit}>Submit Solution</Button>

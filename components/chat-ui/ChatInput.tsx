@@ -21,7 +21,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     "p-4 md:p-6 backdrop-blur-xl max-w-4xl mx-auto border-t border-purple-500/10";
 
   // Original .chat-input-wrapper: position: relative; max-width: 100%;
-  const wrapperClasses = "relative max-w-full";
+  const wrapperClasses = "relative max-w-full overflow-hidden rounded-[24px]";
 
   // Original .chat-input: width: 100%; background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 24px; padding: 16px 60px 16px 20px; color: #374151; font-size: 16px; outline: none; resize: none; min-height: 24px; max-height: 120px; backdrop-filter: blur(20px); transition: all 0.2s ease; box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1);
   // Original .chat-input:focus: border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1), 0 4px 20px rgba(139, 92, 246, 0.2);
@@ -55,6 +55,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
           placeholder="Ask me anything..."
           className={textareaClasses}
           rows={1}
+          autoFocus={true}
+          data-testid="chat-input"
         />
         <button
           onClick={onSendMessage}
