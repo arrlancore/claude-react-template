@@ -90,10 +90,12 @@ export class ExecutionValidator {
   }
 
   private async validateTestCases(expectedPasses: number) {
-    const testCases = this.page.locator(
-      '[data-testid="test-cases-list"] > [data-testid^="test-case-"]'
-    );
-    await expect(testCases).toHaveCount(expectedPasses);
+    const testCasesLocator =
+      '[data-testid="test-cases-list"] > [data-testid^="test-case-"]';
+
+    const testCases = this.page.locator(testCasesLocator);
+    // Restore the original assertion but with an explicit 10-second timeout
+    await expect(testCases).toHaveCount(expectedPasses, { timeout: 10000 });
 
     // Verify all test cases passed
     for (let i = 0; i < expectedPasses; i++) {

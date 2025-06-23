@@ -3,14 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Editor from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
-import {
-  Play,
-  RotateCcw,
-  ChevronDown,
-  Clock,
-  X,
-  Settings
-} from "lucide-react";
+import { Play, RotateCcw, ChevronDown, Clock, X, Settings } from "lucide-react";
 import executionFactory from "@/lib/execution/execution-factory";
 
 interface TestCase {
@@ -38,27 +31,38 @@ interface MonacoEditorPanelProps {
   onSubmit: (code: string, language: string) => void;
   isVisible: boolean;
 }
-
+// will support more languages in the future, after MVP
+// For now, we only support JavaScript, Python, and Go
 const LANGUAGES = [
   { value: "javascript", label: "JavaScript" },
-  { value: "typescript", label: "TypeScript" },
+  // { value: "typescript", label: "TypeScript" },
   { value: "python", label: "Python" },
-  { value: "java", label: "Java" },
-  { value: "cpp", label: "C++" },
-  { value: "c", label: "C" },
+  // { value: "java", label: "Java" },
+  // { value: "cpp", label: "C++" },
+  // { value: "c", label: "C" },
   { value: "go", label: "Go" },
-  { value: "rust", label: "Rust" },
+  // { value: "rust", label: "Rust" },
 ];
 
-  // Load from execution factory instead of problem's starterCode
-  const getStarterCode = async (language: string, problem: DSAProblem): Promise<string> => {
-    try {
-      return await executionFactory.getTemplate(problem.pattern, problem.id, language);
-    } catch (error) {
-      console.warn(`Could not load template for ${problem.pattern}/${problem.id}:`, error);
-      return problem.starterCode?.[language] || "";
-    }
-  };
+// Load from execution factory instead of problem's starterCode
+const getStarterCode = async (
+  language: string,
+  problem: DSAProblem
+): Promise<string> => {
+  try {
+    return await executionFactory.getTemplate(
+      problem.pattern,
+      problem.id,
+      language
+    );
+  } catch (error) {
+    console.warn(
+      `Could not load template for ${problem.pattern}/${problem.id}:`,
+      error
+    );
+    return problem.starterCode?.[language] || "";
+  }
+};
 
 const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
   problem,
@@ -113,16 +117,23 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
     loadTemplate();
   }, [language]); // Only trigger on language change
 
-  const handleEditorChange = useCallback((value: string | undefined) => {
-    setCode(value || "");
-    // Clear markers when code changes
-    if (editorInstance) {
-      const monaco = (window as any).monaco;
-      if (monaco) {
-        monaco.editor.setModelMarkers(editorInstance.getModel(), 'execution-errors', []);
+  const handleEditorChange = useCallback(
+    (value: string | undefined) => {
+      setCode(value || "");
+      // Clear markers when code changes
+      if (editorInstance) {
+        const monaco = (window as any).monaco;
+        if (monaco) {
+          monaco.editor.setModelMarkers(
+            editorInstance.getModel(),
+            "execution-errors",
+            []
+          );
+        }
       }
-    }
-  }, [editorInstance]);
+    },
+    [editorInstance]
+  );
 
   // Parse error message to extract line number and details
   const parseExecutionError = (error: string) => {
@@ -131,13 +142,15 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
     const line = lineMatch ? parseInt(lineMatch[1], 10) : null;
 
     // Extract error message (after the stack trace line)
-    const errorLines = error.split('\n');
-    const errorMsg = errorLines.find(line =>
-      line.includes('Error:') ||
-      line.includes('TypeError:') ||
-      line.includes('ReferenceError:') ||
-      line.includes('SyntaxError:')
-    ) || errorLines[0];
+    const errorLines = error.split("\n");
+    const errorMsg =
+      errorLines.find(
+        (line) =>
+          line.includes("Error:") ||
+          line.includes("TypeError:") ||
+          line.includes("ReferenceError:") ||
+          line.includes("SyntaxError:")
+      ) || errorLines[0];
 
     return { line, message: errorMsg.trim() };
   };
@@ -152,17 +165,23 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
     const { line, message } = parseExecutionError(error);
 
     if (line) {
-      const markers = [{
-        startLineNumber: line,
-        startColumn: 1,
-        endLineNumber: line,
-        endColumn: 1000,
-        message: message,
-        severity: monaco.MarkerSeverity.Error,
-        source: 'execution'
-      }];
+      const markers = [
+        {
+          startLineNumber: line,
+          startColumn: 1,
+          endLineNumber: line,
+          endColumn: 1000,
+          message: message,
+          severity: monaco.MarkerSeverity.Error,
+          source: "execution",
+        },
+      ];
 
-      monaco.editor.setModelMarkers(editorInstance.getModel(), 'execution-errors', markers);
+      monaco.editor.setModelMarkers(
+        editorInstance.getModel(),
+        "execution-errors",
+        markers
+      );
     }
   };
 
@@ -180,22 +199,35 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
       );
 
       setExecutionTime(result.executionTime);
-      setTestResults(result.testResults.map(test => ({
-        input: test.input && typeof test.input === 'object' && 'numbers' in test.input
-          ? `numbers = ${JSON.stringify(test.input.numbers)}, target = ${test.input.target}`
-          : (typeof test.input === 'string' ? test.input.replace('\n', ', target = ') : String(test.input)),
-        expected: Array.isArray(test.expected) ? JSON.stringify(test.expected) : String(test.expected),
-        actual: test.actual ? (Array.isArray(test.actual) ? JSON.stringify(test.actual) : String(test.actual)) : "",
-        passed: test.passed || false
-      })));
+      setTestResults(
+        result.testResults.map((test) => ({
+          input:
+            test.input &&
+            typeof test.input === "object" &&
+            "numbers" in test.input
+              ? `numbers = ${JSON.stringify(test.input.numbers)}, target = ${test.input.target}`
+              : typeof test.input === "string"
+                ? test.input.replace("\n", ", target = ")
+                : String(test.input),
+          expected: Array.isArray(test.expected)
+            ? JSON.stringify(test.expected)
+            : String(test.expected),
+          actual: test.actual
+            ? Array.isArray(test.actual)
+              ? JSON.stringify(test.actual)
+              : String(test.actual)
+            : "",
+          passed: test.passed || false,
+        }))
+      );
 
       if (!result.success && result.error) {
         setExecutionError(result.error);
         setErrorMarkers(result.error);
       }
-
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "Execution failed";
+      const errorMsg =
+        error instanceof Error ? error.message : "Execution failed";
       setExecutionError(errorMsg);
       setErrorMarkers(errorMsg);
       setTestResults([]);
@@ -215,7 +247,11 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
     if (editorInstance) {
       const monaco = (window as any).monaco;
       if (monaco) {
-        monaco.editor.setModelMarkers(editorInstance.getModel(), 'execution-errors', []);
+        monaco.editor.setModelMarkers(
+          editorInstance.getModel(),
+          "execution-errors",
+          []
+        );
       }
     }
   };
@@ -239,7 +275,7 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
     return null;
   }
 
-  const currentLanguage = LANGUAGES.find(lang => lang.value === language);
+  const currentLanguage = LANGUAGES.find((lang) => lang.value === language);
   const hasTestResults = testResults.length > 0 || executionError;
 
   return (
@@ -305,8 +341,11 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
             </Button>
 
             {showLanguageDropdown && (
-              <div className="absolute right-0 top-full mt-1 bg-slate-800 border border-slate-600 rounded-md shadow-lg z-50 min-w-32" data-testid="language-dropdown">
-                {LANGUAGES.map(lang => (
+              <div
+                className="absolute right-0 top-full mt-1 bg-slate-800 border border-slate-600 rounded-md shadow-lg z-50 min-w-32"
+                data-testid="language-dropdown"
+              >
+                {LANGUAGES.map((lang) => (
                   <button
                     key={lang.value}
                     className="w-full px-3 py-2 text-left text-sm hover:bg-slate-700 first:rounded-t-md last:rounded-b-md"
@@ -325,7 +364,7 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
       {/* Editor + Test Results Layout */}
       <div className="flex-1 flex flex-col lg:flex-row min-h-0">
         {/* Editor */}
-        <div className={`${hasTestResults ? 'lg:w-3/5' : 'w-full'} min-h-0`}>
+        <div className={`${hasTestResults ? "lg:w-3/5" : "w-full"} min-h-0`}>
           <Editor
             height="100%"
             language={language}
@@ -362,11 +401,16 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
             </div>
 
             {/* Test Results Content */}
-            <div className="flex-1 overflow-y-auto p-3" data-testid="test-results-container">
+            <div
+              className="flex-1 overflow-y-auto p-3"
+              data-testid="test-results-container"
+            >
               {/* Execution Error */}
               {executionError && (
                 <div className="mb-4 p-3 bg-red-900/30 border border-red-700 rounded text-sm">
-                  <div className="font-medium text-red-400 mb-2">Execution Error:</div>
+                  <div className="font-medium text-red-400 mb-2">
+                    Execution Error:
+                  </div>
                   <pre className="text-red-300 whitespace-pre-wrap text-xs">
                     {executionError}
                   </pre>
@@ -380,15 +424,21 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
                     <div
                       key={index}
                       className={`p-2 rounded text-xs ${
-                        test.passed ? 'bg-green-900/30 border border-green-700' : 'bg-red-900/30 border border-red-700'
+                        test.passed
+                          ? "bg-green-900/30 border border-green-700"
+                          : "bg-red-900/30 border border-red-700"
                       }`}
                       data-testid={`test-case-${index}`}
                     >
                       <div>Input: {test.input}</div>
                       <div>Expected: {test.expected}</div>
                       <div>Actual: {test.actual}</div>
-                      <div className={test.passed ? 'text-green-400' : 'text-red-400'}>
-                        {test.passed ? '✅ Passed' : '❌ Failed'}
+                      <div
+                        className={
+                          test.passed ? "text-green-400" : "text-red-400"
+                        }
+                      >
+                        {test.passed ? "✅ Passed" : "❌ Failed"}
                       </div>
                     </div>
                   ))}
@@ -401,7 +451,11 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
 
       {/* Bottom Buttons */}
       <div className="p-4 border-t border-slate-700 flex justify-end space-x-2">
-        <Button variant="secondary" onClick={onClose} data-testid="close-panel-button">
+        <Button
+          variant="secondary"
+          onClick={onClose}
+          data-testid="close-panel-button"
+        >
           Close Panel
         </Button>
         <Button onClick={handleSubmit}>Submit Solution</Button>
@@ -412,7 +466,9 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-slate-800 rounded-2xl p-6 max-w-2xl w-full border border-slate-600 max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white">Test Case Settings</h3>
+              <h3 className="text-xl font-bold text-white">
+                Test Case Settings
+              </h3>
               <Button
                 size="sm"
                 variant="ghost"
@@ -453,7 +509,8 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
                 className="w-full h-32 px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
               <p className="text-xs text-slate-500 mt-1">
-                Leave empty to use system tests. Custom tests override system tests when defined.
+                Leave empty to use system tests. Custom tests override system
+                tests when defined.
               </p>
             </div>
 

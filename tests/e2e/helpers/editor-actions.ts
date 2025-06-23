@@ -73,6 +73,9 @@ export class EditorActions {
   }
 
   async executeCode() {
+    // Add a delay to help with API rate limiting
+    await this.page.waitForTimeout(250); // Start with 250ms, adjustable
+
     const runButton = this.page.locator('[data-testid="run-code-button"]');
     await expect(runButton).toBeVisible();
     await expect(runButton).not.toBeDisabled();

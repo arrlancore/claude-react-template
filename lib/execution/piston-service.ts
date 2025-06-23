@@ -44,8 +44,15 @@ export interface ExecuteRequest {
 }
 
 // Language mapping from our editor to Piston
-const LANGUAGE_MAP: Record<string, { language: string; version: string; filename: string }> = {
-  javascript: { language: "javascript", version: "18.15.0", filename: "main.js" },
+const LANGUAGE_MAP: Record<
+  string,
+  { language: string; version: string; filename: string }
+> = {
+  javascript: {
+    language: "javascript",
+    version: "18.15.0",
+    filename: "main.js",
+  },
   typescript: { language: "typescript", version: "5.0.3", filename: "main.ts" },
   python: { language: "python", version: "3.10.0", filename: "main.py" },
   java: { language: "java", version: "15.0.2", filename: "Main.java" },
@@ -93,13 +100,15 @@ class PistonService {
     const request: ExecuteRequest = {
       language: mapping.language,
       version: mapping.version,
-      files: [{
-        name: mapping.filename,
-        content: this.wrapCode(code, language)
-      }],
+      files: [
+        {
+          name: mapping.filename,
+          content: this.wrapCode(code, language),
+        },
+      ],
       stdin: stdin || "",
       compile_timeout: timeoutMs,
-      run_timeout: timeoutMs
+      run_timeout: timeoutMs,
     };
 
     const response = await fetch(`${this.baseUrl}/execute`, {
@@ -124,7 +133,16 @@ class PistonService {
     language: string,
     code: string,
     testCases: Array<{ input: string; expected: string }>
-  ): Promise<Array<{ input: string; expected: string; actual: string; passed: boolean; output: string; error?: string }>> {
+  ): Promise<
+    Array<{
+      input: string;
+      expected: string;
+      actual: string;
+      passed: boolean;
+      output: string;
+      error?: string;
+    }>
+  > {
     const results = [];
 
     for (const testCase of testCases) {
@@ -141,7 +159,7 @@ class PistonService {
           actual,
           passed,
           output: result.run.output,
-          error: result.run.stderr || undefined
+          error: result.run.stderr || undefined,
         });
       } catch (error) {
         results.push({
@@ -150,7 +168,7 @@ class PistonService {
           actual: "",
           passed: false,
           output: "",
-          error: error instanceof Error ? error.message : "Execution failed"
+          error: error instanceof Error ? error.message : "Execution failed",
         });
       }
     }
@@ -185,6 +203,13 @@ class PistonService {
         return `#include <stdio.h>\n#include <stdlib.h>\n\n${code}\n\nint main() {\n    printf("Function defined successfully\\n");\n    return 0;\n}`;
 
       case "go":
+        // If the incoming code already starts with "package main",
+        // assume it's a complete program from a specific executor (like TwoSumIIExecutor)
+        // and should not be wrapped again.
+        if (code.trim().startsWith("package main")) {
+          return code; // Return the code as-is
+        }
+        // Otherwise, if it's a raw snippet, apply the default generic Go wrapper.
         return `package main\n\nimport "fmt"\n\n${code}\n\nfunc main() {\n    fmt.Println("Function defined successfully")\n}`;
 
       case "rust":
@@ -204,7 +229,7 @@ class PistonService {
 
     if (timeSinceLastRequest < this.rateLimitDelay) {
       const waitTime = this.rateLimitDelay - timeSinceLastRequest;
-      await new Promise(resolve => setTimeout(resolve, waitTime));
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
     }
 
     this.lastRequestTime = Date.now();
