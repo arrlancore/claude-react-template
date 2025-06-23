@@ -44,6 +44,8 @@ const LANGUAGES = [
   // { value: "rust", label: "Rust" },
 ];
 
+const GO_LINE_OFFSET = 9; // Offset for lines added by Piston wrapper for Go
+
 // Load from execution factory instead of problem's starterCode
 const getStarterCode = async (
   language: string,
@@ -136,33 +138,88 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
   );
 
   // Parse error message to extract line number and details
-  const parseExecutionError = (error: string) => {
-    // Match patterns like "/path/main.js:8" or "line 8"
-    const lineMatch = error.match(/main\.\w+:(\d+)/);
-    const line = lineMatch ? parseInt(lineMatch[1], 10) : null;
+  const parseExecutionError = (error: string, currentLanguage: string) => {
+    let line: number | null = null;
+    let message = error.split("\n")[0]; // Default message is the first line
 
-    // Extract error message (after the stack trace line)
-    const errorLines = error.split("\n");
-    const errorMsg =
-      errorLines.find(
-        (line) =>
-          line.includes("Error:") ||
-          line.includes("TypeError:") ||
-          line.includes("ReferenceError:") ||
-          line.includes("SyntaxError:")
-      ) || errorLines[0];
+    if (currentLanguage === "javascript") {
+      const lineMatch = error.match(/main\.\w+:(\d+)/);
+      line = lineMatch ? parseInt(lineMatch[1], 10) : null;
+      const errorLines = error.split("\n");
+      message =
+        errorLines.find(
+          (l) =>
+            l.includes("Error:") ||
+            l.includes("TypeError:") ||
+            l.includes("ReferenceError:") ||
+            l.includes("SyntaxError:")
+        ) || errorLines[0];
+    } else if (currentLanguage === "python") {
+      // Python: File "main.py", line X
+      //         SpecificError: The error message
+      if (error === "Could not parse output") {
+        // This is an application-level error, not a Python traceback for line marking
+        message = error;
+        line = null;
+        return { line, message }; // Early return
+      }
 
-    return { line, message: errorMsg.trim() };
+      const lineMatch = error.match(/File ".*?", line (\d+)/g);
+      if (lineMatch && lineMatch.length > 0) {
+        // Get the last match, which is usually the most relevant
+        const lastMatch = lineMatch[lineMatch.length - 1];
+        const lineNumStr = lastMatch.match(/line (\d+)/);
+        if (lineNumStr && lineNumStr[1]) {
+          line = parseInt(lineNumStr[1], 10);
+        }
+      }
+      const errorLines = error.split("\n");
+      // Find the line with the error type and message
+      const errorTypeLine = errorLines.find((line) =>
+        /^[A-Za-z]+Error:/.test(line.trim())
+      );
+      message = errorTypeLine
+        ? errorTypeLine.trim()
+        : errorLines[errorLines.length - 1] || errorLines[0];
+    } else if (currentLanguage === "go") {
+      // Go compile error: ./main.go:X:Y: message  OR ./main.go.go:X:Y: message
+      // Go runtime panic: panic: message
+      //                   main.go:X or main.go.go:X
+      // Example error: # command-line-arguments\n./main.go.go:14:12: undefined: x
+      const compileErrorMatch = error.match(
+        /^\.\/(.+?\.go):(\d+):\d+:\s*(.*)/m
+      ); // Added 'm' flag for multiline
+
+      if (compileErrorMatch && compileErrorMatch[2] && compileErrorMatch[3]) {
+        const parsedLine = parseInt(compileErrorMatch[2], 10);
+        line = Math.max(1, parsedLine - GO_LINE_OFFSET); // Adjust line and ensure it's > 0
+        message = compileErrorMatch[3];
+      } else {
+        // Try to find panic message and line from stack trace
+        const panicMatch = error.match(/panic:\s*(.*)/);
+        if (panicMatch && panicMatch[1]) {
+          message = `panic: ${panicMatch[1].split("\n")[0]}`; // Get only the first line of panic
+        }
+        // Match main.go:X or main.go.go:X in stack traces for panics
+        const stackTraceLineMatch = error.match(/(.+?\.go):(\d+)/m);
+        if (stackTraceLineMatch && stackTraceLineMatch[2]) {
+          const parsedLine = parseInt(stackTraceLineMatch[2], 10);
+          line = Math.max(1, parsedLine - GO_LINE_OFFSET); // Adjust line and ensure it's > 0
+        }
+      }
+    }
+
+    return { line, message: message.trim() };
   };
 
   // Set Monaco error markers
-  const setErrorMarkers = (error: string) => {
+  const setErrorMarkers = (error: string, currentLanguage: string) => {
     if (!editorInstance) return;
 
     const monaco = (window as any).monaco;
     if (!monaco) return;
 
-    const { line, message } = parseExecutionError(error);
+    const { line, message } = parseExecutionError(error, currentLanguage);
 
     if (line) {
       const markers = [
@@ -183,6 +240,39 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
         markers
       );
     }
+  };
+
+  const formatErrorForDisplay = (
+    rawError: string,
+    language: string
+  ): string => {
+    if (language === "go") {
+      // Try to match compile error format: (# command-line-arguments\n)?./filename:line:col: message
+      const compileErrorRegex =
+        /^(# command-line-arguments\n)?(\.\/(.+?\.go)):(\d+):(\d+:\s*.*)/m;
+      const compileMatch = rawError.match(compileErrorRegex);
+
+      if (compileMatch) {
+        const prefix = compileMatch[1] || ""; // Optional "# command-line-arguments\n"
+        const filePath = compileMatch[2]; // Full path like ./main.go.go
+        const originalLine = parseInt(compileMatch[4], 10);
+        const restOfMessage = compileMatch[5]; // Column and actual error message part
+
+        const adjustedLine = Math.max(1, originalLine - GO_LINE_OFFSET);
+        return `${prefix}${filePath}:${adjustedLine}:${restOfMessage}`;
+      }
+      // Note: Panic messages might need different handling if their displayed format also needs adjustment.
+      // For now, this targets the common compile error string.
+    } else if (language === "python") {
+      if (rawError === "Could not parse output") {
+        return rawError; // Don't try to adjust this specific message's line numbers
+      }
+      // TODO: Add Python traceback line number adjustment logic here
+      //       if Piston returns standard tracebacks with user-code line numbers
+      //       that need offsetting due to wrappers.
+    }
+    // TODO: Add similar logic for Python if its error messages also need line number adjustments for display.
+    return rawError; // Return original if no transformation applies or language not handled
   };
 
   const handleRun = async () => {
@@ -222,14 +312,16 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
       );
 
       if (!result.success && result.error) {
-        setExecutionError(result.error);
-        setErrorMarkers(result.error);
+        const formattedError = formatErrorForDisplay(result.error, language);
+        setExecutionError(formattedError);
+        setErrorMarkers(result.error, language); // setErrorMarkers uses original error for its internal parsing
       }
     } catch (error) {
       const errorMsg =
         error instanceof Error ? error.message : "Execution failed";
-      setExecutionError(errorMsg);
-      setErrorMarkers(errorMsg);
+      const formattedError = formatErrorForDisplay(errorMsg, language);
+      setExecutionError(formattedError);
+      setErrorMarkers(errorMsg, language); // setErrorMarkers uses original error for its internal parsing
       setTestResults([]);
     }
 
