@@ -12,6 +12,10 @@ import ProblemCard from "@/components/chat-ui/ProblemCard";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import PatternChoiceButtons from "@/components/chat-ui/interactive/PatternChoiceButtons";
+import InteractiveElementWrapper, {
+  InteractiveElement,
+  AlgorithmStateData
+} from "@/components/chat-ui/interactive/InteractiveElementWrapper";
 import { is } from "date-fns/locale";
 
 // Define DSAProblem interface
@@ -180,6 +184,67 @@ export default function DemoChatPage() {
               const userMessage: Message = {
                 id: Date.now().toString(),
                 content: `Selected: ${optionId}`,
+                sender: "user",
+                timestamp: new Date(),
+              };
+              setMessages((prev) => [...prev, userMessage]);
+              setIsInteractiveActive(false);
+            }}
+          />
+        </>
+      );
+    }
+
+    // Handle interactive 2 - algorithm state
+    if (
+      message.content.includes("interactive 2") &&
+      message.sender === "assistant"
+    ) {
+      const algorithmElement: InteractiveElement = {
+        type: 'algorithm-state',
+        data: {
+          visualizer: 'two-pointer',
+          state: {
+            array: [2, 7, 11, 15],
+            left: 0,
+            right: 3,
+            target: 9,
+            currentSum: 17,
+            status: 'Sum is too high, which pointer should move?'
+          },
+          question: 'Current sum is 17, target is 9 (too high). Which pointer should move?',
+          options: [
+            {
+              id: 'move-left',
+              label: 'Move left pointer right',
+              action: 'increment-left',
+              explanation: 'This would increase the sum further (2→7), making it even higher',
+              correct: false
+            },
+            {
+              id: 'move-right',
+              label: 'Move right pointer left',
+              action: 'decrement-right',
+              explanation: 'Correct! This reduces the sum by using a smaller value (15→11)',
+              correct: true
+            }
+          ]
+        }
+      };
+
+      return (
+        <>
+          <div className="mb-4">{message.content}</div>
+          <InteractiveElementWrapper
+            element={algorithmElement}
+            onRender={(container) => {
+              container.focus();
+              setIsInteractiveActive(true);
+            }}
+            onResponse={(response) => {
+              const userMessage: Message = {
+                id: Date.now().toString(),
+                content: `Selected: ${response.selectedOption}`,
                 sender: "user",
                 timestamp: new Date(),
               };
@@ -414,6 +479,12 @@ export default function DemoChatPage() {
           responseContent =
             "Which pattern would you use for this problem? Array: [1,3,6,8,11,15], Target: 14";
           // Will add interactive element in render
+        } else if (
+          userMessage.content.toLowerCase().includes("interactive 2")
+        ) {
+          responseContent =
+            "Let's analyze this two-pointer scenario: Array: [2,7,11,15], Target: 9. We start with pointers at positions 0 and 3. interactive 2";
+          // Will add algorithm visualizer in render
         }
 
         const { content: processedContent, codeBlocks: newCodeBlocks } =
