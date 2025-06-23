@@ -9,6 +9,8 @@ interface DSAProblem {
   description: string;
   starterCode?: Record<string, string>; // { language: code }
   language: string;
+  pattern: string; // Changed back to non-optional to match usage in DemoChatPage
+  testCases?: any[]; // Added to match, optional as not used here
 }
 
 interface ProblemCardProps {
@@ -39,11 +41,18 @@ const ProblemCard: React.FC<ProblemCardProps> = ({ problem, onOpenEditor }) => {
             Starter Code ({problem.language}):
           </h4>
           <pre className="bg-gray-800 text-white p-2 rounded-md text-xs overflow-x-auto">
-            <code>{problem.starterCode[problem.language] || "// No starter code available"}</code>
+            <code>
+              {problem.starterCode[problem.language] ||
+                "// No starter code available"}
+            </code>
           </pre>
         </div>
       )}
-      <Button onClick={() => onOpenEditor(problem)} size="sm" data-testid="open-editor-button">
+      <Button
+        onClick={() => onOpenEditor(problem)}
+        size="sm"
+        data-testid="open-editor-button"
+      >
         Solve Problem
       </Button>
     </div>

@@ -13,6 +13,13 @@ interface TestCase {
   passed?: boolean;
 }
 
+// Interface to represent the structure from test-cases.json
+interface SourceTestCase {
+  input: Record<string, any> | any;
+  expected: any;
+  explanation?: string;
+}
+
 interface DSAProblem {
   id: string;
   pattern: string; // Add pattern property
@@ -20,7 +27,7 @@ interface DSAProblem {
   description: string;
   starterCode?: Record<string, string>; // { language: code }
   language: string;
-  testCases?: TestCase[];
+  testCases?: SourceTestCase[]; // Updated to use SourceTestCase
 }
 
 interface MonacoEditorPanelProps {
@@ -84,6 +91,43 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
   const [editorInstance, setEditorInstance] = useState<any>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [customTestCases, setCustomTestCases] = useState("");
+  const [displayedSystemTestCases, setDisplayedSystemTestCases] =
+    useState<string>("");
+
+  // Effect to format system test cases for display
+  useEffect(() => {
+    if (problem?.testCases?.length) {
+      const formattedStrings = problem.testCases.map((tc) => {
+        let inputDisplayStr = "";
+        if (typeof tc.input === "object" && tc.input !== null) {
+          // Check for common structure like { numbers: [], target: ... }
+          if (
+            "numbers" in tc.input &&
+            "target" in tc.input &&
+            Object.keys(tc.input).length === 2
+          ) {
+            inputDisplayStr = `${JSON.stringify(tc.input.numbers)}|${tc.input.target}`;
+          } else {
+            // Generic fallback for other object structures
+            inputDisplayStr = Object.values(tc.input)
+              .map((v) => (Array.isArray(v) ? JSON.stringify(v) : String(v)))
+              .join("|");
+          }
+        } else {
+          inputDisplayStr = String(tc.input); // For non-object inputs (e.g. string, number)
+        }
+
+        const expectedDisplayStr = JSON.stringify(tc.expected);
+        // Return only input|output, without explanation
+        return `${inputDisplayStr}|${expectedDisplayStr}`;
+      });
+      setDisplayedSystemTestCases(formattedStrings.join("\n")); // Join with single newline
+    } else {
+      setDisplayedSystemTestCases(
+        "No default test cases available for this problem."
+      );
+    }
+  }, [problem, problem.testCases]); // Made dependency more specific
 
   // Auto-save to localStorage
   useEffect(() => {
@@ -576,14 +620,13 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
                 System Test Cases (Default)
               </label>
               <textarea
-                value={`[2,7,11,15]|9|[1,2]
-[2,3,4]|6|[1,3]
-[-1,0]|-1|[1,2]`}
+                value={displayedSystemTestCases}
                 disabled
                 className="w-full h-24 px-3 py-2 bg-slate-900/50 border border-slate-600 rounded-lg text-slate-400 text-sm font-mono resize-none"
               />
               <p className="text-xs text-slate-500 mt-1">
-                Format: nums|target|expected (one per line)
+                System-defined test cases. Format: input_parts|expected_output
+                (one per line).
               </p>
             </div>
 

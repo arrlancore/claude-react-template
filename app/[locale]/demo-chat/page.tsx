@@ -20,13 +20,21 @@ interface DSAProblem {
   description: string;
   starterCode?: Record<string, string>; // { language: code }
   language: string;
+  testCases?: SourceTestCase[]; // Added for consistency with MonacoEditorPanel's expectation
+}
+
+// Interface to represent the structure from test-cases.json, mirroring MonacoEditorPanel
+interface SourceTestCase {
+  input: Record<string, any> | any;
+  expected: any;
+  explanation?: string;
 }
 
 interface Message {
   id: string;
   content: string;
   sender: "user" | "assistant";
-  timestamp: Date;
+  timestamp?: Date; // Made timestamp optional
   codeBlocks?: CodeBlock[];
   dsaProblem?: DSAProblem; // Add dsaProblem to Message interface
 }
@@ -270,8 +278,70 @@ export default function DemoChatPage() {
             title: "Two Sum II - Input Array is Sorted",
             description:
               "Given a 1-indexed array of integers `numbers` that is already sorted in non-decreasing order, find two numbers such that they add up to a specific `target` number.\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\nExample:\nInput: numbers = [2,7,11,15], target = 9\nOutput: [1,2]\nExplanation: The sum of 2 and 7 is 9. Therefore index1 = 1, index2 = 2. We return [1, 2].",
-            starterCode: {}, // Will be loaded from templates
-            language: "javascript",
+            starterCode: {
+              javascript:
+                "function twoSum(numbers, target) {\n    // numbers: sorted array of integers\n    // target: integer to find sum for\n    // return: array of indices [index1, index2] (1-indexed per LeetCode #167)\n    \n}",
+              python:
+                "def twoSum(numbers, target):\n    # numbers: sorted list of integers\n    # target: integer to find sum for\n    # return: list of indices [index1, index2] (1-indexed per LeetCode #167)\n    pass",
+              go: "func twoSum(numbers []int, target int) []int {\n    // numbers: sorted slice of integers\n    // target: integer to find sum for\n    // return: slice of indices [index1, index2] (1-indexed per LeetCode #167)\n    \n}",
+            },
+            language: "javascript", // Default language for the problem card and editor
+            testCases: [
+              {
+                input: { numbers: [2, 7, 11, 15], target: 9 },
+                expected: [[1, 2]],
+                explanation: "Basic case: 2 + 7 = 9",
+              },
+              {
+                input: { numbers: [2, 3, 4], target: 6 },
+                expected: [[1, 3]],
+                explanation: "Skip middle element: 2 + 4 = 6",
+              },
+              {
+                input: { numbers: [-1, 0], target: -1 },
+                expected: [[1, 2]],
+                explanation: "Negative numbers: -1 + 0 = -1",
+              },
+              {
+                input: { numbers: [1, 2], target: 3 },
+                expected: [[1, 2]],
+                explanation: "Minimum array size: 1 + 2 = 3",
+              },
+              {
+                input: { numbers: [-3, -1, 0, 2, 4], target: 1 },
+                expected: [
+                  [2, 4],
+                  [1, 5],
+                ],
+                explanation:
+                  "Mixed negative/positive: -1 + 2 = 1 OR -3 + 4 = 1",
+              },
+              {
+                input: { numbers: [1, 3, 3, 6], target: 6 },
+                expected: [[2, 3]],
+                explanation: "Duplicate values: 3 + 3 = 6",
+              },
+              {
+                input: { numbers: [-5, -3, -1, 0, 2, 4, 6], target: -4 },
+                expected: [[2, 3]],
+                explanation: "Large array: -3 + (-1) = -4",
+              },
+              {
+                input: { numbers: [0, 0, 3, 4], target: 0 },
+                expected: [[1, 2]],
+                explanation: "Target zero: 0 + 0 = 0",
+              },
+              {
+                input: { numbers: [1, 2, 3, 4, 4, 9, 56, 90], target: 8 },
+                expected: [[4, 5]],
+                explanation: "Large array: 4 + 4 = 8",
+              },
+              {
+                input: { numbers: [-10, -8, -2, 1, 2, 5, 6], target: 0 },
+                expected: [[3, 5]],
+                explanation: "Wide range: -2 + 2 = 0",
+              },
+            ],
           };
           // The ProblemCard will display the problem, so the message content can be simpler
           responseContent = `Here's a DSA problem for you: ${dsaProblemForMessage.title}. Click below to open the editor.`;
@@ -365,9 +435,7 @@ export default function DemoChatPage() {
       {/* Fixed Header */}
       <div className="fixed top-0 w-full z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container max-w-4xl mx-auto px-4 py-4">
-          <h1 className="text-xl font-bold text-foreground">
-            Two Pointer
-          </h1>
+          <h1 className="text-xl font-bold text-foreground">Two Pointer</h1>
         </div>
       </div>
 
@@ -434,7 +502,9 @@ export default function DemoChatPage() {
             {isEditorPanelOpen && currentProblem ? (
               <MonacoEditorPanel
                 problem={currentProblem}
-                initialCode={currentProblem.starterCode?.[currentProblem.language] || ""}
+                initialCode={
+                  currentProblem.starterCode?.[currentProblem.language] || ""
+                }
                 language={currentProblem.language}
                 onClose={handleCloseEditor}
                 onSubmit={handleEditorSubmit}

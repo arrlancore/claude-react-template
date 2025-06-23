@@ -342,11 +342,7 @@ fn main() {
       }
     }
 
-    if (language === "python" && stdout?.startsWith("null")) {
-      throw new Error("No valid output received from execution");
-    }
-
-    throw new Error("Could not parse output");
+    throw new Error("No valid output received from execution");
   }
 
   /**
