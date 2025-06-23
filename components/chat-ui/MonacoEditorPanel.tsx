@@ -11,7 +11,7 @@ import {
   X,
   Settings
 } from "lucide-react";
-import { codeExecutionService } from "@/lib/execution/code-execution-service";
+import executionFactory from "@/lib/execution/execution-factory";
 
 interface TestCase {
   input: string;
@@ -22,6 +22,7 @@ interface TestCase {
 
 interface DSAProblem {
   id: string;
+  pattern: string; // Add pattern property
   title: string;
   description: string;
   starterCode?: Record<string, string>; // { language: code }
@@ -49,10 +50,15 @@ const LANGUAGES = [
   { value: "rust", label: "Rust" },
 ];
 
-// Get starter code from problem's starterCode prop
-const getStarterCode = (language: string, problem: DSAProblem): string => {
-  return problem.starterCode?.[language] || "";
-};
+  // Load from execution factory instead of problem's starterCode
+  const getStarterCode = async (language: string, problem: DSAProblem): Promise<string> => {
+    try {
+      return await executionFactory.getTemplate(problem.pattern, problem.id, language);
+    } catch (error) {
+      console.warn(`Could not load template for ${problem.pattern}/${problem.id}:`, error);
+      return problem.starterCode?.[language] || "";
+    }
+  };
 
 const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
   problem,
@@ -84,25 +90,27 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
 
   // Load from localStorage on mount only, not on language change
   useEffect(() => {
-    const saveKey = `dsa-editor-${problem.id}-${language}`;
-    const saved = localStorage.getItem(saveKey);
-    if (saved) {
-      setCode(saved);
-    } else {
-      // If no saved code, use starter template
-      const starterCode = getStarterCode(language, problem);
-      setCode(starterCode);
-    }
+    const loadInitialCode = async () => {
+      const saveKey = `dsa-editor-${problem.id}-${language}`;
+      const saved = localStorage.getItem(saveKey);
+      if (saved) {
+        setCode(saved);
+      } else {
+        // If no saved code, use starter template
+        const starterCode = await getStarterCode(language, problem);
+        setCode(starterCode);
+      }
+    };
+    loadInitialCode();
   }, [problem.id]); // Remove language and initialCode from dependencies
 
   // Initialize with starter code template when language changes
   useEffect(() => {
-    const starterCode = getStarterCode(language, problem);
-    if (starterCode) {
-      setCode(starterCode);
-    } else {
-      setCode(initialCode);
-    }
+    const loadTemplate = async () => {
+      const starterCode = await getStarterCode(language, problem);
+      setCode(starterCode || initialCode);
+    };
+    loadTemplate();
   }, [language]); // Only trigger on language change
 
   const handleEditorChange = useCallback((value: string | undefined) => {
@@ -163,7 +171,9 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
     setExecutionError(null);
 
     try {
-      const result = await codeExecutionService.executeTwoSum(
+      const result = await executionFactory.execute(
+        problem.pattern,
+        problem.id,
         language,
         code,
         customTestCases.trim() || undefined
@@ -171,9 +181,11 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
 
       setExecutionTime(result.executionTime);
       setTestResults(result.testResults.map(test => ({
-        input: test.input.replace('\n', ', target = '),
-        expected: test.expected,
-        actual: test.actual || "",
+        input: test.input && typeof test.input === 'object' && 'numbers' in test.input
+          ? `numbers = ${JSON.stringify(test.input.numbers)}, target = ${test.input.target}`
+          : (typeof test.input === 'string' ? test.input.replace('\n', ', target = ') : String(test.input)),
+        expected: Array.isArray(test.expected) ? JSON.stringify(test.expected) : String(test.expected),
+        actual: test.actual ? (Array.isArray(test.actual) ? JSON.stringify(test.actual) : String(test.actual)) : "",
         passed: test.passed || false
       })));
 
@@ -216,10 +228,10 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
     onSubmit(code, language);
   };
 
-  const handleLanguageChange = (newLanguage: string) => {
+  const handleLanguageChange = async (newLanguage: string) => {
     setLanguage(newLanguage);
     setShowLanguageDropdown(false);
-    const starterCode = getStarterCode(newLanguage, problem);
+    const starterCode = await getStarterCode(newLanguage, problem);
     setCode(starterCode);
   };
 
@@ -412,9 +424,9 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
                 System Test Cases (Default)
               </label>
               <textarea
-                value={`[2,7,11,15]|9|[0,1]
-[3,2,4]|6|[1,2]
-[-1,0]|-1|[0,1]`}
+                value={`[2,7,11,15]|9|[1,2]
+[2,3,4]|6|[1,3]
+[-1,0]|-1|[1,2]`}
                 disabled
                 className="w-full h-24 px-3 py-2 bg-slate-900/50 border border-slate-600 rounded-lg text-slate-400 text-sm font-mono resize-none"
               />
@@ -432,7 +444,7 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
                 value={customTestCases}
                 onChange={(e) => setCustomTestCases(e.target.value)}
                 placeholder={`[1,2,3,4]|7|[2,3]
-[5,5,5]|10|[0,1]
+[5,5,5]|10|[1,2]
 []|0|null`}
                 className="w-full h-32 px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />

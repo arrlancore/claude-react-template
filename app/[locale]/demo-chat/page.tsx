@@ -15,6 +15,7 @@ import { ChevronDown } from "lucide-react";
 // Define DSAProblem interface
 interface DSAProblem {
   id: string;
+  pattern: string; // Add pattern property
   title: string;
   description: string;
   starterCode?: Record<string, string>; // { language: code }
@@ -264,51 +265,12 @@ export default function DemoChatPage() {
           userMessage.content.toLowerCase().includes("give me a problem")
         ) {
           dsaProblemForMessage = {
-            id: `dsa_${Date.now()}`,
-            title: "Two Sum Challenge",
+            id: "01-two-sum-ii", // Use actual problem ID
+            pattern: "two-pointer", // Add pattern
+            title: "Two Sum II - Input Array is Sorted",
             description:
-              "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\nExample:\nInput: nums = [2,7,11,15], target = 9\nOutput: [0,1]\nExplanation: Because nums[0] + nums[1] == 9, we return [0, 1].",
-            starterCode: {
-              javascript: `/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number[]}
- */
-var twoSum = function(nums, target) {
-    // Your code here
-};`,
-              typescript: `function twoSum(nums: number[], target: number): number[] {
-    // Your code here
-}`,
-              python: `def twoSum(nums: List[int], target: int) -> List[int]:
-    # Your code here
-    pass`,
-              java: `class Solution {
-    public int[] twoSum(int[] nums, int target) {
-        // Your code here
-    }
-}`,
-              cpp: `class Solution {
-public:
-    vector<int> twoSum(vector<int>& nums, int target) {
-        // Your code here
-    }
-};`,
-              c: `/**
- * Note: The returned array must be malloced, assume caller calls free().
- */
-int* twoSum(int* nums, int numsSize, int target, int* returnSize){
-    // Your code here
-}`,
-              go: `func twoSum(nums []int, target int) []int {
-    // Your code here
-}`,
-              rust: `impl Solution {
-    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
-        // Your code here
-    }
-}`
-            },
+              "Given a 1-indexed array of integers `numbers` that is already sorted in non-decreasing order, find two numbers such that they add up to a specific `target` number.\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\nExample:\nInput: numbers = [2,7,11,15], target = 9\nOutput: [1,2]\nExplanation: The sum of 2 and 7 is 9. Therefore index1 = 1, index2 = 2. We return [1, 2].",
+            starterCode: {}, // Will be loaded from templates
             language: "javascript",
           };
           // The ProblemCard will display the problem, so the message content can be simpler
