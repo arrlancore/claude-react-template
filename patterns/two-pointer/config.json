@@ -1,1 +1,209 @@
-{"patternId": "two-pointer", "metadata": {"id": "two-pointer", "name": "Two Pointer Technique", "description": "Master the art of using two pointers to solve array and string problems efficiently", "difficulty": "beginner", "estimatedTime": {"level1": "4-8 hours", "level2": "2-4 hours", "level3": "3-5 hours", "total": "9-17 hours"}, "prerequisites": ["arrays", "basic_loops"], "companies": ["Google", "Microsoft", "Amazon", "Meta", "Apple"], "interviewFrequency": "very_high"}, "levels": {"level1": {"id": "level1", "name": "Interview Ready", "description": "Master core Two Pointer patterns for interview success", "objective": "Recognize and solve standard Two Pointer problems confidently", "estimatedTime": "4-8 hours", "problems": [{"id": "two-sum-ii", "title": "Two Sum II - Input Array is Sorted", "difficulty": "easy", "estimatedTime": "30-45 minutes", "category": "foundation", "description": "Find two numbers in sorted array that sum to target"}, {"id": "valid-palindrome", "title": "Valid Palindrome", "difficulty": "easy", "estimatedTime": "20-30 minutes", "category": "foundation", "description": "Check if string is palindrome using two pointers"}, {"id": "container-with-water", "title": "Container With Most Water", "difficulty": "medium", "estimatedTime": "30-45 minutes", "category": "foundation", "description": "Find container that holds the most water"}, {"id": "move-zeroes", "title": "Move Zeroes", "difficulty": "easy", "estimatedTime": "20-30 minutes", "category": "foundation", "description": "Move all zeros to end while maintaining order"}, {"id": "three-sum", "title": "3Sum", "difficulty": "medium", "estimatedTime": "45-60 minutes", "category": "extension", "description": "Find all unique triplets that sum to zero"}, {"id": "remove-duplicates", "title": "Remove Duplicates from Sorted Array", "difficulty": "easy", "estimatedTime": "20-30 minutes", "category": "foundation", "description": "Remove duplicates in-place from sorted array"}, {"id": "sort-colors", "title": "Sort Colors", "difficulty": "medium", "estimatedTime": "30-45 minutes", "category": "extension", "description": "Sort array with three colors using Dutch flag algorithm"}, {"id": "remove-nth-node", "title": "Remove Nth Node From End of List", "difficulty": "medium", "estimatedTime": "30-45 minutes", "category": "extension", "description": "Remove nth node from end of linked list in one pass"}], "successCriteria": {"patternRecognitionSpeed": 45, "implementationAccuracy": 80, "transferSuccessRate": 75}}, "level2": {"id": "level2", "name": "Fluent Mastery", "description": "Handle all Two Pointer variations with confidence", "objective": "Apply patterns to complex variations and edge cases", "estimatedTime": "2-4 hours", "problems": [{"id": "three-sum-closest", "title": "3Sum Closest", "difficulty": "medium", "estimatedTime": "30-45 minutes", "category": "extension", "description": "Find three numbers whose sum is closest to target"}, {"id": "longest-substring", "title": "Longest Substring Without Repeating Characters", "difficulty": "medium", "estimatedTime": "45-60 minutes", "category": "mastery", "description": "Find longest substring without repeating characters"}, {"id": "valid-palindrome-ii", "title": "Valid Palindrome II", "difficulty": "easy", "estimatedTime": "30-45 minutes", "category": "extension", "description": "Check if string can be palindrome after deleting one character"}, {"id": "squares-sorted-array", "title": "Squares of a Sorted Array", "difficulty": "easy", "estimatedTime": "20-30 minutes", "category": "extension", "description": "Return squares of sorted array in sorted order"}], "successCriteria": {"patternRecognitionSpeed": 30, "implementationAccuracy": 85, "transferSuccessRate": 85}}, "level3": {"id": "level3", "name": "Expert Optimization", "description": "Master advanced optimizations and complex variations", "objective": "Optimize solutions and teach pattern to others", "estimatedTime": "3-5 hours", "problems": [{"id": "trapping-rain-water", "title": "Trapping Rain Water", "difficulty": "hard", "estimatedTime": "60-90 minutes", "category": "mastery", "description": "Calculate trapped rainwater using two pointers"}, {"id": "four-sum", "title": "4Sum", "difficulty": "medium", "estimatedTime": "45-60 minutes", "category": "mastery", "description": "Find all unique quadruplets that sum to target"}], "successCriteria": {"patternRecognitionSpeed": 20, "implementationAccuracy": 90, "transferSuccessRate": 90}}}, "progressionLogic": {"level1Completion": {"requiredProblems": 8, "minMasteryScore": 80, "patternRecognitionTest": true}, "level2Unlock": {"levelCompletion": true, "userChoice": true}, "level3Unlock": {"levelCompletion": true, "userChoice": true}}}
+{
+  "patternId": "two-pointer",
+  "metadata": {
+    "id": "two-pointer",
+    "name": "Two Pointer Technique",
+    "description": "Master the art of using two pointers to solve array and string problems efficiently",
+    "difficulty": "beginner",
+    "estimatedTime": {
+      "level1": "4-8 hours",
+      "level2": "2-4 hours",
+      "level3": "3-5 hours",
+      "total": "9-17 hours"
+    },
+    "prerequisites": [
+      "arrays",
+      "basic_loops"
+    ],
+    "companies": [
+      "Google",
+      "Microsoft",
+      "Amazon",
+      "Meta",
+      "Apple"
+    ],
+    "interviewFrequency": "very_high"
+  },
+  "levels": {
+    "level1": {
+      "id": "level1",
+      "name": "Interview Ready",
+      "description": "Master core Two Pointer patterns for interview success",
+      "objective": "Recognize and solve standard Two Pointer problems confidently",
+      "estimatedTime": "4-8 hours",
+      "problems": [
+        {
+          "id": "two-sum-ii",
+          "title": "Two Sum II - Input Array is Sorted",
+          "difficulty": "easy",
+          "estimatedTime": "30-45 minutes",
+          "category": "foundation",
+          "description": "Find two numbers in sorted array that sum to target"
+        },
+        {
+          "id": "valid-palindrome",
+          "title": "Valid Palindrome",
+          "difficulty": "easy",
+          "estimatedTime": "20-30 minutes",
+          "category": "foundation",
+          "description": "Check if string is palindrome using two pointers"
+        },
+        {
+          "id": "container-with-water",
+          "title": "Container With Most Water",
+          "difficulty": "medium",
+          "estimatedTime": "30-45 minutes",
+          "category": "foundation",
+          "description": "Find container that holds the most water"
+        },
+        {
+          "id": "move-zeroes",
+          "title": "Move Zeroes",
+          "difficulty": "easy",
+          "estimatedTime": "20-30 minutes",
+          "category": "foundation",
+          "description": "Move all zeros to end while maintaining order"
+        },
+        {
+          "id": "three-sum",
+          "title": "3Sum",
+          "difficulty": "medium",
+          "estimatedTime": "45-60 minutes",
+          "category": "extension",
+          "description": "Find all unique triplets that sum to zero"
+        },
+        {
+          "id": "remove-duplicates",
+          "title": "Remove Duplicates from Sorted Array",
+          "difficulty": "easy",
+          "estimatedTime": "20-30 minutes",
+          "category": "foundation",
+          "description": "Remove duplicates in-place from sorted array"
+        },
+        {
+          "id": "sort-colors",
+          "title": "Sort Colors",
+          "difficulty": "medium",
+          "estimatedTime": "30-45 minutes",
+          "category": "extension",
+          "description": "Sort array with three colors using Dutch flag algorithm"
+        },
+        {
+          "id": "remove-nth-node",
+          "title": "Remove Nth Node From End of List",
+          "difficulty": "medium",
+          "estimatedTime": "30-45 minutes",
+          "category": "extension",
+          "description": "Remove nth node from end of linked list in one pass"
+        }
+      ],
+      "successCriteria": {
+        "patternRecognitionSpeed": 45,
+        "implementationAccuracy": 80,
+        "transferSuccessRate": 75
+      }
+    },
+    "level2": {
+      "id": "level2",
+      "name": "Fluent Mastery",
+      "description": "Handle all Two Pointer variations with confidence",
+      "objective": "Apply patterns to complex variations and edge cases",
+      "estimatedTime": "2-4 hours",
+      "problems": [
+        {
+          "id": "three-sum-closest",
+          "title": "3Sum Closest",
+          "difficulty": "medium",
+          "estimatedTime": "30-45 minutes",
+          "category": "extension",
+          "description": "Find three numbers whose sum is closest to target"
+        },
+        {
+          "id": "longest-substring",
+          "title": "Longest Substring Without Repeating Characters",
+          "difficulty": "medium",
+          "estimatedTime": "45-60 minutes",
+          "category": "mastery",
+          "description": "Find longest substring without repeating characters"
+        },
+        {
+          "id": "valid-palindrome-ii",
+          "title": "Valid Palindrome II",
+          "difficulty": "easy",
+          "estimatedTime": "30-45 minutes",
+          "category": "extension",
+          "description": "Check if string can be palindrome after deleting one character"
+        },
+        {
+          "id": "squares-sorted-array",
+          "title": "Squares of a Sorted Array",
+          "difficulty": "easy",
+          "estimatedTime": "20-30 minutes",
+          "category": "extension",
+          "description": "Return squares of sorted array in sorted order"
+        }
+      ],
+      "successCriteria": {
+        "patternRecognitionSpeed": 30,
+        "implementationAccuracy": 85,
+        "transferSuccessRate": 85
+      }
+    },
+    "level3": {
+      "id": "level3",
+      "name": "Multi-Pattern Mastery",
+      "description": "Combine Two Pointer with supporting patterns for real interview scenarios",
+      "objective": "Apply Two Pointer thinking to multi-pattern problems confidently",
+      "estimatedTime": "2-3 hours",
+      "problems": [
+        {
+          "id": "meeting-rooms-ii",
+          "title": "Meeting Rooms II",
+          "difficulty": "medium",
+          "estimatedTime": "45-60 minutes",
+          "category": "multi-pattern",
+          "primaryPattern": "two-pointer",
+          "supportingPatterns": ["sorting", "greedy"],
+          "description": "Find minimum number of meeting rooms required using two pointers",
+          "adaptiveHints": {
+            "sorting": "Just arranges data for your Two Pointer technique",
+            "greedy": "Helps decide pointer movement - same logic you know"
+          }
+        },
+        {
+          "id": "merge-intervals-optimized",
+          "title": "Merge Intervals (Optimized)",
+          "difficulty": "medium",
+          "estimatedTime": "30-45 minutes",
+          "category": "multi-pattern",
+          "primaryPattern": "two-pointer",
+          "supportingPatterns": ["sorting"],
+          "description": "Merge overlapping intervals using two pointers for optimization",
+          "adaptiveHints": {
+            "sorting": "Prepares intervals for Two Pointer merging"
+          }
+        }
+      ],
+      "successCriteria": {
+        "patternRecognitionSpeed": 30,
+        "implementationAccuracy": 85,
+        "multiPatternThinking": 80
+      }
+    }
+  },
+  "progressionLogic": {
+    "level1Completion": {
+      "requiredProblems": 8,
+      "minMasteryScore": 80,
+      "patternRecognitionTest": true
+    },
+    "level2Unlock": {
+      "levelCompletion": true,
+      "userChoice": true
+    },
+    "level3Unlock": {
+      "levelCompletion": true,
+      "userChoice": true
+    }
+  }
+}
