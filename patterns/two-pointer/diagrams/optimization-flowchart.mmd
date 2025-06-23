@@ -1,0 +1,57 @@
+graph TD
+    A[Initial Solution O(n²)] --> B{Can we optimize?}
+    B -->|Yes| C[Identify bottleneck]
+    B -->|No| D[Current solution is optimal]
+
+    C --> E{What's causing O(n²)?}
+    E -->|Nested loops| F[Can we eliminate inner loop?]
+    E -->|Checking all pairs| G[Can we be more strategic?]
+    E -->|Redundant work| H[Can we avoid recalculation?]
+
+    F --> I{Is data sorted?}
+    G --> J{Can we use Two Pointer movement?}
+    H --> K{Can we cache results?}
+
+    I -->|Yes| L[Two Pointer: O(n)]
+    I -->|No| M[Sort first: O(n log n)]
+
+    J -->|Yes| N[Strategic pointer movement]
+    J -->|No| O[Consider other optimizations]
+
+    K -->|Yes| P[Memoization/Caching]
+    K -->|No| Q[Reconsider approach]
+
+    L --> R[Optimal Two Pointer Solution]
+    M --> S[Sort + Two Pointer: O(n log n)]
+    N --> T[Two Pointer optimization achieved]
+
+    R --> U{Can we optimize further?}
+    S --> V{Sort vs Hash trade-off?}
+    T --> W{Space-time trade-off considerations}
+
+    U -->|Space| X[Reduce space complexity]
+    U -->|Time| Y[Already optimal O(n)]
+    U -->|Neither| Z[Solution is optimal]
+
+    V -->|Hash better| AA[Use Hash Map: O(n) time, O(n) space]
+    V -->|Sort better| BB[Keep sorted approach: O(n log n) time, O(1) space]
+
+    W -->|Need less space| CC[In-place Two Pointer]
+    W -->|Need less time| DD[Preprocessing optimization]
+
+    X --> EE[In-place modifications]
+    AA --> FF[Hash Map solution]
+    BB --> GG[Sorted Two Pointer solution]
+    CC --> HH[Space-optimized solution]
+    DD --> II[Time-optimized solution]
+
+    style A fill:#ffcdd2
+    style R fill:#c8e6c9
+    style S fill:#c8e6c9
+    style T fill:#c8e6c9
+    style Y fill:#4caf50
+    style Z fill:#4caf50
+    style FF fill:#e1f5fe
+    style GG fill:#e1f5fe
+    style HH fill:#e1f5fe
+    style II fill:#e1f5fe

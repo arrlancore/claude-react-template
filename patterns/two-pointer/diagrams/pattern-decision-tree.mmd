@@ -1,0 +1,47 @@
+graph TD
+    A[Problem Statement] --> B{Is data sorted or sortable?}
+    B -->|Yes| C{Looking for pairs/relationships?}
+    B -->|No| D{Can we use hash map instead?}
+
+    C -->|Yes| E{What type of relationship?}
+    C -->|No| F[Consider other patterns]
+
+    E -->|Sum/Product| G[Two Pointer - Opposite Direction]
+    E -->|Comparison/Match| H[Two Pointer - Opposite Direction]
+    E -->|Modification| I[Two Pointer - Same Direction]
+
+    G --> J[Start: left=0, right=n-1]
+    H --> K[Start: left=0, right=n-1]
+    I --> L[Start: slow=0, fast=0 or fast=1]
+
+    J --> M{Compare current sum to target}
+    K --> N{Compare elements for match}
+    L --> O{Process elements with different speeds}
+
+    M -->|Sum < target| P[Move left pointer right]
+    M -->|Sum > target| Q[Move right pointer left]
+    M -->|Sum = target| R[Found answer!]
+
+    N -->|Match| S[Found palindrome/match!]
+    N -->|No match| T[Move both pointers toward center]
+
+    O -->|Condition met| U[Move slow pointer]
+    O -->|Continue| V[Move fast pointer]
+
+    P --> M
+    Q --> M
+    T --> N
+    U --> O
+    V --> O
+
+    D --> W[Hash Map Pattern]
+    F --> X[Sliding Window/Other Pattern]
+
+    style A fill:#e1f5fe
+    style G fill:#c8e6c9
+    style H fill:#c8e6c9
+    style I fill:#c8e6c9
+    style R fill:#4caf50
+    style S fill:#4caf50
+    style W fill:#ffecb3
+    style X fill:#ffecb3

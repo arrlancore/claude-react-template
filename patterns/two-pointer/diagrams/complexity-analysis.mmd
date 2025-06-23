@@ -1,0 +1,80 @@
+graph LR
+    subgraph "Two Pointer Approaches"
+        A[Brute Force O(n²)]
+        B[Two Pointer O(n)]
+        C[Hash Map O(n)]
+    end
+
+    subgraph "Time Complexity Analysis"
+        D[O(n²) - Quadratic]
+        E[O(n log n) - Linearithmic]
+        F[O(n) - Linear]
+        G[O(1) - Constant]
+    end
+
+    subgraph "Space Complexity Analysis"
+        H[O(n) - Linear Space]
+        I[O(log n) - Logarithmic Space]
+        J[O(1) - Constant Space]
+    end
+
+    subgraph "Problem Types & Optimal Solutions"
+        K[Sorted Array + Target Sum]
+        L[Palindrome Check]
+        M[Array Modification]
+        N[Interval Processing]
+    end
+
+    A --> D
+    B --> F
+    C --> F
+
+    K --> O[Two Pointer: O(n) time, O(1) space]
+    L --> P[Two Pointer: O(n) time, O(1) space]
+    M --> Q[Two Pointer: O(n) time, O(1) space]
+    N --> R[Sort + Two Pointer: O(n log n) time, O(1) space]
+
+    O --> F
+    O --> J
+    P --> F
+    P --> J
+    Q --> F
+    Q --> J
+    R --> E
+    R --> J
+
+    subgraph "Trade-off Considerations"
+        S[Time vs Space]
+        T[Preprocessing Cost]
+        U[Code Complexity]
+        V[Maintainability]
+    end
+
+    S --> W[Two Pointer often optimal for both]
+    T --> X[Sorting cost may be worth it]
+    U --> Y[Two Pointer is elegant and simple]
+    V --> Z[Easy to understand and debug]
+
+    subgraph "When NOT to use Two Pointer"
+        AA[Unsorted data + no sort allowed]
+        BB[Need to track all pairs, not just find one]
+        CC[Complex state requirements]
+        DD[Non-linear data structures]
+    end
+
+    AA --> EE[Use Hash Map instead]
+    BB --> FF[Use nested loops or other approach]
+    CC --> GG[Use dynamic programming or other pattern]
+    DD --> HH[Use appropriate data structure algorithms]
+
+    style D fill:#ffcdd2
+    style E fill:#fff3e0
+    style F fill:#c8e6c9
+    style G fill:#4caf50
+    style H fill:#e1f5fe
+    style I fill:#e8f5e8
+    style J fill:#4caf50
+    style W fill:#c8e6c9
+    style X fill:#fff3e0
+    style Y fill:#c8e6c9
+    style Z fill:#c8e6c9
