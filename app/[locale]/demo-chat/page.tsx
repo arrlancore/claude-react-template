@@ -11,6 +11,8 @@ import MonacoEditorPanel from "@/components/chat-ui/MonacoEditorPanel";
 import ProblemCard from "@/components/chat-ui/ProblemCard";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
+import PatternChoiceButtons from "@/components/chat-ui/interactive/PatternChoiceButtons";
+import { is } from "date-fns/locale";
 
 // Define DSAProblem interface
 interface DSAProblem {
@@ -21,6 +23,16 @@ interface DSAProblem {
   starterCode?: Record<string, string>; // { language: code }
   language: string;
   testCases?: SourceTestCase[]; // Added for consistency with MonacoEditorPanel's expectation
+}
+
+interface Message {
+  id: string;
+  content: string;
+  sender: "user" | "assistant";
+  timestamp?: Date;
+  codeBlocks?: CodeBlock[];
+  dsaProblem?: DSAProblem;
+  interactive?: boolean; // ADD THIS LINE
 }
 
 // Interface to represent the structure from test-cases.json, mirroring MonacoEditorPanel
@@ -64,7 +76,7 @@ export default function DemoChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-
+  const [isInteractiveActive, setIsInteractiveActive] = useState(false);
   // New state for Monaco Editor Panel
   const [isEditorPanelOpen, setIsEditorPanelOpen] = useState(false);
   const [currentProblem, setCurrentProblem] = useState<DSAProblem | null>(null);
@@ -136,6 +148,48 @@ export default function DemoChatPage() {
 
   // Updated to return JSX
   const renderMessageContent = (message: Message): React.ReactNode => {
+    // Handle interactive elements
+    if (
+      message.content.includes("Which pattern would you use") &&
+      message.sender === "assistant"
+    ) {
+      return (
+        <>
+          <div className="mb-4">{message.content}</div>
+          <PatternChoiceButtons
+            question="Select the best pattern:"
+            onRender={(container) => {
+              container.focus();
+              setIsInteractiveActive(true);
+            }}
+            options={[
+              { id: "two-pointer", label: "Two Pointer", confidence: "high" },
+              {
+                id: "sliding-window",
+                label: "Sliding Window",
+                confidence: "medium",
+              },
+              {
+                id: "binary-search",
+                label: "Binary Search",
+                confidence: "low",
+              },
+              { id: "not-sure", label: "Not Sure", confidence: "low" },
+            ]}
+            onSelect={(optionId) => {
+              const userMessage: Message = {
+                id: Date.now().toString(),
+                content: `Selected: ${optionId}`,
+                sender: "user",
+                timestamp: new Date(),
+              };
+              setMessages((prev) => [...prev, userMessage]);
+              setIsInteractiveActive(false);
+            }}
+          />
+        </>
+      );
+    }
     // Handle DSA Problem Card
     if (message.dsaProblem) {
       return (
@@ -354,6 +408,12 @@ export default function DemoChatPage() {
         ) {
           responseContent +=
             "\n\n```javascript\nfunction twoPointerExample(arr, target) {\n    let left = 0;\n    let right = arr.length - 1;\n    \n    while (left < right) {\n        const sum = arr[left] + arr[right];\n        \n        if (sum === target) {\n            return [left, right];\n        } else if (sum < target) {\n            left++;\n        } else {\n            right--;\n        }\n    }\n    \n    return null;\n}\n\n// Example usage\nconst result = twoPointerExample([1, 2, 3, 4, 5], 7);\nconsole.log(result); // [1, 4]\n```";
+        } else if (
+          userMessage.content.toLowerCase().includes("interactive 1")
+        ) {
+          responseContent =
+            "Which pattern would you use for this problem? Array: [1,3,6,8,11,15], Target: 14";
+          // Will add interactive element in render
         }
 
         const { content: processedContent, codeBlocks: newCodeBlocks } =
@@ -484,6 +544,7 @@ export default function DemoChatPage() {
             <div className="container mx-auto">
               <ChatInput
                 inputValue={inputValue}
+                disabled={isInteractiveActive}
                 onInputChange={(value) => {
                   setInputValue(value);
                   autoResize();

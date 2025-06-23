@@ -16,11 +16,13 @@ The current demo showcases several foundational components and features:
 
 *   **Core Components:**
     *   `MessageList`: Displays a list of messages from the user and the assistant.
-    *   `ChatInput`: Allows users to type and send text messages.
+    *   `ChatInput`: Allows users to type and send text messages. Supports disabled state for interactive sessions.
     *   `CodeCardComponent`: Renders static code blocks within assistant messages.
     *   `ProblemCard`: Displays information about a DSA problem and provides an option to open an interactive editor.
     *   `MonacoEditorPanel`: An embedded Monaco editor for users to write and submit code for DSA problems. Includes features for running code against test cases (system and custom) and viewing results.
     *   `TypingIndicator`: Shows when the assistant is "typing."
+    *   `PatternChoiceButtons`: Interactive pattern selection component with confidence levels and auto-focus.
+    *   `InteractiveElementWrapper`: Wrapper component for future interactive elements.
 
 *   **Implemented Features (✅ Done / 🚧 Partially Done / ❌ Not Done):**
     *   ✅ Sending and receiving text-based messages.
@@ -30,12 +32,14 @@ The current demo showcases several foundational components and features:
     *   ✅ Opening the `MonacoEditorPanel` from a `ProblemCard` with pre-filled problem details (title, description, starter code for the default language, test cases for display in settings).
     *   ✅ Submitting code from the `MonacoEditorPanel`. The submission is then displayed as a new user message in the chat.
     *   ✅ Dynamic display of system test cases (input/output format) in the Monaco Editor Panel settings.
+    *   ✅ Interactive pattern choice buttons with auto-focus and input management.
     *   🚧 Simulated AI responses: The demo uses `setTimeout` and predefined responses/problem data. Actual LLM/AI integration is pending.
     *   🚧 Basic DSA Problem structure (`DSAProblem` interface) defined and used, including ID, title, description, starter code, language, and test cases.
     *   💡 **Developer Simulation Triggers:** To facilitate rapid UI development and testing of specific components before full AI/backend integration, the demo page (`app/[locale]/demo-chat/page.tsx`) incorporates keyword-based triggers:
         *   Typing "dsa problem" or "give me a problem" simulates the AI presenting the "Two Sum II" problem, which then allows testing the `ProblemCard` and `MonacoEditorPanel` flow.
         *   Typing "code", "function", or "algorithm" (without "dsa problem") simulates the AI providing a generic JavaScript code block.
-        *   *(Future simulation triggers, e.g., typing "quiz" to show a mock quiz, can be added to streamline development of other interactive components.)*
+        *   Typing "interactive 1" shows pattern choice buttons with auto-focus and input disable functionality.
+        *   *(Future simulation triggers for other interactive components can be added as needed.)*
 
 ## 3. Target Features for Learning Activities (Derived from User Simulation & Requirements)
 
@@ -44,16 +48,16 @@ To transform the demo into a full learning platform as envisioned in `patterns/t
 ### 3.1. Interactive Message Elements
 
 *   **Buttons in Messages:**
-    *   **Status:** ❌ Not Done
-    *   **Description:** Allow AI messages to include interactive buttons (e.g., "[Start Learning]", "[Yes, let's go fast]", "[Show me the connection]"). These buttons would trigger specific actions or send predefined responses back to the AI/system.
+    *   **Status:** ✅ Done (Pattern Choice Buttons)
+    *   **Description:** Implemented `PatternChoiceButtons` component with color-coded confidence levels, selection state management, and auto-focus functionality. Integrated with demo-chat via "interactive 1" trigger.
 *   **Embedded Quizzes/Polls:**
-    *   **Status:** ❌ Not Done
+    *   **Status:** 🚧 Partially Done (Pattern selection implemented)
     *   **Description:**
-        *   **Multiple-Choice:** Display questions with A, B, C options directly in the chat. Capture user selection.
-        *   **Short Answer/Reasoning Prompts:** Specific input fields for users to type explanations or insights, distinct from the main chat input.
+        *   **Multiple-Choice:** ✅ Pattern choice buttons with confidence indicators (high/medium/low)
+        *   **Short Answer/Reasoning Prompts:** ❌ Not Done - Future iteration
 *   **User Input for Specific Prompts:**
-    *   **Status:** ❌ Not Done
-    *   **Description:** Beyond general chat, dedicated input fields or modes for answering specific AI questions (e.g., "Explain your reasoning").
+    *   **Status:** ✅ Done (Input disabled during interactive sessions)
+    *   **Description:** Main chat input is disabled when interactive elements are active, forcing user to respond to the specific prompt. Input re-enabled after selection.
 
 ### 3.2. Enhanced Content Display
 
@@ -87,7 +91,7 @@ To transform the demo into a full learning platform as envisioned in `patterns/t
         *   Send user interactions (quiz answers, free-text reasoning, code submissions for analysis beyond execution) to the LLM.
         *   Receive and parse structured responses from the LLM.
 *   **Rendering Dynamic AI Responses:**
-    *   **Status:** 🚧 Partially Done (Can render text, code, problem cards)
+    *   **Status:** 🚧 Partially Done (Can render text, code, problem cards, interactive elements)
     *   **Description:** Ability to render complex responses from the AI, which might include text, new interactive elements (quizzes, buttons), formatted explanations, or requests for further user input.
 
 ### 3.5. Navigation & External Content
@@ -96,7 +100,26 @@ To transform the demo into a full learning platform as envisioned in `patterns/t
     *   **Status:** ❌ Not Done
     *   **Description:** Ability for chat messages to include links or buttons that navigate the user to other parts of the application, like a personal dashboard or different learning patterns.
 
-## 4. Key Considerations for Development
+## 4. Recently Completed Features
+
+### 4.1. Interactive Pattern Choice Buttons (Completed)
+*   **Components Added:**
+    *   `PatternChoiceButtons` (`components/chat-ui/interactive/PatternChoiceButtons.tsx`)
+    *   `InteractiveElementWrapper` (`components/chat-ui/interactive/InteractiveElementWrapper.tsx`)
+*   **Features:**
+    *   Color-coded confidence levels (high=green, medium=yellow, low=red)
+    *   Auto-focus on interactive elements
+    *   Selection state management (shows "✓ Selected" after choice)
+    *   Main chat input disabled during interactive sessions
+    *   Automatic focus return to chat input after completion
+*   **Testing:** Type "interactive 1" in demo-chat to test
+*   **Integration:** Ready for AI backend integration
+*   **UX Enhancements:**
+    *   Cannot re-trigger after selection
+    *   Visual feedback for user choices
+    *   Smooth focus management
+
+## 5. Key Considerations for Development
 
 *   **Component Reusability:** Design new UI elements (quizzes, buttons-in-message, etc.) as modular and reusable React components.
 *   **State Management:** Choose an appropriate state management solution (e.g., Context API, Zustand, Redux) to handle the complex state of the learning journey and chat interactions.
@@ -104,9 +127,10 @@ To transform the demo into a full learning platform as envisioned in `patterns/t
 *   **Accessibility (a11y):** Ensure all interactive elements are accessible and the UI is usable for people with disabilities.
 *   **Styling and Theming:** Maintain a consistent and engaging visual style.
 
-## 5. Open Questions/Future Enhancements
+## 6. Open Questions/Future Enhancements
 
 *   More sophisticated embedded visualization tools.
 *   Voice input/output capabilities.
 *   Integration with external coding platforms or version control.
 *   Detailed analytics and reporting on user learning patterns.
+*   Additional interactive element types (strategy quizzes, reasoning prompts, code insight buttons).
