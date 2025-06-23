@@ -1,13 +1,12 @@
-import { test, expect } from '@playwright/test';
-import { ChatActions } from './helpers/chat-actions';
-import { EditorActions } from './helpers/editor-actions';
-import { ExecutionValidator } from './helpers/execution-validator';
-import { solutions } from './fixtures/two-sum-solutions';
-import { languageConfigs } from './config/language-configs';
+import { test, expect } from "@playwright/test";
+import { ChatActions } from "./helpers/chat-actions";
+import { EditorActions } from "./helpers/editor-actions";
+import { ExecutionValidator } from "./helpers/execution-validator";
+import { solutions } from "./fixtures/two-sum-solutions";
+import { languageConfigs } from "./config/language-configs";
 
-test.describe('Monaco Editor Multi-Language Execution', () => {
-
-  test('JavaScript - Two Sum II execution', async ({ page }) => {
+test.describe("Monaco Editor Multi-Language Execution", () => {
+  test.only("JavaScript - Two Sum II execution", async ({ page }) => {
     const chat = new ChatActions(page);
     const editor = new EditorActions(page);
     const validator = new ExecutionValidator(page);
@@ -20,22 +19,24 @@ test.describe('Monaco Editor Multi-Language Execution', () => {
     await chat.openMonacoEditor();
 
     // Switch to JavaScript (default language, but ensure correct)
-    await editor.switchLanguage('javascript');
+    await editor.switchLanguage("javascript");
 
     // Implement solution
     await editor.insertSolution(solutions.javascript);
 
     // Execute & validate
     await editor.executeCode();
+    await page.pause();
     await validator.validateResults({
-      expectedPasses: languageConfigs.javascript.expectedTestCases
+      expectedPasses: languageConfigs.javascript.expectedTestCases,
     });
+    // Pause the test to inspect the browser
 
     // Cleanup
     await editor.closeEditor();
   });
 
-  test('Python - Two Sum II execution', async ({ page }) => {
+  test("Python - Two Sum II execution", async ({ page }) => {
     const chat = new ChatActions(page);
     const editor = new EditorActions(page);
     const validator = new ExecutionValidator(page);
@@ -44,18 +45,18 @@ test.describe('Monaco Editor Multi-Language Execution', () => {
     await chat.triggerDSAProblem();
     await chat.openMonacoEditor();
 
-    await editor.switchLanguage('python');
+    await editor.switchLanguage("python");
     await editor.insertSolution(solutions.python);
 
     await editor.executeCode();
     await validator.validateResults({
-      expectedPasses: languageConfigs.python.expectedTestCases
+      expectedPasses: languageConfigs.python.expectedTestCases,
     });
 
     await editor.closeEditor();
   });
 
-  test('TypeScript - Two Sum II execution', async ({ page }) => {
+  test("TypeScript - Two Sum II execution", async ({ page }) => {
     const chat = new ChatActions(page);
     const editor = new EditorActions(page);
     const validator = new ExecutionValidator(page);
@@ -64,18 +65,18 @@ test.describe('Monaco Editor Multi-Language Execution', () => {
     await chat.triggerDSAProblem();
     await chat.openMonacoEditor();
 
-    await editor.switchLanguage('typescript');
+    await editor.switchLanguage("typescript");
     await editor.insertSolution(solutions.typescript);
 
     await editor.executeCode();
     await validator.validateResults({
-      expectedPasses: languageConfigs.typescript.expectedTestCases
+      expectedPasses: languageConfigs.typescript.expectedTestCases,
     });
 
     await editor.closeEditor();
   });
 
-  test('Java - Two Sum II execution', async ({ page }) => {
+  test("Java - Two Sum II execution", async ({ page }) => {
     const chat = new ChatActions(page);
     const editor = new EditorActions(page);
     const validator = new ExecutionValidator(page);
@@ -84,18 +85,18 @@ test.describe('Monaco Editor Multi-Language Execution', () => {
     await chat.triggerDSAProblem();
     await chat.openMonacoEditor();
 
-    await editor.switchLanguage('java');
+    await editor.switchLanguage("java");
     await editor.insertSolution(solutions.java);
 
     await editor.executeCode();
     await validator.validateResults({
-      expectedPasses: languageConfigs.java.expectedTestCases
+      expectedPasses: languageConfigs.java.expectedTestCases,
     });
 
     await editor.closeEditor();
   });
 
-  test('C++ - Two Sum II execution', async ({ page }) => {
+  test("C++ - Two Sum II execution", async ({ page }) => {
     const chat = new ChatActions(page);
     const editor = new EditorActions(page);
     const validator = new ExecutionValidator(page);
@@ -104,18 +105,18 @@ test.describe('Monaco Editor Multi-Language Execution', () => {
     await chat.triggerDSAProblem();
     await chat.openMonacoEditor();
 
-    await editor.switchLanguage('cpp');
+    await editor.switchLanguage("cpp");
     await editor.insertSolution(solutions.cpp);
 
     await editor.executeCode();
     await validator.validateResults({
-      expectedPasses: languageConfigs.cpp.expectedTestCases
+      expectedPasses: languageConfigs.cpp.expectedTestCases,
     });
 
     await editor.closeEditor();
   });
 
-  test('C - Two Sum II execution', async ({ page }) => {
+  test("C - Two Sum II execution", async ({ page }) => {
     const chat = new ChatActions(page);
     const editor = new EditorActions(page);
     const validator = new ExecutionValidator(page);
@@ -124,18 +125,18 @@ test.describe('Monaco Editor Multi-Language Execution', () => {
     await chat.triggerDSAProblem();
     await chat.openMonacoEditor();
 
-    await editor.switchLanguage('c');
+    await editor.switchLanguage("c");
     await editor.insertSolution(solutions.c);
 
     await editor.executeCode();
     await validator.validateResults({
-      expectedPasses: languageConfigs.c.expectedTestCases
+      expectedPasses: languageConfigs.c.expectedTestCases,
     });
 
     await editor.closeEditor();
   });
 
-  test('Go - Two Sum II execution', async ({ page }) => {
+  test("Go - Two Sum II execution", async ({ page }) => {
     const chat = new ChatActions(page);
     const editor = new EditorActions(page);
     const validator = new ExecutionValidator(page);
@@ -144,18 +145,18 @@ test.describe('Monaco Editor Multi-Language Execution', () => {
     await chat.triggerDSAProblem();
     await chat.openMonacoEditor();
 
-    await editor.switchLanguage('go');
+    await editor.switchLanguage("go");
     await editor.insertSolution(solutions.go);
 
     await editor.executeCode();
     await validator.validateResults({
-      expectedPasses: languageConfigs.go.expectedTestCases
+      expectedPasses: languageConfigs.go.expectedTestCases,
     });
 
     await editor.closeEditor();
   });
 
-  test('Rust - Two Sum II execution', async ({ page }) => {
+  test("Rust - Two Sum II execution", async ({ page }) => {
     const chat = new ChatActions(page);
     const editor = new EditorActions(page);
     const validator = new ExecutionValidator(page);
@@ -164,12 +165,12 @@ test.describe('Monaco Editor Multi-Language Execution', () => {
     await chat.triggerDSAProblem();
     await chat.openMonacoEditor();
 
-    await editor.switchLanguage('rust');
+    await editor.switchLanguage("rust");
     await editor.insertSolution(solutions.rust);
 
     await editor.executeCode();
     await validator.validateResults({
-      expectedPasses: languageConfigs.rust.expectedTestCases
+      expectedPasses: languageConfigs.rust.expectedTestCases,
     });
 
     await editor.closeEditor();

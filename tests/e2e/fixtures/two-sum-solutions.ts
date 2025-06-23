@@ -4,22 +4,18 @@
 
 export const solutions = {
   javascript: `function twoSum(numbers, target) {
-    let left = 0;
-    let right = numbers.length - 1;
+    const seen = new Map(); // stores num => 1-based index
 
-    while (left < right) {
-        const sum = numbers[left] + numbers[right];
+    for (let i = 0; i < numbers.length; i++) {
+        const complement = target - numbers[i];
 
-        if (sum === target) {
-            return [left + 1, right + 1]; // 1-indexed
-        } else if (sum < target) {
-            left++;
-        } else {
-            right--;
+        if (seen.has(complement)) {
+            return [seen.get(complement), i + 1]; // convert to 1-based index
         }
-    }
 
-    return []; // No solution found
+        seen.set(numbers[i], i + 1); // store 1-based index
+    }
+    return []; // No solution found or problem guarantees a solution
 }`,
 
   typescript: `function twoSum(numbers: number[], target: number): number[] {
@@ -167,5 +163,5 @@ int* twoSum(int* numbers, int numbersSize, int target, int* returnSize) {
 
         vec![] // No solution found
     }
-}`
+}`,
 };
