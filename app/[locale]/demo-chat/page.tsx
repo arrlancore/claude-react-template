@@ -40,6 +40,8 @@ import InteractiveElementWrapper, {
 } from "@/components/chat-ui/interactive/InteractiveElementWrapper";
 import { useLearningSession, useProgress } from "@/lib/learning/hooks";
 import { recordUserInteraction } from "@/lib/learning";
+import { convertMDToContent } from "@/lib/mdx/mdx-utils";
+import MDXViewer from "@/components/chat-ui/mdx-viewer";
 
 // Define DSAProblem interface
 interface DSAProblem {
@@ -204,7 +206,9 @@ export default function DemoChatPage() {
     ) {
       return (
         <>
-          <div className="mb-4">{message.content}</div>
+          <div className="mb-4">
+            <MDXViewer source={message.content} />
+          </div>
           <PatternChoiceButtons
             question="Select the best pattern:"
             onRender={(container) => {

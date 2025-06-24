@@ -28,9 +28,9 @@ function extractHeadings(content: string): TableOfContents[] {
     const text = match[2].trim();
     const slug = text
       .toLowerCase()
-      .replace(/[^\w\s-]/g, '') // Remove special characters
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
-      .replace(/^-+|-+$/g, ''); // Remove leading and trailing hyphens
+      .replace(/[^\w\s-]/g, "") // Remove special characters
+      .replace(/\s+/g, "-") // Replace spaces with hyphens
+      .replace(/^-+|-+$/g, ""); // Remove leading and trailing hyphens
 
     headings.push({ level, text, slug });
   }
@@ -38,7 +38,10 @@ function extractHeadings(content: string): TableOfContents[] {
   return headings;
 }
 
-export async function getAllPosts(page: number = 1, limit: number = paginationConfig.postsPerPage): Promise<{ posts: PostMeta[], total: number, totalPages: number }> {
+export async function getAllPosts(
+  page: number = 1,
+  limit: number = paginationConfig.postsPerPage
+): Promise<{ posts: PostMeta[]; total: number; totalPages: number }> {
   const currentDate = new Date();
 
   const mapPost = async (filePath: string) => {
@@ -94,7 +97,7 @@ export async function getAllPosts(page: number = 1, limit: number = paginationCo
   return {
     posts: paginatedPosts,
     total,
-    totalPages
+    totalPages,
   };
 }
 
@@ -102,10 +105,12 @@ export async function getPostsByAuthor(
   authorSlug: string,
   page: number = 1,
   limit: number = paginationConfig.authorPostsPerPage
-): Promise<{ posts: PostMeta[], total: number, totalPages: number }> {
+): Promise<{ posts: PostMeta[]; total: number; totalPages: number }> {
   const { posts: allPosts } = await getAllPosts(1, Number.MAX_SAFE_INTEGER);
 
-  const filteredPosts = allPosts.filter((post) => post.author.slug === authorSlug);
+  const filteredPosts = allPosts.filter(
+    (post) => post.author.slug === authorSlug
+  );
   const total = filteredPosts.length;
   const totalPages = Math.ceil(total / limit);
 
@@ -117,7 +122,7 @@ export async function getPostsByAuthor(
   return {
     posts: paginatedPosts,
     total,
-    totalPages
+    totalPages,
   };
 }
 
