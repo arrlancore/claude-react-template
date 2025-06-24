@@ -84,6 +84,7 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
   const [code, setCode] = useState(initialCode);
   const [language, setLanguage] = useState(initialLanguage);
   const [isRunning, setIsRunning] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false);
   const [executionTime, setExecutionTime] = useState<number | null>(null);
   const [testResults, setTestResults] = useState<TestCase[]>([]);
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
@@ -94,6 +95,15 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
   const [displayedSystemTestCases, setDisplayedSystemTestCases] =
     useState<string>("");
 
+  // validate test result is submitted
+  useEffect(() => {
+    if (isSubmit && testResults.length > 0) {
+      const allPassed = testResults.every((test) => test.passed);
+      if (allPassed) {
+        onSubmit(code, language);
+      }
+    }
+  }, [isSubmit, testResults]);
   // Effect to format system test cases for display
   useEffect(() => {
     if (problem?.testCases?.length) {
@@ -375,20 +385,11 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
   const handleSubmit = async () => {
     console.log("[DEBUG] Submit clicked - starting test validation");
     setIsRunning(true);
+    setIsSubmit(true);
 
     try {
       // First: Run tests
-      await handleRunCode();
-
-      // Check if all tests passed
-      if (testResults.length > 0 && testResults.every(test => test.passed)) {
-        console.log("[DEBUG] All tests passed - proceeding to AI validation");
-        // All tests passed - call AI validation
-        onSubmit(code, language);
-      } else {
-        console.log("[DEBUG] Some tests failed - stopping submission");
-        // Tests failed - don't call AI, user sees test results
-      }
+      await handleRun();
     } catch (error) {
       console.error("[DEBUG] Test execution failed:", error);
     }
@@ -418,10 +419,6 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
 
   const handleEditorMount = (editor: any, monaco: any) => {
     setEditorInstance(editor);
-  };
-
-  const handleSubmit = () => {
-    onSubmit(code, language);
   };
 
   const handleLanguageChange = async (newLanguage: string) => {
