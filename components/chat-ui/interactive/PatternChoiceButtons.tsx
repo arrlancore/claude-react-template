@@ -35,6 +35,7 @@ const PatternChoiceButtons: React.FC<PatternChoiceButtonsProps> = ({
   // }, [selectedOption]);
 
   const handleSelect = (optionId: string) => {
+    console.log("PatternChoiceButtons: Option selected:", optionId);
     setSelectedOption(optionId);
     onSelect(optionId);
   };
