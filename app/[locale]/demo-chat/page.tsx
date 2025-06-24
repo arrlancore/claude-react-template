@@ -42,6 +42,8 @@ import { useLearningSession, useProgress } from "@/lib/learning/hooks";
 import { recordUserInteraction } from "@/lib/learning";
 import { convertMDToContent } from "@/lib/mdx/mdx-utils";
 import MDXViewer from "@/components/chat-ui/mdx-viewer";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 // Define DSAProblem interface
 interface DSAProblem {
@@ -61,7 +63,7 @@ interface Message {
   timestamp?: Date;
   codeBlocks?: CodeBlock[];
   dsaProblem?: DSAProblem;
-  interactive?: boolean; // ADD THIS LINE
+  interactive?: boolean;
 }
 
 // Interface to represent the structure from test-cases.json, mirroring MonacoEditorPanel
@@ -71,28 +73,26 @@ interface SourceTestCase {
   explanation?: string;
 }
 
-interface Message {
-  id: string;
-  content: string;
-  sender: "user" | "assistant";
-  timestamp?: Date; // Made timestamp optional
-  codeBlocks?: CodeBlock[];
-  dsaProblem?: DSAProblem; // Add dsaProblem to Message interface
-}
-
 interface CodeBlock {
   id: string;
   code: string;
   language: string;
 }
 
-export default function DemoChatPage() {
+interface DemoChatPageProps {
+  user: {
+    id: string;
+    email: string | null;
+  };
+}
+
+function DemoChatPage({ user }: DemoChatPageProps) {
   // Learning session hooks
   const {
     session,
     resumeOrCreateSession,
     isLoading: sessionLoading,
-  } = useLearningSession();
+  } = useLearningSession(user.id);
   const { updateUnderstanding } = useProgress();
 
   const [messages, setMessages] = useState<Message[]>([
@@ -123,14 +123,14 @@ export default function DemoChatPage() {
     const initSession = async () => {
       if (!session && !sessionLoading) {
         try {
-          await resumeOrCreateSession("demo-user", "two-pointer");
+          await resumeOrCreateSession(user.id as string, "two-pointer");
         } catch (error) {
           console.error("Failed to initialize session:", error);
         }
       }
     };
     initSession();
-  }, [session, sessionLoading, resumeOrCreateSession]);
+  }, [session, sessionLoading, resumeOrCreateSession, user.id]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -365,7 +365,7 @@ export default function DemoChatPage() {
     }
 
     // Handle regular code blocks
-    const parts = message.content.split(/(\[CODE_BLOCK:[^\]]+\])/g);
+    const parts = message.content.split(/(\[CODE_BLOCK:[^\]]+)\]/g);
     return parts.map((part, index) => {
       const match = part.match(/\[CODE_BLOCK:([^\]]+)\]/);
       if (match) {
@@ -445,7 +445,7 @@ export default function DemoChatPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: "demo-user",
+          user_id: user.id as string,
           code: submittedCode,
           language: language,
           pattern_id: "two-pointer",
@@ -467,65 +467,9 @@ export default function DemoChatPage() {
       const validation = await response.json();
 
       // Create AI feedback message
-      const feedbackMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: `
-**Code Analysis Complete! 🎯**
-
-• **Correctness**: ${validation.data.correctness}%
-• **Efficiency**: ${validation.data.efficiency || "Good"}
-• **Pattern Usage**: ${validation.data.pattern_recognition || "Detected"}
-
-**Feedback**: ${validation.data.feedback}
-
-${validation.data.suggestions?.length > 0 ? `**Suggestions**:\n${validation.data.suggestions.map((s: string) => `• ${s}`).join("\n")}` : ""}
-
-${validation.data.correctness >= 80 ? "🎉 Great work! You've successfully implemented the Two Pointer pattern!" : "💪 Keep going! You're on the right track."}
-        `,
-        sender: "assistant",
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, feedbackMessage]);
-
-      // Record the submission and update progress
-      if (session?.id) {
-        await recordUserInteraction({
-          session_id: session.id,
-          interaction_type: "code_submission",
-          user_input: submittedCode,
-          ai_response: validation.data.feedback,
-          timestamp: new Date(),
-          metadata: {
-            problem_id: currentProblem.id,
-            language: language,
-            correctness: validation.data.correctness,
-            efficiency: validation.data.efficiency,
-            pattern_recognition: validation.data.pattern_recognition,
-          },
-        });
-
-        // Update understanding based on code quality
-        if (validation.data.understanding_adjustment) {
-          updateUnderstanding(validation.data.understanding_adjustment);
-        }
-      }
-    } catch (error) {
-      console.error("Code validation error:", error);
-
-      // Fallback feedback
       const fallbackMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: `Thanks for submitting your solution for "${currentProblem.title}"! Let me analyze your code...
-
-I can see you're working on implementing the Two Pointer pattern. The structure looks good!
-
-Some general guidance:
-• Make sure you're moving the pointers strategically based on the comparison
-• Remember that we're working with a sorted array
-• The goal is to find the target sum efficiently
-
-Would you like to discuss your approach or try another problem?`,
+        content: `Thanks for submitting your solution for "${currentProblem.title}"! Let me analyze your code...\n\nI can see you're working on implementing the Two Pointer pattern. The structure looks good!\n\nSome general guidance:\n• Make sure you're moving the pointers strategically based on the comparison\n• Remember that we're working with a sorted array\n• The goal is to find the target sum efficiently`,
         sender: "assistant",
         timestamp: new Date(),
       };
@@ -560,7 +504,7 @@ Would you like to discuss your approach or try another problem?`,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: "demo-user",
+          user_id: user.id as string,
           message: inputValue,
           context: {
             pattern_id: "two-pointer",
@@ -639,37 +583,6 @@ Would you like to discuss your approach or try another problem?`,
       }
 
       setMessages((prev) => [...prev, assistantMessage]);
-
-      // Record interaction
-      if (session?.id) {
-        await recordUserInteraction({
-          session_id: session.id,
-          interaction_type: "chat_message",
-          user_input: inputValue,
-          ai_response: aiResponse.data.message,
-          timestamp: new Date(),
-          metadata: {
-            understanding_delta: aiResponse.data.understanding_adjustment || 0,
-            requires_interaction: aiResponse.data.requires_interaction || false,
-          },
-        });
-
-        if (aiResponse.data.understanding_adjustment) {
-          updateUnderstanding(aiResponse.data.understanding_adjustment);
-        }
-      }
-    } catch (error) {
-      console.error("AI Error:", error);
-
-      const fallbackMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content:
-          "I'm having trouble connecting right now. Let me help you with the Two Pointer pattern. Can you tell me what specific aspect you'd like to learn about?",
-        sender: "assistant",
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, fallbackMessage]);
     } finally {
       setIsTyping(false);
     }
@@ -845,3 +758,33 @@ Would you like to discuss your approach or try another problem?`,
     </div>
   );
 }
+
+interface DemoChatPageProps {
+  user: {
+    id: string;
+    email: string | null;
+  };
+}
+
+function DemoChatPageWithAuth() {
+  const { user, isAuthenticated, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.push("/auth");
+    }
+  }, [router, isAuthenticated, loading]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isAuthenticated || !user) {
+    return null; // Or a specific "not authenticated" message
+  }
+
+  return <DemoChatPage user={user as { id: string; email: string | null }} />;
+}
+
+export default DemoChatPageWithAuth;
