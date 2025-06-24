@@ -372,6 +372,30 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
     setIsRunning(false);
   };
 
+  const handleSubmit = async () => {
+    console.log("[DEBUG] Submit clicked - starting test validation");
+    setIsRunning(true);
+
+    try {
+      // First: Run tests
+      await handleRunCode();
+
+      // Check if all tests passed
+      if (testResults.length > 0 && testResults.every(test => test.passed)) {
+        console.log("[DEBUG] All tests passed - proceeding to AI validation");
+        // All tests passed - call AI validation
+        onSubmit(code, language);
+      } else {
+        console.log("[DEBUG] Some tests failed - stopping submission");
+        // Tests failed - don't call AI, user sees test results
+      }
+    } catch (error) {
+      console.error("[DEBUG] Test execution failed:", error);
+    }
+
+    setIsRunning(false);
+  };
+
   const handleReset = () => {
     setCode(initialCode);
     const saveKey = `dsa-editor-${problem.id}-${language}`;
@@ -452,6 +476,15 @@ const MonacoEditorPanel: React.FC<MonacoEditorPanelProps> = ({
             className="bg-slate-700 hover:bg-slate-600 text-white border-slate-600"
           >
             <Settings className="h-4 w-4" />
+          </Button>
+
+          <Button
+            size="sm"
+            onClick={handleSubmit}
+            disabled={isRunning}
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            {isRunning ? "Testing..." : "Submit"}
           </Button>
         </div>
 

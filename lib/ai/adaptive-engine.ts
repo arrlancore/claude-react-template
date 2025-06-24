@@ -87,11 +87,14 @@ export class AdaptiveEngine {
   // Validation Methods
   async validateSolution(request: ValidationRequest): Promise<ValidationResponse> {
     const variables = this.buildValidationVariables(request);
+    console.log("[DEBUG] Validation variables:", variables);
 
     const rendered = this.promptManager.renderTemplate('solution_validation', variables);
     if (!rendered) {
       throw new Error('Solution validation template not found');
     }
+
+    console.log("[DEBUG] AI Prompt:", rendered.prompt);
 
     const response = await this.geminiClient.generateResponse(
       rendered.prompt,
@@ -101,6 +104,8 @@ export class AdaptiveEngine {
         temperature: rendered.template.temperature,
       }
     );
+
+    console.log("[DEBUG] AI Raw Response:", response.content);
 
     await this.trackUsage({
       user_id: request.user_id,
@@ -112,7 +117,10 @@ export class AdaptiveEngine {
       response_time: response.responseTime,
     });
 
-    return this.parseValidationResponse(response.content);
+    const parsed = this.parseValidationResponse(response.content);
+    console.log("[DEBUG] Parsed Response:", parsed);
+
+    return parsed;
   }
 
   // Chat Methods
@@ -213,9 +221,9 @@ export class AdaptiveEngine {
   private buildValidationVariables(request: ValidationRequest): Record<string, string> {
     return {
       pattern_name: request.pattern_id.replace('-', ' '),
-      problem_description: request.context.problem_description || 'current problem',
+      problem_description: `Two Sum II problem: Given a sorted array and target, find two numbers that sum to target. Return 1-indexed positions.`,
       user_solution: request.user_solution,
-      user_explanation: request.solution_approach,
+      user_explanation: request.solution_approach || 'No explanation provided',
     };
   }
 
@@ -282,7 +290,14 @@ export class AdaptiveEngine {
 
   private parseValidationResponse(content: string): ValidationResponse {
     try {
-      const parsed = JSON.parse(content);
+      // Extract JSON from markdown code blocks if present
+      let jsonContent = content;
+      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/);
+      if (jsonMatch) {
+        jsonContent = jsonMatch[1];
+      }
+
+      const parsed = JSON.parse(jsonContent);
       return {
         is_correct: parsed.is_correct || false,
         pattern_recognition: parsed.pattern_recognition || false,

@@ -235,9 +235,7 @@ function DemoChatPage({ user }: DemoChatPageProps) {
     ) {
       return (
         <>
-          <div className="mb-4">
-            {message.content}
-          </div>
+          <div className="mb-4">{message.content}</div>
           <PatternChoiceButtons
             question="Select the best pattern:"
             onRender={(container) => {
@@ -259,7 +257,10 @@ function DemoChatPage({ user }: DemoChatPageProps) {
               { id: "not-sure", label: "Not Sure", confidence: "low" },
             ]}
             onSelect={async (optionId) => {
-              console.log("[DEBUG]: Main component onSelect called with:", optionId);
+              console.log(
+                "[DEBUG]: Main component onSelect called with:",
+                optionId
+              );
 
               // Update understanding based on correctness
               const isCorrect = optionId === "two-pointer";
@@ -277,12 +278,13 @@ function DemoChatPage({ user }: DemoChatPageProps) {
                   // Add completion message
                   const completionMessage: Message = {
                     id: (Date.now() + 2).toString(),
-                    content: "✅ **Excellent!** You correctly identified the Two Pointer pattern. This shows you understand when to use strategic pointer movement for optimization.",
+                    content:
+                      "✅ **Excellent!** You correctly identified the Two Pointer pattern. This shows you understand when to use strategic pointer movement for optimization.",
                     sender: "assistant",
                     timestamp: new Date(),
                   };
 
-                  setMessages(prev => [...prev, completionMessage]);
+                  setMessages((prev) => [...prev, completionMessage]);
                   setIsTyping(false);
 
                   // Auto-progress if in calibration stage
@@ -291,18 +293,22 @@ function DemoChatPage({ user }: DemoChatPageProps) {
                       setIsTyping(true); // Show loading for stage transition
                       setTimeout(() => {
                         progressToNextStage();
-                        setIsTyping(false);
                       }, 400);
                     }, 1500);
                   }
                 }, 500); // 500ms loading for completion message
               } else {
-                console.log("[DEBUG]: Incorrect option, no achievements triggered");
+                console.log(
+                  "[DEBUG]: Incorrect option, no achievements triggered"
+                );
               }
 
               // Record interaction if session exists
               if (session?.id) {
-                console.log("[DEBUG]: Recording interaction for session:", session.id);
+                console.log(
+                  "[DEBUG]: Recording interaction for session:",
+                  session.id
+                );
                 await recordUserInteraction({
                   session_id: session.id,
                   interaction_type: "pattern_recognition",
@@ -321,7 +327,9 @@ function DemoChatPage({ user }: DemoChatPageProps) {
                   },
                 });
               } else {
-                console.log("[DEBUG]: No session found, skipping interaction recording");
+                console.log(
+                  "[DEBUG]: No session found, skipping interaction recording"
+                );
               }
 
               const userMessage: Message = {
@@ -489,15 +497,26 @@ function DemoChatPage({ user }: DemoChatPageProps) {
     submittedCode: string,
     language: string
   ) => {
-    if (!currentProblem) return;
+    console.log("[DEBUG] handleEditorSubmit called with:", {
+      submittedCode,
+      language,
+      currentProblem,
+    });
 
+    if (!currentProblem) {
+      console.log("[DEBUG] No current problem, returning early");
+      return;
+    }
+
+    console.log("[DEBUG] Creating solution message");
     const solutionMessage: Message = {
       id: Date.now().toString(),
-      content: `Solution submitted for "${currentProblem.title}":\n\`\`\`${language}\n${submittedCode}\n\`\`\``,
+      content: `Solution submitted for "${currentProblem.title}"`,
       sender: "user",
       timestamp: new Date(),
     };
 
+    console.log("[DEBUG] Extracting code blocks");
     const { content: processedContent, codeBlocks: newCodeBlocks } =
       extractCodeBlocks(solutionMessage.content);
 
@@ -513,9 +532,12 @@ function DemoChatPage({ user }: DemoChatPageProps) {
       codeBlocks: newCodeBlocks,
     };
 
+    console.log("[DEBUG] Adding message to chat");
     setMessages((prevMessages) => [...prevMessages, finalSolutionMessage]);
     setIsTyping(true);
 
+    console.log("[DEBUG] Starting AI validation call");
+    // Send directly to AI validation (Monaco editor handles test execution)
     try {
       // Send to AI for validation
       const response = await fetch("/api/ai/validate", {
@@ -523,15 +545,15 @@ function DemoChatPage({ user }: DemoChatPageProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_id: user.id as string,
-          code: submittedCode,
-          language: language,
-          pattern_id: "two-pointer",
+          pattern_id: currentProblem.pattern,
           problem_id: currentProblem.id,
+          user_solution: submittedCode,
+          language: language,
           context: {
             session_data: {
               understanding_level: session?.understanding_level || 50,
-              attempt_number: 1, // Could track this
-              time_spent_minutes: 10, // Could calculate actual time
+              attempt_number: 1,
+              time_spent_minutes: 10,
             },
           },
         }),
@@ -542,16 +564,36 @@ function DemoChatPage({ user }: DemoChatPageProps) {
       }
 
       const validation = await response.json();
+      console.log("[DEBUG] AI validation response:", validation);
 
-      // Create AI feedback message
-      const fallbackMessage: Message = {
+      // Create AI feedback message from actual response
+      const feedbackContent = `**Code Analysis Results:**
+
+${validation.data.is_correct ? "✅" : "❌"} **Correctness:** ${validation.data.is_correct ? "Passed" : "Needs work"}
+⚡ **Efficiency:** ${validation.data.efficiency_score}/100
+🎯 **Pattern Recognition:** ${validation.data.pattern_recognition ? "Good" : "Needs improvement"}
+📊 **Understanding Level:** ${validation.data.understanding_level}
+
+**AI Feedback:**
+${validation.data.feedback}
+
+${
+  validation.data.improvement_suggestions.length > 0
+    ? `**Suggestions:**
+${validation.data.improvement_suggestions.map((s) => `• ${s}`).join("\n")}`
+    : ""
+}
+
+${validation.data.is_correct ? "🎉 Great job! Your solution is working correctly!" : "💪 Keep refining your approach!"}`;
+
+      const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: `Thanks for submitting your solution for "${currentProblem.title}"! Let me analyze your code...\n\nI can see you're working on implementing the Two Pointer pattern. The structure looks good!\n\nSome general guidance:\n• Make sure you're moving the pointers strategically based on the comparison\n• Remember that we're working with a sorted array\n• The goal is to find the target sum efficiently`,
+        content: feedbackContent,
         sender: "assistant",
         timestamp: new Date(),
       };
 
-      setMessages((prev) => [...prev, fallbackMessage]);
+      setMessages((prev) => [...prev, aiMessage]);
 
       // Check for problem completion achievements
       const currentIndex = curriculum.indexOf(currentProblem.id);
@@ -658,7 +700,12 @@ function DemoChatPage({ user }: DemoChatPageProps) {
 
   // Achievement detection based on actions
   const checkForAchievements = (action: string, data?: any) => {
-    console.log("[DEBUG]: checkForAchievements called with action:", action, "data:", data);
+    console.log(
+      "[DEBUG]: checkForAchievements called with action:",
+      action,
+      "data:",
+      data
+    );
     const achievements: Achievement[] = [];
 
     // Stage progression achievements
@@ -809,7 +856,8 @@ function DemoChatPage({ user }: DemoChatPageProps) {
                   </span>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Problem {Math.max(1, currentProblemIndex + 1)} of {curriculum.length}
+                  Problem {Math.max(1, currentProblemIndex + 1)} of{" "}
+                  {curriculum.length}
                 </div>
 
                 {sessionLoading && (
@@ -830,6 +878,9 @@ function DemoChatPage({ user }: DemoChatPageProps) {
     if (currentIndex < curriculum.length - 1) {
       const nextProblem = curriculum[currentIndex + 1];
       setCurrentProblem(nextProblem);
+
+      // Show loading for async AI call
+      setIsTyping(true);
 
       // Load next problem via chat API
       try {
@@ -858,13 +909,32 @@ function DemoChatPage({ user }: DemoChatPageProps) {
 
           const problemMessage: Message = {
             id: Date.now().toString(),
-            content: aiResponse.content ||
+            content:
+              aiResponse.content ||
               `Let's work on problem ${currentIndex + 2}: ${nextProblem.replace(/-/g, " ").replace(/^\d+\s*/, "")}`,
             sender: "assistant",
             timestamp: new Date(),
           };
 
           setMessages((prev) => [...prev, problemMessage]);
+
+          // Auto-open editor with problem data
+          const problemData: DSAProblem = {
+            id: nextProblem,
+            pattern: "two-pointer",
+            title: nextProblem.replace(/-/g, " ").replace(/^\d+\s*/, ""),
+            description: `Solve this ${nextProblem.replace(/-/g, " ")} problem using the Two Pointer technique.`,
+            starterCode: {
+              javascript:
+                "// Write your solution here\nfunction solution() {\n    \n}",
+              python: "# Write your solution here\ndef solution():\n    pass",
+            },
+            language: "javascript",
+          };
+
+          setCurrentProblem(problemData);
+          setIsEditorPanelOpen(true);
+          setIsTyping(false);
         } else {
           throw new Error("Chat API failed");
         }
@@ -878,6 +948,24 @@ function DemoChatPage({ user }: DemoChatPageProps) {
         };
 
         setMessages((prev) => [...prev, fallbackMessage]);
+
+        // Auto-open editor with problem data (fallback)
+        const problemData: DSAProblem = {
+          id: nextProblem,
+          pattern: "two-pointer",
+          title: nextProblem.replace(/-/g, " ").replace(/^\d+\s*/, ""),
+          description: `Solve this ${nextProblem.replace(/-/g, " ")} problem using the Two Pointer technique.`,
+          starterCode: {
+            javascript:
+              "// Write your solution here\nfunction solution() {\n    \n}",
+            python: "# Write your solution here\ndef solution():\n    pass",
+          },
+          language: "javascript",
+        };
+
+        setCurrentProblem(problemData);
+        setIsEditorPanelOpen(true);
+        setIsTyping(false);
       }
     } else {
       // Completed all problems - trigger assessment
@@ -893,7 +981,7 @@ function DemoChatPage({ user }: DemoChatPageProps) {
     // PHASE 2: Check interactive commands first
     const command = inputValue.toLowerCase().trim();
 
-    if (command === 'interactive 1') {
+    if (command === "interactive 1") {
       const userMessage: Message = {
         id: Date.now().toString(),
         content: inputValue,
@@ -901,25 +989,26 @@ function DemoChatPage({ user }: DemoChatPageProps) {
         timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, userMessage]);
+      setMessages((prev) => [...prev, userMessage]);
       setInputValue("");
       setIsTyping(true);
 
       setTimeout(() => {
         const interactiveMessage: Message = {
           id: (Date.now() + 1).toString(),
-          content: "Which pattern would you use to find two numbers that sum to a target in a sorted array?",
+          content:
+            "Which pattern would you use to find two numbers that sum to a target in a sorted array?",
           sender: "assistant",
           timestamp: new Date(),
         };
 
-        setMessages(prev => [...prev, interactiveMessage]);
+        setMessages((prev) => [...prev, interactiveMessage]);
         setIsTyping(false);
-      }, 400);
+      }, 500);
       return;
     }
 
-    if (command === 'interactive 2') {
+    if (command === "interactive 2") {
       const userMessage: Message = {
         id: Date.now().toString(),
         content: inputValue,
@@ -927,7 +1016,7 @@ function DemoChatPage({ user }: DemoChatPageProps) {
         timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, userMessage]);
+      setMessages((prev) => [...prev, userMessage]);
       setInputValue("");
       setIsTyping(true);
 
@@ -939,9 +1028,9 @@ function DemoChatPage({ user }: DemoChatPageProps) {
           timestamp: new Date(),
         };
 
-        setMessages(prev => [...prev, interactiveMessage]);
+        setMessages((prev) => [...prev, interactiveMessage]);
         setIsTyping(false);
-      }, 400);
+      }, 500);
       return;
     }
 
@@ -978,9 +1067,11 @@ function DemoChatPage({ user }: DemoChatPageProps) {
 
     // Help command
     if (command === "help") {
-      const helpMessage: Message = {
-        id: Date.now().toString(),
-        content: `**Learning Commands:**
+      // 500ms delay for system response
+      setTimeout(() => {
+        const helpMessage: Message = {
+          id: Date.now().toString(),
+          content: `**Learning Commands:**
 
 🎯 **Stage Navigation:**
 • \`next stage\` or \`progress\` - Move to next learning stage
@@ -995,11 +1086,13 @@ function DemoChatPage({ user }: DemoChatPageProps) {
 • \`give me a problem\` - Load coding problem
 
 Your current stage: **${currentStage}** | Problem: **${currentProblem}**`,
-        sender: "assistant",
-        timestamp: new Date(),
-      };
+          sender: "assistant",
+          timestamp: new Date(),
+        };
 
-      setMessages((prev) => [...prev, userMessage, helpMessage]);
+        setMessages((prev) => [...prev, userMessage, helpMessage]);
+        setIsTyping(false);
+      }, 500);
       setInputValue("");
       return;
     }
