@@ -38,8 +38,8 @@ import InteractiveElementWrapper, {
   InteractiveElement,
   AlgorithmStateData,
 } from "@/components/chat-ui/interactive/InteractiveElementWrapper";
-import { useLearningSession, useProgress } from '@/lib/learning/hooks';
-import { recordUserInteraction } from '@/lib/learning';
+import { useLearningSession, useProgress } from "@/lib/learning/hooks";
+import { recordUserInteraction } from "@/lib/learning";
 
 // Define DSAProblem interface
 interface DSAProblem {
@@ -86,7 +86,11 @@ interface CodeBlock {
 
 export default function DemoChatPage() {
   // Learning session hooks
-  const { session, resumeOrCreateSession, isLoading: sessionLoading } = useLearningSession();
+  const {
+    session,
+    resumeOrCreateSession,
+    isLoading: sessionLoading,
+  } = useLearningSession();
   const { updateUnderstanding } = useProgress();
 
   const [messages, setMessages] = useState<Message[]>([
@@ -117,9 +121,9 @@ export default function DemoChatPage() {
     const initSession = async () => {
       if (!session && !sessionLoading) {
         try {
-          await resumeOrCreateSession('demo-user', 'two-pointer', 1);
+          await resumeOrCreateSession("demo-user", "two-pointer");
         } catch (error) {
-          console.error('Failed to initialize session:', error);
+          console.error("Failed to initialize session:", error);
         }
       }
     };
@@ -226,19 +230,24 @@ export default function DemoChatPage() {
               if (session?.id) {
                 await recordUserInteraction({
                   session_id: session.id,
-                  interaction_type: 'pattern_recognition',
+                  interaction_type: "pattern_recognition",
                   user_input: optionId,
                   ai_response: null,
                   timestamp: new Date(),
                   metadata: {
                     selected_option: optionId,
-                    correct: optionId === 'two-pointer',
-                    options_shown: ['two-pointer', 'sliding-window', 'binary-search', 'not-sure']
-                  }
+                    correct: optionId === "two-pointer",
+                    options_shown: [
+                      "two-pointer",
+                      "sliding-window",
+                      "binary-search",
+                      "not-sure",
+                    ],
+                  },
                 });
 
                 // Update understanding based on correctness
-                const isCorrect = optionId === 'two-pointer';
+                const isCorrect = optionId === "two-pointer";
                 updateUnderstanding(isCorrect ? 10 : -5);
               }
 
@@ -310,7 +319,7 @@ export default function DemoChatPage() {
               if (session?.id) {
                 await recordUserInteraction({
                   session_id: session.id,
-                  interaction_type: 'algorithm_visualization',
+                  interaction_type: "algorithm_visualization",
                   user_input: response.selectedOption,
                   ai_response: null,
                   timestamp: new Date(),
@@ -318,8 +327,8 @@ export default function DemoChatPage() {
                     selected_option: response.selectedOption,
                     correct: response.correct || false,
                     algorithm_state: response.algorithmState || null,
-                    explanation_shown: response.explanationShown || false
-                  }
+                    explanation_shown: response.explanationShown || false,
+                  },
                 });
 
                 // Update understanding based on correctness
@@ -395,17 +404,10 @@ export default function DemoChatPage() {
     setCurrentProblem(null);
   };
 
-  const handleEditorSubmit = (submittedCode: string, language: string) => {
-    if (!currentProblem) return;
-
-    const solutionMessage: Message = {
-      id: Date.now().toString(),
-      content: `Solution submitted for "${currentProblem.title}":\n\`\`\`${language}\n${submittedCode}\n\`\`\``,
-      sender: "user",
-      timestamp: new Date(),
-    };
-
-  const handleEditorSubmit = async (submittedCode: string, language: string) => {
+  const handleEditorSubmit = async (
+    submittedCode: string,
+    language: string
+  ) => {
     if (!currentProblem) return;
 
     const solutionMessage: Message = {
@@ -435,23 +437,23 @@ export default function DemoChatPage() {
 
     try {
       // Send to AI for validation
-      const response = await fetch('/api/ai/validate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/ai/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: 'demo-user',
+          user_id: "demo-user",
           code: submittedCode,
           language: language,
-          pattern_id: 'two-pointer',
+          pattern_id: "two-pointer",
           problem_id: currentProblem.id,
           context: {
             session_data: {
               understanding_level: session?.understanding_level || 50,
               attempt_number: 1, // Could track this
-              time_spent_minutes: 10 // Could calculate actual time
-            }
-          }
-        })
+              time_spent_minutes: 10, // Could calculate actual time
+            },
+          },
+        }),
       });
 
       if (!response.ok) {
@@ -467,14 +469,14 @@ export default function DemoChatPage() {
 **Code Analysis Complete! 🎯**
 
 • **Correctness**: ${validation.data.correctness}%
-• **Efficiency**: ${validation.data.efficiency || 'Good'}
-• **Pattern Usage**: ${validation.data.pattern_recognition || 'Detected'}
+• **Efficiency**: ${validation.data.efficiency || "Good"}
+• **Pattern Usage**: ${validation.data.pattern_recognition || "Detected"}
 
 **Feedback**: ${validation.data.feedback}
 
-${validation.data.suggestions?.length > 0 ? `**Suggestions**:\n${validation.data.suggestions.map((s: string) => `• ${s}`).join('\n')}` : ''}
+${validation.data.suggestions?.length > 0 ? `**Suggestions**:\n${validation.data.suggestions.map((s: string) => `• ${s}`).join("\n")}` : ""}
 
-${validation.data.correctness >= 80 ? '🎉 Great work! You\'ve successfully implemented the Two Pointer pattern!' : '💪 Keep going! You\'re on the right track.'}
+${validation.data.correctness >= 80 ? "🎉 Great work! You've successfully implemented the Two Pointer pattern!" : "💪 Keep going! You're on the right track."}
         `,
         sender: "assistant",
         timestamp: new Date(),
@@ -486,7 +488,7 @@ ${validation.data.correctness >= 80 ? '🎉 Great work! You\'ve successfully imp
       if (session?.id) {
         await recordUserInteraction({
           session_id: session.id,
-          interaction_type: 'code_submission',
+          interaction_type: "code_submission",
           user_input: submittedCode,
           ai_response: validation.data.feedback,
           timestamp: new Date(),
@@ -495,8 +497,8 @@ ${validation.data.correctness >= 80 ? '🎉 Great work! You\'ve successfully imp
             language: language,
             correctness: validation.data.correctness,
             efficiency: validation.data.efficiency,
-            pattern_recognition: validation.data.pattern_recognition
-          }
+            pattern_recognition: validation.data.pattern_recognition,
+          },
         });
 
         // Update understanding based on code quality
@@ -504,9 +506,8 @@ ${validation.data.correctness >= 80 ? '🎉 Great work! You\'ve successfully imp
           updateUnderstanding(validation.data.understanding_adjustment);
         }
       }
-
     } catch (error) {
-      console.error('Code validation error:', error);
+      console.error("Code validation error:", error);
 
       // Fallback feedback
       const fallbackMessage: Message = {
@@ -551,23 +552,24 @@ Would you like to discuss your approach or try another problem?`,
 
     try {
       // Use real AI endpoint
-      const response = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: 'demo-user',
+          user_id: "demo-user",
           message: inputValue,
           context: {
-            pattern_id: 'two-pointer',
+            pattern_id: "two-pointer",
             problem_id: session?.stage_progress?.current_problem || null,
             conversation_history: messages.slice(-10),
             session_data: {
               understanding_level: session?.understanding_level || 50,
-              current_stage: session?.current_stage || 'introduction',
-              guidance_level: session?.stage_progress?.guidance_level || 'balanced'
-            }
-          }
-        })
+              current_stage: session?.current_stage || "introduction",
+              guidance_level:
+                session?.stage_progress?.guidance_level || "balanced",
+            },
+          },
+        }),
       });
 
       if (!response.ok) {
@@ -581,15 +583,19 @@ Would you like to discuss your approach or try another problem?`,
         content: aiResponse.data.message,
         sender: "assistant",
         timestamp: new Date(),
-        interactive: aiResponse.data.requires_interaction
+        interactive: aiResponse.data.requires_interaction,
       };
 
       // Handle special AI responses
-      if (aiResponse.data.interactive_type === 'pattern_choice') {
-        assistantMessage.content = "Which pattern would you use for this problem? Array: [1,3,6,8,11,15], Target: 14";
+      if (aiResponse.data.interactive_type === "pattern_choice") {
+        assistantMessage.content =
+          "Which pattern would you use for this problem? Array: [1,3,6,8,11,15], Target: 14";
         assistantMessage.interactive = true;
-      } else if (aiResponse.data.interactive_type === 'algorithm_visualization') {
-        assistantMessage.content = "Let's analyze this two-pointer scenario: Array: [2,7,11,15], Target: 9. We start with pointers at positions 0 and 3. interactive 2";
+      } else if (
+        aiResponse.data.interactive_type === "algorithm_visualization"
+      ) {
+        assistantMessage.content =
+          "Let's analyze this two-pointer scenario: Array: [2,7,11,15], Target: 9. We start with pointers at positions 0 and 3. interactive 2";
         assistantMessage.interactive = true;
       }
 
@@ -601,13 +607,14 @@ Would you like to discuss your approach or try another problem?`,
           title: aiResponse.data.problem_data.title,
           description: aiResponse.data.problem_data.description,
           starterCode: aiResponse.data.problem_data.starter_code,
-          language: aiResponse.data.problem_data.language || 'javascript',
-          testCases: aiResponse.data.problem_data.test_cases
+          language: aiResponse.data.problem_data.language || "javascript",
+          testCases: aiResponse.data.problem_data.test_cases,
         };
       }
 
       // Handle code blocks
-      const { content: processedContent, codeBlocks: newCodeBlocks } = extractCodeBlocks(assistantMessage.content);
+      const { content: processedContent, codeBlocks: newCodeBlocks } =
+        extractCodeBlocks(assistantMessage.content);
 
       if (newCodeBlocks.length > 0) {
         const newCodeBlocksMap: Record<string, CodeBlock> = {};
@@ -633,27 +640,27 @@ Would you like to discuss your approach or try another problem?`,
       if (session?.id) {
         await recordUserInteraction({
           session_id: session.id,
-          interaction_type: 'chat_message',
+          interaction_type: "chat_message",
           user_input: inputValue,
           ai_response: aiResponse.data.message,
           timestamp: new Date(),
           metadata: {
             understanding_delta: aiResponse.data.understanding_adjustment || 0,
-            requires_interaction: aiResponse.data.requires_interaction || false
-          }
+            requires_interaction: aiResponse.data.requires_interaction || false,
+          },
         });
 
         if (aiResponse.data.understanding_adjustment) {
           updateUnderstanding(aiResponse.data.understanding_adjustment);
         }
       }
-
     } catch (error) {
-      console.error('AI Error:', error);
+      console.error("AI Error:", error);
 
       const fallbackMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: "I'm having trouble connecting right now. Let me help you with the Two Pointer pattern. Can you tell me what specific aspect you'd like to learn about?",
+        content:
+          "I'm having trouble connecting right now. Let me help you with the Two Pointer pattern. Can you tell me what specific aspect you'd like to learn about?",
         sender: "assistant",
         timestamp: new Date(),
       };
@@ -711,7 +718,9 @@ Would you like to discuss your approach or try another problem?`,
       <div className="fixed top-0 w-full z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold text-foreground">Two Pointer Learning</h1>
+            <h1 className="text-xl font-bold text-foreground">
+              Two Pointer Learning
+            </h1>
 
             {/* Progress Indicator */}
             {session && (
@@ -724,16 +733,20 @@ Would you like to discuss your approach or try another problem?`,
                       style={{ width: `${session.understanding_level || 0}%` }}
                     />
                   </div>
-                  <span className="font-medium">{Math.round(session.understanding_level || 0)}%</span>
+                  <span className="font-medium">
+                    {Math.round(session.understanding_level || 0)}%
+                  </span>
                 </div>
 
                 {sessionLoading && (
-                  <div className="text-muted-foreground text-xs">Loading session...</div>
+                  <div className="text-muted-foreground text-xs">
+                    Loading session...
+                  </div>
                 )}
 
                 {session.current_stage && (
                   <div className="text-xs text-muted-foreground capitalize">
-                    Stage: {session.current_stage.replace('_', ' ')}
+                    Stage: {session.current_stage.replace("_", " ")}
                   </div>
                 )}
               </div>
