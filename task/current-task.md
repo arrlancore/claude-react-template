@@ -74,14 +74,14 @@ components/
 │   ├── interactive/
 │   │   ├── PatternChoiceButtons.tsx ✅
 │   │   ├── InteractiveElementWrapper.tsx ✅
-│   │   ├── StrategyQuiz.tsx 🎯
-│   │   ├── ReasoningPrompt.tsx 🎯
+│   │   ├── StrategyQuiz.tsx ✅
+│   │   ├── ReasoningPrompt.tsx (No need)
 │   │   └── ProgressButtons.tsx 🎯
 ```
 
 ## Testing Plan
 - "interactive 1" → Pattern choice ✅
-- "interactive 2" → Strategy quiz 🎯
+- "interactive 2" → Strategy quiz ✅
 - "interactive 3" → Reasoning prompt 🎯
 - "interactive 4" → Progress control 🎯
 

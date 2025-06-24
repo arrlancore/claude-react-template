@@ -23,7 +23,8 @@ const MessageItem: React.FC<MessageItemProps> = ({
   // Base message container classes
   // Original .message: display: flex; gap: 16px; opacity: 0; animation: fadeInUp 0.5s ease-out forwards;
   // Original .message.user: flex-direction: row-reverse; align-self: flex-end;
-  const messageContainerClasses = `flex gap-4 animate-fadeInUp ${
+  // todo remove class: animate-fadeInUp
+  const messageContainerClasses = `flex font-inter gap-4 items-center ${
     isUser ? "flex-row-reverse self-end" : ""
   }`;
 
@@ -42,17 +43,17 @@ const MessageItem: React.FC<MessageItemProps> = ({
   // Original .message.user .message-content: background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.1)); border: 1px solid rgba(139, 92, 246, 0.2);
   // Original .message.assistant .message-content: background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(168, 85, 247, 0.1)); border: 1px solid rgba(236, 72, 153, 0.2);
   // Responsive max-width from original CSS: .message-content { max-width: 85%; } @media (max-width: 768px)
-  const contentClasses = `rounded-[20px] px-5 py-4 max-w-[70%] md:max-w-[85%] text-slate-700 leading-relaxed shadow-[0_4px_20px_rgba(139,92,246,0.1)] backdrop-blur-xl ${
+  const contentClasses = `rounded-[20px] px-5 py-4 max-w-full text-slate-700 leading-relaxed backdrop-blur-xl ${
     isUser
-      ? "bg-gradient-to-r from-purple-500/10 to-fuchsia-500/10 border border-purple-500/20"
-      : "bg-gradient-to-r from-pink-500/10 to-fuchsia-500/10 border border-pink-500/20"
+      ? "bg-gradient-to-r from-purple-500/10 to-fuchsia-500/10 border border-purple-500/20 max-w-[70%] md:max-w-[85%] shadow-[0_4px_20px_rgba(139,92,246,0.1)]"
+      : ""
   }`;
   // Note: The original CSS uses rgba values for gradients. Tailwind's direct gradient stops might look slightly different.
   // If exact color matching is critical, these gradients might need to be custom defined in tailwind.config.js or as custom CSS.
 
   return (
     <div key={message.id} className={messageContainerClasses}>
-      <div className={avatarClasses}>{isUser ? "You" : "AI"}</div>
+      {isUser && <div className={avatarClasses}>You</div>}
 
       <div className={contentClasses}>
         {/* 
@@ -66,7 +67,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
           or could be simplified if there are other clickable elements.
         */}
         <div
-          className="prose prose-sm max-w-none prose-p:my-0 prose-pre:my-0"
+          className="prose max-w-none prose-p:my-0 prose-pre:my-0"
           // The onClick for code cards is now handled by the CodeCardComponent itself.
           // If there are other types of interactive elements to be rendered via renderMessageContent,
           // their event handling would need to be part of the JSX returned by renderMessageContent.

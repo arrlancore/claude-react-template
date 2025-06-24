@@ -20,7 +20,6 @@ const TypingIndicator: React.FC = () => {
 
   return (
     <div className={assistantMessageClasses}>
-      <div className={avatarClasses}>AI</div>
       <div className={typingIndicatorBubbleClasses}>
         <span>Thinking</span>
         <div className="flex gap-1">

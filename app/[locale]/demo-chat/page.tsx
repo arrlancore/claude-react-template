@@ -14,7 +14,7 @@ import { ChevronDown } from "lucide-react";
 import PatternChoiceButtons from "@/components/chat-ui/interactive/PatternChoiceButtons";
 import InteractiveElementWrapper, {
   InteractiveElement,
-  AlgorithmStateData
+  AlgorithmStateData,
 } from "@/components/chat-ui/interactive/InteractiveElementWrapper";
 import { is } from "date-fns/locale";
 
@@ -201,35 +201,38 @@ export default function DemoChatPage() {
       message.sender === "assistant"
     ) {
       const algorithmElement: InteractiveElement = {
-        type: 'algorithm-state',
+        type: "algorithm-state",
         data: {
-          visualizer: 'two-pointer',
+          visualizer: "two-pointer",
           state: {
             array: [2, 7, 11, 15],
             left: 0,
             right: 3,
             target: 9,
             currentSum: 17,
-            status: 'Sum is too high, which pointer should move?'
+            status: "Sum is too high, which pointer should move?",
           },
-          question: 'Current sum is 17, target is 9 (too high). Which pointer should move?',
+          question:
+            "Current sum is 17, target is 9 (too high). Which pointer should move?",
           options: [
             {
-              id: 'move-left',
-              label: 'Move left pointer right',
-              action: 'increment-left',
-              explanation: 'This would increase the sum further (2→7), making it even higher',
-              correct: false
+              id: "move-left",
+              label: "Move left pointer right",
+              action: "increment-left",
+              explanation:
+                "This would increase the sum further (2→7), making it even higher",
+              correct: false,
             },
             {
-              id: 'move-right',
-              label: 'Move right pointer left',
-              action: 'decrement-right',
-              explanation: 'Correct! This reduces the sum by using a smaller value (15→11)',
-              correct: true
-            }
-          ]
-        }
+              id: "move-right",
+              label: "Move right pointer left",
+              action: "decrement-right",
+              explanation:
+                "Correct! This reduces the sum by using a smaller value (15→11)",
+              correct: true,
+            },
+          ],
+        },
       };
 
       return (
