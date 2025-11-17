@@ -106,7 +106,10 @@ const config: Config = {
       animation: {
         ellipsis: "ellipsis 1.5s infinite",
         "progress-bar": "progress-bar 2s ease-in-out infinite",
-        "pulse": "pulse-opacity 1.5s ease-in-out infinite",
+        pulse: "pulse-opacity 1.5s ease-in-out infinite",
+      },
+      fontFamily: {
+        sans: ["Inter", "ui-sans-serif", "system-ui"],
       },
     },
   },

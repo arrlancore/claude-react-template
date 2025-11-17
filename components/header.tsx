@@ -57,16 +57,14 @@ function Header() {
             <h1 className="text-xl md:text-2xl font-extrabold">
               <span>{brand.title}</span>
               {brand.domain && (
-                <span className="bg-gradient-to-tr from-primary to-primary-foreground bg-clip-text text-transparent">
-                  .{brand.domain}
-                </span>
+                <span className="bg-gradient-to-tr from-primary to-primary-foreground bg-clip-text text-transparent"></span>
               )}
             </h1>
           </Link>
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
+        {/* <nav className="hidden md:flex items-center gap-6">
           <a
             href="#features"
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -107,7 +105,7 @@ function Header() {
               <span>Style Guide</span>
             </Link>
           )}
-        </nav>
+        </nav> */}
 
         {/* Desktop Action Buttons */}
         <div className="hidden md:flex items-center gap-4">
@@ -145,7 +143,7 @@ function Header() {
         <div className="md:hidden bg-background border-b">
           <div className="container py-4 px-4 sm:px-6">
             <nav className="flex flex-col space-y-4">
-              <a
+              {/* <a
                 href="#features"
                 className="py-2 text-muted-foreground hover:text-foreground"
                 onClick={toggleMenu}
@@ -190,7 +188,7 @@ function Header() {
                   <Palette className="h-4 w-4" />
                   <span>Style Guide</span>
                 </Link>
-              )}
+              )} */}
 
               <div className="pt-4 flex flex-col space-y-3">
                 <Button

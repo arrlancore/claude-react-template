@@ -1,0 +1,102 @@
+/* Custom Chat Styles - For things Tailwind can't easily handle */
+
+/* Global font (can be moved to tailwind.config.js or globals.css later if preferred) */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Logo gradient text */
+.logo-gradient {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent; /* Standard property */
+}
+
+/* Message fade-in animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fadeInUp {
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+/* Typing indicator dot bounce animation */
+@keyframes bounce {
+    0%, 80%, 100% { 
+        transform: scale(0);
+        opacity: 0.5;
+    } 
+    40% { 
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.animate-bounce-dot {
+    animation: bounce 1.4s infinite ease-in-out;
+}
+.animate-bounce-dot:nth-child(1) { animation-delay: -0.32s; }
+.animate-bounce-dot:nth-child(2) { animation-delay: -0.16s; }
+.animate-bounce-dot:nth-child(3) { animation-delay: -0.16s; } /* Original had -0.16s for 2nd and 3rd, keeping consistent */
+
+
+/* Code card pseudo-element for the side border */
+.code-card-before::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    opacity: 0.6;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px; /* Added for horizontal scrollbars if they appear */
+}
+::-webkit-scrollbar-track {
+    background: rgba(139, 92, 246, 0.1); /* purple-500/10 */
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.3); /* purple-500/30 */
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.5); /* purple-500/50 */
+}
+
+/* Mobile code panel overlay backdrop */
+@media (max-width: 768px) {
+    .mobile-code-panel-overlay::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(8px);
+        z-index: -1; /* Ensure it's behind the panel content but over page content */
+        opacity: 0;
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}

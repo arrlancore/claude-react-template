@@ -1,22 +1,22 @@
 export const brand = {
-  title: "Brand",
-  domain: "ai",
+  title: "PatternLift",
+  domain: "com",
 };
-export const brandName = `${brand.title}.${brand.domain}`;
+export const brandName = `PatternLift.${brand.domain}`;
 
 // app
-export const appSlogan = "Build Better, Ship Faster";
-export const appTitle = `${appSlogan} | ${brandName}`;
+export const appSlogan = "Know the Patterns, Ace Interviews";
+export const appTitle = `${brand.title} | ${appSlogan}`;
 export const appDescription =
-  "The complete development platform for building and scaling your next project. Trusted by over 20,000 developers worldwide.";
-export const appUrl = "https://brand.ai";
+  "Master Data Structures and Algorithms through AI-powered pattern learning. Learn the 8 essential patterns that unlock 90% of coding interviews with your personal Socratic mentor.";
+export const appUrl = "https://patternlift.com";
 export const appLocale = "en_US";
 
 // blog
-export const blogTitle = "Blog";
-export const blogDescription = `Latest news, insights, and tutorials from the ${brand.title}.${brand.domain} team.`;
-export const blogUrl = appUrl + "blog";
-export const defaultAuthor = "Editor Team";
+export const blogTitle = "PatternLift Blog";
+export const blogDescription = `Algorithm patterns, interview tips, and learning strategies from the ${brand.title} team.`;
+export const blogUrl = appUrl + "/blog";
+export const defaultAuthor = "PatternLift Team";
 
 // pagination
 export const paginationConfig = {

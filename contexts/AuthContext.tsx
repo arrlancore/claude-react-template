@@ -22,6 +22,7 @@ interface AuthContextType {
     password: string,
     metadata?: any
   ) => Promise<{ error: any }>;
+  signInWithGitHub: () => Promise<{ error: any }>;
   isAuthenticated: boolean;
 }
 
@@ -34,7 +35,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
+
+  // Track component mount state
+  useEffect(() => {
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
 
   const refreshUser = async () => {
     const { data } = await supabase.auth.getUser();
@@ -50,12 +60,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         password,
       });
 
-      if (!error) {
+      if (!error && isMounted) {
         toast({
           description: "Login berhasil! Selamat datang kembali.",
           variant: "default",
         });
-      } else {
+      } else if (error && isMounted) {
         toast({
           description: "Gagal login: " + error.message,
           variant: "destructive",
@@ -64,10 +74,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       return { error };
     } catch (err: any) {
-      toast({
-        description: "Terjadi kesalahan: " + err.message,
-        variant: "destructive",
-      });
+      if (isMounted) {
+        toast({
+          description: "Terjadi kesalahan: " + err.message,
+          variant: "destructive",
+        });
+      }
       return { error: err };
     }
   };
@@ -83,12 +95,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         },
       });
 
-      if (!error) {
+      if (!error && isMounted) {
         toast({
           description: "Pendaftaran berhasil! Silakan cek email Anda.",
           variant: "default",
         });
-      } else {
+      } else if (error && isMounted) {
         toast({
           description: "Gagal mendaftar: " + error.message,
           variant: "destructive",
@@ -97,10 +109,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       return { error };
     } catch (err: any) {
-      toast({
-        description: "Terjadi kesalahan: " + err.message,
-        variant: "destructive",
+      if (isMounted) {
+        toast({
+          description: "Terjadi kesalahan: " + err.message,
+          variant: "destructive",
+        });
+      }
+      return { error: err };
+    }
+  };
+
+  // Sign in with GitHub
+  const signInWithGitHub = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "github",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
+        },
       });
+
+      return { error };
+    } catch (err: any) {
+      if (isMounted) {
+        toast({
+          description: "Terjadi kesalahan: " + err.message,
+          variant: "destructive",
+        });
+      }
       return { error: err };
     }
   };
@@ -109,20 +149,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     // Set up the auth state listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsAuthenticated(!!session?.user);
-      setLoading(false);
+    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      setSession(currentSession);
+      const currentUser = currentSession?.user ?? null;
+      setUser(currentUser);
+      setIsAuthenticated(!!currentUser);
+      // DO NOT set loading here for onAuthStateChange,
+      // as initial loading is handled by getSession()
     });
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsAuthenticated(!!session?.user);
-      setLoading(false);
-    });
+    // 1. Get the initial session. This is the primary driver for initial loading state.
+    supabase.auth
+      .getSession()
+      .then(({ data: { session: initialSession } }) => {
+        setSession(initialSession);
+        const currentUser = initialSession?.user ?? null;
+        setUser(currentUser);
+        setIsAuthenticated(!!currentUser);
+        setLoading(false); // <--- SET LOADING FALSE HERE, AFTER INITIAL SESSION IS FETCHED
+      })
+      .catch((error) => {
+        console.error("Error getting initial session:", error);
+        setLoading(false); // Also set loading false on error
+      });
 
     return () => {
       subscription.unsubscribe();
@@ -130,14 +179,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const signOut = async () => {
-    toast({
-      description: "Logging out...",
-    });
-    await supabase.auth.signOut();
-    toast({
-      description: "Berhasil keluar dari sistem",
-      variant: "default",
-    });
+    try {
+      // Perform logout without showing toasts during the critical logout process
+      const { error } = await supabase.auth.signOut();
+
+      // Only show error toast if there's an actual error and component is mounted
+      if (error && isMounted) {
+        console.error("Logout error:", error);
+        toast({
+          description: "Error during logout: " + error.message,
+          variant: "destructive",
+        });
+      }
+
+      // Don't show success toast - the auth state change will handle the redirect
+      // This prevents DOM manipulation errors when the page is transitioning
+    } catch (err: any) {
+      console.error("Unexpected logout error:", err);
+      // Only show error toast if component is still mounted
+      if (isMounted) {
+        toast({
+          description: "Unexpected error during logout",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   const value = {
@@ -148,6 +214,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     refreshUser,
     signIn,
     signUp,
+    signInWithGitHub,
     isAuthenticated,
   };
 
